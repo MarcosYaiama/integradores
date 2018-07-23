@@ -1,0 +1,21 @@
+{% extends 'template.html' %} {% block conteudo %}
+        <form action="#" method="POST">
+
+            <label>Nome:</label>
+            <input class="form-control" type="text" name="usuario" required>
+            <label>Senha:</label>
+            <input class="form-control" type="password" name="senha" required>
+            <label>Repita a senha:</label>
+            <input class="form-control" type="password" name="senha_conf" required>
+            <br>
+            <label>Função:</label>
+            <select name="cargo" class="form-control">
+                <option value="cco">CCO</option>
+                <option value="guarda">Guarda</option>
+                <option value="analista">Analista</option>
+            </select>
+            <br>
+            <button class="btn btn-success form-control" type="submit">Entrar</button>
+
+        </form>
+{% endblock %}

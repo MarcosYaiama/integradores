@@ -1,0 +1,96 @@
+{% extends 'template.html' %} {% block conteudo %}
+        <h1 style="text-align: center;">Encaminhamento de Carga Reprovada</h1>
+        <a class="btn btn-primary form-control" href="{{ url_for('cco_form') }}">Voltar</a>
+        <br><br>
+        <form action="#" method="POST">
+        <label>Informações da Carga</label>
+        <table class="table table-striped table-responsive table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fornecedor</th>
+                    <th>Placa</th>
+                    <th>Data</th>
+                    <th>Hora</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>002</td>
+                    <td>Tabajara</td>
+                    <td>AAA-9999</td>
+                    <td>01/04/2018</td>
+                    <td>11:30</td>
+                </tr>
+        
+            </tbody>
+        </table>
+        <label>Dados da Análise</label>
+        <table class="table table-striped table-responsive table-bordered">
+            <thead>
+                <tr>
+                    <th>Grão</th>
+                    <th>Peso</th>
+                    <th>Umidade</th>
+                    <th>Temperatura</th>
+                    <th>Rugosidade</th>
+                    <th>Taxa de Aprovação</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Soja</td>
+                    <td>10kg</td>
+                    <td>X</td>
+                    <td>20º C</td>
+                    <td>Y</td>
+                    <td>60%</td>
+                </tr>
+            </tbody>
+        </table>
+                <label>Status Guardas</label>
+                <table class="table table-striped table-responsive table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center;">ID</th>
+                            <th style="text-align: center;">Nome</th>
+                            <th style="text-align: center;">Disponibilidade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align: center;">543</td>
+                            <td style="text-align: center;">Caruara</td>
+                            <td class="btn-danger" style="font-weight: bolder; text-align: center;">Removendo Caminhão</td>
+                            </tr>
+                        <tr>
+                            <td style="text-align: center;">647</td>
+                            <td style="text-align: center;">Jéssica</td>
+                            <td class="btn-primary" style="font-weight: bolder; text-align: center;">Retornando de Chamado</td>
+                            
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">543</td>
+                            <td style="text-align: center;">Eduardo</td>
+                            <td class="btn-success" style="font-weight: bolder; text-align: center;">Disponivel</td>                            
+                        </tr>
+                    </tbody>
+                </table>
+
+            <label>Encaminhar</label>
+            <select name="encaminhar" class="form-control">
+                <option>Gate 1</option>
+                <option>Gate 2</option>
+                <option>Gate 3</option>
+            </select>
+            <label>Guarda</label>
+            <select name="encaminhar" class="form-control">
+                <option>Caruara</option>
+                <option>Jéssica</option>
+                <option>Eduardo</option>
+            </select>
+            <br><br>
+            <button type="submit" class="btn btn-danger form-control">Enviar</button>
+
+        </form>
+{% endblock %}

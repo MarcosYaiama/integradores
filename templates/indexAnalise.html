@@ -1,0 +1,91 @@
+{% extends 'template.html' %} {% block conteudo %}
+            <table class="table table-bordered table-responsive table-striped">
+                <label>Retornos da Maquina de Analise</label>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Grão</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>002</td>
+                        <td>Soja</td>
+                        <td>
+                            <a class="btn btn-success form-control" href="{{ url_for('analise_form') }}">Iniciar Análise</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-striped table-responsive table-bordered">
+                <label>Situação da Ultima análise</label>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Grão</th>
+                        <th>Resultado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>001</td>
+                        <td>Soja</td>
+                        <td>Reprovado</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-striped table-responsive table-bordered">
+                <thead>
+                    <label>Requisições CCO Finalizadas</label>
+                    <tr>
+                        <th>ID</th>
+                        <th>Grão</th>
+                        <th>Peso</th>
+                        <th>Data</th>
+                        <th>Hora</th>
+                        <th>Circunstância</th>
+                        <th>Situação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>001</td>
+                        <td>Soja</td>
+                        <td>10Kg</td>
+                        <td>10/10/2019</td>
+                        <td>14:30</td>
+                        <td>Reprova Analise</td>
+                        <td>Aguardando CCO</td>
+                    </tr>
+                    <tr>
+                        <td>001</td>
+                        <td>Soja</td>
+                        <td>10Kg</td>
+                        <td>10/10/2019</td>
+                        <td>14:34</td>
+                        <td>Nova Analise</td>
+                        <td>Aguardando Analise</td>
+                    </tr>
+                    <tr>
+                        <td>001</td>
+                        <td>Soja</td>
+                        <td>10Kg</td>
+                        <td>10/10/2019</td>
+                        <td>14:39</td>
+                        <td>Reprova</td>
+                        <td>Aguardando CCO</td>
+                    </tr>
+                    <tr>
+                        <td>001</td>
+                        <td>Soja</td>
+                        <td>10Kg</td>
+                        <td>10/10/2019</td>
+                        <td>14:39</td>
+                        <td>Reprova</td>
+                        <td>Finalizado</td>
+                    </tr>
+                </tbody>
+            </table>
+            <a class="btn btn-primary form-control" href="#">Ver Mais</a><br><br>
+{% endblock %}
