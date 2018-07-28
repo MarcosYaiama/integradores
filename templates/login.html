@@ -1,17 +1,22 @@
 {% extends 'template.html' %}
 {% block conteudo %}
-            <h1 style="text-align:center; font-size: 2em;">Bem Vindo</h1>
-            <form action="{{ url_for('autenticar') }}" method="POST" style="padding: 1em;">
+<h1 style="text-align:center; font-size: 2em;">Bem Vindo</h1>
+<form action="{{ url_for('autenticar') }}" method="POST" style="padding: 1em;">
 
-                <label>Nome:</label>
-                <input class="form-control" type="text" name="usuario" required>
-                <label>Senha:</label>
-                <input class="form-control" type="password" name="senha" required><br>
-                <button class="btn btn-success form-control" type="submit">Entrar</button>
-
-            </form>
-            <br><br>
-            <ul>
+    <label>Nome:</label>
+    <input class="form-control" type="text" name="usuario" required>
+    <label>Senha:</label>
+    <input class="form-control" type="password" name="senha" required><br>
+    <button class="btn btn-success form-control" type="submit">Entrar</button>
+    
+</form>
+<h3 style="text-align: center">BUG ALERT</h3>
+<br><br>
+<ul>
+    <li><strong>BUG encontrado na hora de trocar do MySQL para SQL Alchemy, o mesmo aparece situações relacionadas ao login!</strong></li>
+</ul>
+<br><br>
+<ul>
                 <h3 style="text-align: center">Histórico de Atualizações</h3><br>
                 <li>15/07/2018:
                     <ul>
@@ -27,7 +32,7 @@
                         <li>Bootstrap no CSS</li>
                     </ul>
                 </li>
-                    
+                <br>
                 </li>
                 <li>17/07/2018:
                     <ul>
@@ -39,12 +44,24 @@
                         <li>Blocos Flask para diminuir código HTML</li>
                     </ul>
                 </li>
-                18/07/2018:
-                <ul>
-                    <li>Criação do catalogo de features/Histórico de Atualizações na tela de Login</li>
-                    <li>Botões de Logout e Voltar</li>
-                    <li>Fluxograma das Tabelas do banco de dados</li>
-                </ul>
+                <br>
+                <li>
+                    18/07/2018:
+                    <ul>
+                        <li>Criação do catalogo de features/Histórico de Atualizações na tela de Login</li>
+                        <li>Botões de Logout e Voltar</li>
+                        <li>Fluxograma das Tabelas do banco de dados</li>
+                    </ul>
+                </li>
+                <br>
+                <li>
+                27/07/2018:
+                    <ul>
+                        <li>Inicio do Planejamento e Estudo do Banco com MySQL</li>
+                        <li>Transição do SQL ALCHEMY para MySQL</li>
+                        <li>Possibilidade de alterar SQL ALCHEMY para MySQL a qualquer momento pelo back-end</li>
+                        <li>Inicio do planejamento de registros de usuarios através da interface do CCO</li>
+                    </ul>
+                </li>
             </ul><br><br>
-            
             {% endblock %}

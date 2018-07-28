@@ -17,9 +17,9 @@ def busca_usuario_por_nome(nome):
 def nivel_de_acesso(cargo):
     if(cargo == 'CCO'):
         return ('indexCCO.html', 'formCCO.html', 'reprovaCCO.html')
-    elif(cargo == 'Analista de Grãos'):
+    elif(cargo == 'ANALISE DE GRAOS'):
         return ('indexAnalise.html', 'formAnalise.html')
-    elif(cargo == 'Guarda'):
+    elif(cargo == 'GUARDA'):
         return ('indexGuarda.html', 'chamadoGuarda.html')
     else:
         return False
