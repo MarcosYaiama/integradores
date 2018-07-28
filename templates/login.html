@@ -1,12 +1,14 @@
 {% extends 'template.html' %}
 {% block conteudo %}
-<h1 style="text-align:center; font-size: 2em;">Bem Vindo</h1>
+<h1 style="text-align: center">Bem Vindo</h1>
 <form action="{{ url_for('autenticar') }}" method="POST" style="padding: 1em;">
-
+    <p>
     <label>Nome:</label>
     <input class="form-control" type="text" name="usuario" required>
-    <label>Senha:</label>
+    </p>
+    <p><label>Senha:</label>
     <input class="form-control" type="password" name="senha" required><br>
+    </p>
     <button class="btn btn-success form-control" type="submit">Entrar</button>
     
 </form>
