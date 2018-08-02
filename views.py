@@ -47,6 +47,12 @@ def autenticar():
     flash('Não logado')
     return redirect(url_for('index'))
     
+
+@app.route('/registro')
+def registro():
+    cargos = usuario_dao.cargos()
+    return render_template('registro.html', cargos = cargos)
+
 @app.route('/formCCO')
 def cco_form():
     return protege_rota('formCCO.html')

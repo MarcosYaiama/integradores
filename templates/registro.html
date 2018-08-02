@@ -10,9 +10,11 @@
             <br>
             <label>Função:</label>
             <select name="cargo" class="form-control">
-                <option value="cco">CCO</option>
-                <option value="guarda">Guarda</option>
-                <option value="analista">Analista</option>
+                {% for i in cargos %}
+                    <option value="{{ i }}">{{ i }}</option>
+                {% endfor %}
+                <!-- <option value="guarda">Guarda</option>
+                <option value="analista">Analista</option> -->
             </select>
             <br>
             <button class="btn btn-success form-control" type="submit">Entrar</button>

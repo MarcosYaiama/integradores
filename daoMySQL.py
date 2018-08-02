@@ -1,5 +1,5 @@
 from flask_mysqldb import MySQL
-from models import Usuario
+from models import Usuario, Cargo
 # SQL_DELETA_JOGO = 'delete from jogo where id = %s'
 # SQL_JOGO_POR_ID = 'SELECT id, nome, categoria, console from jogo where id = %s'
 # SQL_ATUALIZA_JOGO = 'UPDATE jogo SET nome=%s, categoria=%s, console=%s where id = %s'
@@ -7,8 +7,8 @@ from models import Usuario
 # SQL_CRIA_JOGO = 'INSERT into jogo (nome, categoria, console) values (%s, %s, %s)'
 SQL_USUARIO_POR_ID = 'SELECT * from usuarios where id = %s'
 SQL_BUSCA_USUARIOS = 'SELECT * from usuarios'
+SQL_BUSCA_CARGOS = 'SELECT * from cargos'
 SQL_CRIA_USUARIO = 'INSERT into usuarios(id, nome, senha) values (%s, %s, %s)'
-
 
 class UsuarioDao:
     def __init__(self, db):
@@ -41,6 +41,15 @@ class UsuarioDao:
         #self.__db.connect.commit()     #MALDITO ERRO, JAMAIS TE ESQUECEREI!
         self.__db.connection.commit()
 
+    def cargos(self):
+        cursor = self.__db.connection.cursor()
+        cursor.execute(SQL_BUSCA_CARGOS)
+        cargos_bd = cursor.fetchall()
+        cargos = []
+        for i in cargos_bd:
+            cargos.append(i[0])
+        # print(cargos)
+        return cargos
 
 def traduz_jogos(jogos):
     def cria_jogo_com_tupla(tupla):
@@ -52,7 +61,6 @@ def traduz_user(usuarios):
     def cria_user_com_tupla(tupla):
         return Usuario(tupla[0], tupla[1], tupla[2],tupla[3])
     return list(map(cria_user_com_tupla, usuarios))
-
 
 def traduz_usuario(tupla):
     return Usuario(tupla[0], tupla[1], tupla[2], tupla[3])
