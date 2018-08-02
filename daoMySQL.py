@@ -20,6 +20,7 @@ class UsuarioDao:
         cursor.execute(SQL_USUARIO_POR_ID, (id,))
         dados = cursor.fetchone()
         usuario = traduz_usuario(dados) if dados else None
+        print(usuario)
         return usuario
 
     def listar(self):

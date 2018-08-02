@@ -28,10 +28,13 @@ def autenticar():
     senha = request.form['senha']
     if(mySQL):
         usuario = usuario_dao.buscar_por_id(nome)
-    else:
-        usuario = busca_usuario_por_nome(nome)
-
+   #else:
+   #    usuario = busca_usuario_por_nome(nome)
+    print(usuario.id)
     if usuario:
+        print('Entrei')
+        print(usuario.senha)
+        print(usuario.nome_completo)
         if (senha == usuario.senha):
             print('LOGADO')
             print(usuario.cargo)

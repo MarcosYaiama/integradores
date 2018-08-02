@@ -1,0 +1,6 @@
+Instalar as libs
+
+flask
+libmysqlclient-dev   - Antes de instalar flask-mysqldb
+flask-mysqldb
+sqlalchemy
