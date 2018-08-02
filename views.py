@@ -97,15 +97,21 @@ def logout():
 
 @app.route('/controle_func')
 def controle_funcionarios():
-    usuarios = usuario_dao.listar()
-    cargos = usuario_dao.cargos()
-    dict_cargos = {}
-        
-    for user in usuarios:
-        if user.cargo not in dict_cargos:
-            dict_cargos.setdefault(user.cargo, False)
-        for i in range(len(cargos)):
-            if user.cargo == cargos[i] and user.status == "Online":
-                dict_cargos[cargos[i]] = True
-    print(dict_cargos)            
-    return render_template('controle_funcionariosCCO.html', usuarios = usuarios, cargos = dict_cargos)
+    if(session['usuario_cargo'] == 'CCO'):
+        usuarios = usuario_dao.listar()
+        cargos = usuario_dao.cargos()
+        dict_cargos = {}
+
+        for user in usuarios:
+            if user.cargo not in dict_cargos:
+                dict_cargos.setdefault(user.cargo, False)
+            for i in range(len(cargos)):
+                if user.cargo == cargos[i] and user.status == "Online":
+                    dict_cargos[cargos[i]] = True
+        print(dict_cargos)            
+        return render_template('controle_funcionariosCCO.html', usuarios = usuarios, cargos = dict_cargos)
+    else:
+        flash('Não foi possivel acessar essa página')
+        return redirect(url_for('index'))
+
+

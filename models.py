@@ -1,5 +1,5 @@
 class Usuario:
-    def __init__(self, id, senha, cargo, nome, status):
+    def __init__(self, id, senha, cargo, nome, status="Offline"):
         self.nome = nome
         self.senha = senha
         self.id = id 

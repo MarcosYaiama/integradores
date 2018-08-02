@@ -1,5 +1,5 @@
 {% extends 'template.html' %} {% block conteudo %}
-<h2 style="text-align: center;">Analise Manual</h2>
+<h2 style="text-align: center;">Controle de Usuarios</h2>
 <a class="btn btn-primary form-control" href="{{ url_for('index') }}">Voltar</a><br>
 <br>
 {% for cargo, online in cargos.items() %}
@@ -52,6 +52,6 @@ Funcionarios Offline:
 
   </tbody>
 </table>
-
+<a class="btn btn-success form-control" href="{{ url_for('registro') }}">Registrar novo Funcionario</a>
 
 {% endblock %}
