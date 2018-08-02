@@ -34,14 +34,15 @@ def autenticar():
     if usuario:
         print('Entrei')
         print(usuario.senha)
-        print(usuario.nome_completo)
+        print(usuario.nome)
         if (senha == usuario.senha):
             print('LOGADO')
             print(usuario.cargo)
             session['usuario_logado'] = usuario.id
-            session['usuario_nome'] = usuario.nome_completo
+            session['usuario_nome'] = usuario.nome
             session['usuario_cargo'] = usuario.cargo
             session['nivel_acesso'] = nivel_de_acesso(usuario.cargo)
+            usuario_dao.atualiza_status("Online", usuario.id)
             print(session['nivel_acesso'])
             return redirect(url_for('index'))
     flash('Não logado')
@@ -87,8 +88,24 @@ def chamado_guarda():
 
 @app.route('/logout')
 def logout():
+    usuario_dao.atualiza_status("Offline", session['usuario_logado'])
     session['usuario_logado'] = None
     session['usuario_nome'] = None
     session['usuario_cargo'] = None
     session['nivel_acesso'] = None
     return redirect(url_for('index'))
+
+@app.route('/controle_func')
+def controle_funcionarios():
+    usuarios = usuario_dao.listar()
+    cargos = usuario_dao.cargos()
+    dict_cargos = {}
+        
+    for user in usuarios:
+        if user.cargo not in dict_cargos:
+            dict_cargos.setdefault(user.cargo, False)
+        for i in range(len(cargos)):
+            if user.cargo == cargos[i] and user.status == "Online":
+                dict_cargos[cargos[i]] = True
+    print(dict_cargos)            
+    return render_template('controle_funcionariosCCO.html', usuarios = usuarios, cargos = dict_cargos)

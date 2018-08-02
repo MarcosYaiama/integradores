@@ -9,6 +9,8 @@ SQL_USUARIO_POR_ID = 'SELECT * from usuarios where id = %s'
 SQL_BUSCA_USUARIOS = 'SELECT * from usuarios'
 SQL_BUSCA_CARGOS = 'SELECT * from cargos'
 SQL_CRIA_USUARIO = 'INSERT into usuarios(id, nome_completo, senha, cargo) values (%s, %s, %s, %s)'
+SQL_ATUALIZA_STATUS_USUARIO = 'UPDATE usuarios set status_atual=%s where id=%s'
+
 
 class UsuarioDao:
     def __init__(self, db):
@@ -50,6 +52,15 @@ class UsuarioDao:
         # print(cargos)
         return cargos
 
+    def atualiza_status(self, estado, id):
+        cursor = self.__db.connection.cursor()
+        cursor.execute(SQL_ATUALIZA_STATUS_USUARIO, (estado,
+                                                     id))
+        self.__db.connection.commit()
+
+
+
+
 def traduz_jogos(jogos):
     def cria_jogo_com_tupla(tupla):
         return Jogo(tupla[1], tupla[2], tupla[3], id=tupla[0])
@@ -58,8 +69,8 @@ def traduz_jogos(jogos):
 
 def traduz_user(usuarios):
     def cria_user_com_tupla(tupla):
-        return Usuario(tupla[0], tupla[1], tupla[2],tupla[3])
+        return Usuario(tupla[0], tupla[1], tupla[2],tupla[3], tupla[4])
     return list(map(cria_user_com_tupla, usuarios))
 
 def traduz_usuario(tupla):
-    return Usuario(tupla[0], tupla[1], tupla[2], tupla[3])
+    return Usuario(tupla[0], tupla[1], tupla[2], tupla[3], tupla[4])
