@@ -53,6 +53,19 @@ def registro():
     cargos = usuario_dao.cargos()
     return render_template('registro.html', cargos = cargos)
 
+@app.route('/autenticar_novo_usuario', methods=['POST',])
+def novo_usuario():
+    if(request.form['senha'] == request.form['senha_conf']):
+        novo_usuario = Usuario(request.form['id'],
+                            request.form['senha'],
+                            request.form['cargo'],
+                            request.form['nome'])
+        usuario_dao.novo_usuario(novo_usuario)
+        return redirect(url_for('index'))
+    else:
+        flash('As senhas não correspondem')
+        return redirect(url_for('registro'))
+
 @app.route('/formCCO')
 def cco_form():
     return protege_rota('formCCO.html')

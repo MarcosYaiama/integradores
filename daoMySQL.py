@@ -8,7 +8,7 @@ from models import Usuario, Cargo
 SQL_USUARIO_POR_ID = 'SELECT * from usuarios where id = %s'
 SQL_BUSCA_USUARIOS = 'SELECT * from usuarios'
 SQL_BUSCA_CARGOS = 'SELECT * from cargos'
-SQL_CRIA_USUARIO = 'INSERT into usuarios(id, nome, senha) values (%s, %s, %s)'
+SQL_CRIA_USUARIO = 'INSERT into usuarios(id, nome_completo, senha, cargo) values (%s, %s, %s, %s)'
 
 class UsuarioDao:
     def __init__(self, db):
@@ -33,11 +33,10 @@ class UsuarioDao:
     def novo_usuario(self, usuario):
         cursor = self.__db.connection.cursor()
         cursor.execute(SQL_CRIA_USUARIO, (usuario.id,
-                                          usuario.nome, usuario.senha))
-        print(self)
-        nome = "Marcos"
-        print(self.nome)
-        print(nome)
+                                          usuario.nome, 
+                                          usuario.senha, 
+                                          usuario.cargo))
+
         #self.__db.connect.commit()     #MALDITO ERRO, JAMAIS TE ESQUECEREI!
         self.__db.connection.commit()
 
