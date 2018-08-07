@@ -39,6 +39,37 @@ INSERT INTO `cargos` VALUES ('ANALISTA DE GRAOS'),('CCO'),('GUARDA');
 UNLOCK TABLES;
 
 --
+-- Table structure for table `logs_func`
+--
+
+DROP TABLE IF EXISTS `logs_func`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `logs_func` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` varchar(100) DEFAULT NULL,
+  `Status` tinyint(1) DEFAULT NULL,
+  `hora` time DEFAULT NULL,
+  `data` date DEFAULT NULL,
+  `cargo` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_usuario` (`id_usuario`),
+  KEY `cargo` (`cargo`),
+  CONSTRAINT `logs_func_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`),
+  CONSTRAINT `logs_func_ibfk_2` FOREIGN KEY (`cargo`) REFERENCES `cargos` (`nome`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `logs_func`
+--
+
+LOCK TABLES `logs_func` WRITE;
+/*!40000 ALTER TABLE `logs_func` DISABLE KEYS */;
+/*!40000 ALTER TABLE `logs_func` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `status`
 --
 
@@ -99,4 +130,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-08-05  4:31:03
+-- Dump completed on 2018-08-07 11:08:07
