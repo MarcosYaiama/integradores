@@ -43,6 +43,7 @@ def autenticar():
             session['usuario_cargo'] = usuario.cargo
             session['nivel_acesso'] = nivel_de_acesso(usuario.cargo)
             usuario_dao.atualiza_status("Online", usuario.id)
+            usuario_dao.atualiza_log(usuario.id, 1, usuario.cargo)
             print(session['nivel_acesso'])
             return redirect(url_for('index'))
     flash('Não logado')
@@ -89,6 +90,7 @@ def chamado_guarda():
 @app.route('/logout')
 def logout():
     usuario_dao.atualiza_status("Offline", session['usuario_logado'])
+    usuario_dao.atualiza_log(session['usuario_logado'], 0, session['usuario_cargo'])
     session['usuario_logado'] = None
     session['usuario_nome'] = None
     session['usuario_cargo'] = None
@@ -100,6 +102,7 @@ def controle_funcionarios():
     if(session['usuario_cargo'] == 'CCO'):
         usuarios = usuario_dao.listar()
         cargos = usuario_dao.cargos()
+        logs = usuario_dao.listar_logs()
         dict_cargos = {}
 
         for user in usuarios:
@@ -109,7 +112,7 @@ def controle_funcionarios():
                 if user.cargo == cargos[i] and user.status == "Online":
                     dict_cargos[cargos[i]] = True
         print(dict_cargos)            
-        return render_template('controle_funcionariosCCO.html', usuarios = usuarios, cargos = dict_cargos)
+        return render_template('controle_funcionariosCCO.html', usuarios = usuarios, cargos = dict_cargos, logs = logs[:6])
     else:
         flash('Não foi possivel acessar essa página')
         return redirect(url_for('index'))

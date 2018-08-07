@@ -6,6 +6,15 @@ class Usuario:
         self.cargo = cargo
         self.status = status
 
+class Logs():
+    def __init__(self, id_usuario, status, hora, data, cargo):
+        self.id_usuario = id_usuario
+        self.status = status
+        self.hora = hora
+        self.data = data
+        self.cargo = cargo
+        
+
 class Cargo:
     def __init__(self, cargo):
         self.cargo = cargo
