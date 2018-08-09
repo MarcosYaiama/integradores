@@ -1,4 +1,5 @@
 {% extends 'template.html' %} {% block conteudo %}
+            {% if analises %}
             <table class="table table-bordered table-responsive table-striped">
                 <label>Retornos da Maquina de Analise</label>
                 {{analises}}
@@ -28,6 +29,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% endif %}
             <table class="table table-striped table-responsive table-bordered">
                 <label>Situação da Ultima análise</label>
                 <thead>

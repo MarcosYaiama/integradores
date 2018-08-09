@@ -242,7 +242,8 @@ class Analise():
                     resultados[lista][coluna] = str(resultados[lista][coluna]) 
                     nova_lista[tabela[coluna]] = resultados[lista][coluna]
                 analises.append(nova_lista)
-
+        else:
+            analises = False
         return analises
 
     # É chamada sempre que o analista clica em iniciar analise em algum retorno da maquina que
