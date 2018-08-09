@@ -86,9 +86,15 @@ def cco_reprova():
     return protege_rota('reprovaCCO.html')
 
 
-@app.route('/formAnalise')
+@app.route('/formAnalise', methods = ['POST',])
 def analise_form():
-    return protege_rota('formAnalise.html')
+    id_carga = request.form['id_carga_fk']
+    dados_maquina = analise.busca_por_id_tabela('id_carga_fk', id_carga, 'analise')
+    analise_manual = analise.inicia_analise_manual(id_carga, dados_maquina[3], session['usuario_nome'])
+    print(analise_manual)
+    # dados_manual = analise.busca_por_id_tabela('id_carga_fk', id_carga, 'analise')
+    dados = [dados_maquina, analise_manual]
+    return protege_rota('formAnalise.html', dados)
 
 
 @app.route('/chamados')

@@ -18,7 +18,7 @@ SQL_ATUALIZA_STATUS_USUARIO = 'UPDATE usuarios set status_atual=%s where id=%s'
 SQL_ATUALIZA_LOGS_USUARIO = 'INSERT into logs_func(id_usuario, Status, hora, data, cargo) values (%s, %s, %s, %s, %s)'
 
 SQL_INSERE_INFO_CARGAS = "INSERT into info_cargas(grao, fornecedor, destino, data_chegada, hora_chegada) values (%s, %s, %s, %s, %s)"
-SQL_INSERE_ANALISE = "INSERT into analise values (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+SQL_INSERE_ANALISE = "INSERT into analise values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 SQL_BUSCA = 'SELECT * from '
 
 
@@ -122,7 +122,15 @@ class Analise():
                 resultado.append(i[0])
             return resultado
     
-
+    def busca_por_id_tabela(self, coluna, valor, tabela):
+        cursor = self.__db.connection.cursor()
+        cursor.execute('SELECT * from {} where {} = {}'.format(tabela,coluna, valor))
+        dado = list(cursor.fetchall())
+        for i in range(len(dado)):
+            dado = list(dado[i])
+            for a in range(len(dado)):
+                dado[a] = str(dado[a])
+        return dado
 
     def sorteia(self):
         destinos = ["Guaruja", "Santos", "São Vicente","São Paulo", "Japão", "Taiwan"]
@@ -164,7 +172,8 @@ class Analise():
         tempo_final = [abs(datetime.now().hour - tempo_inicio[0]),
                        abs(datetime.now().minute - tempo_inicio[1]),
                        abs(datetime.now().second - tempo_inicio[2])]
-
+        print(tempo_inicio)
+        print(tempo_final)
         cursor.execute(SQL_INSERE_ANALISE,(id_carga_fk,
                                            umidade,
                                            temperatura,
@@ -173,7 +182,8 @@ class Analise():
                                            str(datetime.now().date()),
                                            estado_fk,
                                            resultado,
-                                           '{}:{}:{}'.format(tempo_final[0], tempo_final[1], tempo_final[2])
+                                           '{}:{}:{}'.format(tempo_final[0], tempo_final[1], tempo_final[2]),
+                                           0
                                            ))
 
         self.__db.connection.commit()
@@ -200,7 +210,8 @@ class Analise():
 
             # if(item[0] not in registros_analise[0]):
                 # self.insere_analise_maquina(item[0], dados['umidade'], dados['temperatura'], dados['grao'], dados['estado'], dados['resultado'] )
-                
+    
+
     def cria_analise(self):
         self.busca_info_cargas_sem_analise()
         dados = self.sorteia()
@@ -217,26 +228,91 @@ class Analise():
         cursor = self.__db.connection.cursor()
         cursor.execute('SELECT * from analise where estado_fk = "Analista"')
         resultados = list(cursor.fetchall())
+        # print(resultados)
+        tabela = ["id_carga_fk", 'umidade', 'temperatura',
+                  'grao_fk', 'hora_inicio_analise', 'data_inicio_analise', 
+                  'estado_fk', 'resultado', 'tempo_analise', "analise_iniciada"]
         analises = []
         if(len(resultados)):
             for lista in range(len(resultados)):
                 # pprint(resultados[lista])
                 resultados[lista] = list(resultados[lista])
-                for item in range(len(resultados[lista])):
-                    resultados[lista][item] = str(resultados[lista][item]) 
+                nova_lista = {} 
+                for coluna in range(len(tabela)):
+                    resultados[lista][coluna] = str(resultados[lista][coluna]) 
+                    nova_lista[tabela[coluna]] = resultados[lista][coluna]
+                analises.append(nova_lista)
 
-                analises.append({'id_carga_fk':resultados[lista][0],
-                                'umidade':resultados[lista][1],
-                                'temperatura':resultados[lista][2],
-                                'grao_fk':resultados[lista][3],
-                                'hora_inicio_analise':resultados[lista][4],
-                                'data_inicio_analise': resultados[lista][5],
-                                'estado_fk':resultados[lista][6],
-                                'resultado':resultados[lista][7],
-                                'tempo_analise':resultados[lista][8]
-                                }) 
-                 
-        # pprint(analises)
         return analises
-    # def termina_analise():
-        
+
+    # É chamada sempre que o analista clica em iniciar analise em algum retorno da maquina que
+    # aparece no index. Essa função registra a hora em que o Analista deu esse clique e cria
+    # na tabela analise do GRAO uma linha, apenas com os valores que não precisam ser passado pelo
+    # analista, os outros valores referentes são jogados no formulario na pagina formAnalise.html
+    # para ficar a cargo do analista preencher.
+    def inicia_analise_manual(self, id_carga, grao, analista):
+        #Inserir dado na tabela Relativa ao grao e retornar a tabela
+        if(grao == 'Soja'):
+            colunas = ['id_carga','Ardidos', 'Queimados', 'Mofados', 'Esverdeados', 'Partidos,Quebrados ou Amassados',
+                       'Impurezas', 'Analista', 'Data', 'hora inicio', 'Hora Termino', 'id registro', 'estado_analise_manual']
+
+
+        else:
+            colunas = ['id_carga', 'Avariados e Ardidos', 'Quebrados', 'Impurezas', 'Carunchado', 'Data',
+                       'hora inicio', 'Hora Termino', 'Analista', 'id registro', 'estado_analise_manual']
+
+        consulta = self.__busca_dados_analise_grao(grao, id_carga, colunas)
+        if(not consulta):
+            self.__inicia_analise_manual_bd(grao, analista,id_carga)
+            self.__atualiza_status_analise_iniciada(1, id_carga)
+            consulta = self.__busca_dados_analise_grao(grao, id_carga, colunas)
+        return consulta
+
+    #Atualiza o valor da coluna analise_iniciada da tabela analise
+    #Essa coluna diz se a analise já está em andamento ou não
+    #Esse valor é responsavel por alterar a cor do botão no IndexAnalise.html
+    def __atualiza_status_analise_iniciada(self,iniciada, id_carga):
+        cursor = self.__db.connection.cursor()
+        print('update analise set analise_iniciada={} where id_carga_fk = {}'.format(iniciada, id_carga))
+        cursor.execute('update analise set analise_iniciada={} where id_carga_fk = {}'.format(iniciada, id_carga))
+        self.__db.connection.commit()
+
+    #Cria linha no banco de dados que será usada para a analise, inserindo a data atual, horario atual, analista
+    # E deixa como NULL os valores que serão preenchidos pelo analista no form e a hora_termino que será inserida
+    # quando o analista clickar em enviar.
+    def __inicia_analise_manual_bd(self, grao, analista, id_carga):
+        cursor = self.__db.connection.cursor()
+        hora = '{}:{}:{}'.format(datetime.now().hour,
+                                    datetime.now().minute,
+                                    datetime.now().second)
+        data = str(datetime.now().date())
+        print('INSERT INTO {}(id_carga_fk, data, hora_inicio, Analista) values (%s,%s,%s,%s)'.format(grao), (id_carga, data, hora, analista))
+        cursor.execute('INSERT INTO {}(id_carga_fk, data, hora_inicio, Analista) values (%s,%s,%s,%s)'.format(grao), (
+            id_carga, data, hora, analista))
+        self.__db.connection.commit()
+    
+    # Retorna todas as tabelas em uma lista de dicionarios com o id da CARGA, em ordem da ultima inserida até a ultima
+    # Esse valor é usado depois fora do método para verificar se precisa-se fazer uma nova inserção
+    def __busca_dados_analise_grao(self, grao, valor_id_carga_fk, colunas):
+        cursor = self.__db.connection.cursor()
+        print('SELECT * from {} where id_carga_fk = {} order by id desc'.format(grao.lower(), valor_id_carga_fk))
+        cursor.execute('SELECT * from {} where id_carga_fk = {} order by id desc'.format(grao.lower(), valor_id_carga_fk))
+
+        retorno_bd = list(cursor.fetchall())
+        print(retorno_bd)
+        if(retorno_bd):
+            print(retorno_bd[0])
+            print(len(colunas))
+            tabela_analise_manual = list(retorno_bd[0])
+            tabela_final = {}
+            for i in range(len(tabela_analise_manual)):
+                tabela_final[colunas[i]] = str(tabela_analise_manual[i])
+            del tabela_final['Analista']
+            del tabela_final['Data']
+            del tabela_final['Hora Termino']
+            return tabela_final
+        return False
+
+    def finaliza_analise_manual(self):
+        pass
+    

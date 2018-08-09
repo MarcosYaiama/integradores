@@ -1,6 +1,7 @@
 {% extends 'template.html' %} {% block conteudo %}
             <table class="table table-bordered table-responsive table-striped">
                 <label>Retornos da Maquina de Analise</label>
+                {{analises}}
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -9,13 +10,22 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% for analise in analises %}
                     <tr>
-                        <td>002</td>
-                        <td>Soja</td>
+                        <td>{{ analise['id_carga_fk'] }}</td>
+                        <td>{{ analise['grao_fk'] }}</td>
                         <td>
-                            <a class="btn btn-success form-control" href="{{ url_for('analise_form') }}">Iniciar Análise</a>
+                            <form action="{{ url_for('analise_form') }}" method="POST">
+                                <input type="hidden" name="id_carga_fk" value="{{ analise['id_carga_fk'] }}">
+                                {% if analise['analise_iniciada'] == '1' %}
+                                    <button class="btn btn-primary form-control">Continuar Analise</button>
+                                {% else %}
+                                    <button class="btn btn-success form-control">Iniciar Análise</button>
+                                {% endif %}
+                            </form>
                         </td>
                     </tr>
+                    {% endfor %}
                 </tbody>
             </table>
             <table class="table table-striped table-responsive table-bordered">
