@@ -2,15 +2,16 @@ from flask import render_template, redirect, session, url_for, flash, request
 from app import app, db
 from models import Usuario
 from helpers import busca_usuario_por_nome, nivel_de_acesso
-from daoMySQL import UsuarioDao
+from daoMySQL import UsuarioDao, Analise
 
 mySQL = True
 usuario_dao = UsuarioDao(db)
+analise = Analise(db)
 
 
-def protege_rota(pagina):
+def protege_rota(pagina, arquivos=None):
     if(pagina in session['nivel_acesso']):
-        return render_template(session['nivel_acesso'][session['nivel_acesso'].index(pagina)])
+        return render_template(session['nivel_acesso'][session['nivel_acesso'].index(pagina)], arquivos=arquivos)
     else:
         redirect(url_for('index'))
 
@@ -20,6 +21,14 @@ def index():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         return render_template('login.html')
     else:
+        if(session['usuario_cargo'] == "ANALISTA DE GRAOS"):
+            analises = analise.registros_maquina()
+            return render_template(session['nivel_acesso'][0], analises = analises)
+        elif(session['usuario_cargo'] == "CCO"):
+            pass
+        elif(session['usuario_cargo'] == "GUARDA"):
+            pass
+            
         return render_template(session['nivel_acesso'][0])
 
 @app.route('/autenticar', methods=['POST',])
@@ -32,9 +41,9 @@ def autenticar():
    #    usuario = busca_usuario_por_nome(nome)
     print(usuario.id)
     if usuario:
-        print('Entrei')
-        print(usuario.senha)
-        print(usuario.nome)
+        # print('Entrei')
+        # print(usuario.senha)
+        # print(usuario.nome)
         if (senha == usuario.senha):
             print('LOGADO')
             print(usuario.cargo)
@@ -117,4 +126,8 @@ def controle_funcionarios():
         flash('Não foi possivel acessar essa página')
         return redirect(url_for('index'))
 
+@app.route('/gera_analise')
+def gera_analise():
+    analise.cria_analise()
+    return "<h1>OI</h1>"
 
