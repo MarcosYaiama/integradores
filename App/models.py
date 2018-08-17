@@ -1,5 +1,5 @@
 class Usuario:
-    def __init__(self, id, senha, cargo, nome, status="Offline"):
+    def __init__(self, id:str, senha:str, cargo:str, nome:str, status="Offline"):
         self.nome = nome
         self.senha = senha
         self.id = id 
@@ -7,7 +7,7 @@ class Usuario:
         self.status = status
 
 class Logs():
-    def __init__(self, id_usuario, status, hora, data, cargo):
+    def __init__(self, id_usuario:str, status, hora, data, cargo:str):
         self.id_usuario = id_usuario
         self.status = status
         self.hora = hora
@@ -16,5 +16,5 @@ class Logs():
         
 
 class Cargo:
-    def __init__(self, cargo):
+    def __init__(self, cargo:str):
         self.cargo = cargo
