@@ -407,7 +407,6 @@ class Analise():
         return analises
 
 
-
     def inicia_analise_manual(self, id_carga, grao:str, analista:str):
         '''
         É chamada sempre que o analista clica em iniciar analise em algum retorno da maquina que
