@@ -1,0 +1,107 @@
+{% extends 'template.html' %}
+{% block conteudo %}
+<h1 style="text-align: center">Bem Vindo</h1>
+<form action="{{ url_for('autenticar') }}" method="POST" style="padding: 1em;">
+    <p>
+    <label>Nome:</label>
+    <input class="form-control" type="text" name="usuario" required>
+    </p>
+    <p><label>Senha:</label>
+    <input class="form-control" type="password" name="senha" required><br>
+    </p>
+    <button class="btn btn-success form-control" type="submit">Entrar</button>
+    
+</form>
+<h3 style="text-align: center">BUG ALERT</h3>
+<br><br>
+<ul>
+    <li><strong>BUG encontrado na hora de trocar do MySQL para SQL Alchemy, o mesmo aparece situações relacionadas ao login!</strong></li>
+</ul>
+<br><br>
+<ul>
+                <h3 style="text-align: center">Histórico de Atualizações</h3><br>
+                <li>15/07/2018:
+                    <ul>
+                        <li>Fluxograma</li>
+                        <li>Paginas de HTML estático:
+                            <ul>
+                                <li>Analise: Index, form</li>
+                                <li>CCO: Index, form, Reprova</li>
+                                <li>Guarda: Index, chamados</li>
+                                <li>Login</li>
+                            </ul>
+                        </li>
+                        <li>Bootstrap no CSS</li>
+                    </ul>
+                </li>
+                <br>
+                </li>
+                <li>17/07/2018:
+                    <ul>
+                        <li>Integração com Flask</li>
+                        <li>Criação da tabela de usuarios</li>
+                        <li>Abstração do banco</li>
+                        <li>Autenticação</li>
+                        <li>Nivel de acesso com base nos cargos</li>
+                        <li>Blocos Flask para diminuir código HTML</li>
+                    </ul>
+                </li>
+                <br>
+                <li>
+                    18/07/2018:
+                    <ul>
+                        <li>Criação do catalogo de features/Histórico de Atualizações na tela de Login</li>
+                        <li>Botões de Logout e Voltar</li>
+                        <li>Fluxograma das Tabelas do banco de dados</li>
+                    </ul>
+                </li>
+                <br>
+                <li>
+                27/07/2018:
+                    <ul>
+                        <li>Inicio do Planejamento e Estudo do Banco com MySQL</li>
+                        <li>Transição do SQL ALCHEMY para MySQL</li>
+                        <li>Possibilidade de alterar SQL ALCHEMY para MySQL a qualquer momento pelo back-end</li>
+                        <li>Inicio do planejamento de registros de usuarios através da interface do CCO</li>
+                    </ul>
+                </li>
+                <br>
+                <li>
+                    01/08/2018:
+                    <ul>
+                        <li>Iniciando interação da tela de registro com o banco</li>
+                        <li>Options dos cargos interagindo com banco MySQL</li>
+                        <li>Bug do Login da Analise de Grãos corrigido</li>
+                    </ul>
+                </li>
+                <li>
+                    02/08/2018:
+                    <ul>
+                      <li>Tela de Registros pronta e funcionando com o banco de dados</li>
+                      <li>Tela de Controle de Funcionarios pronta e interagindo com o banco</li>
+                        <li>Tela de Registro e Controle de usuarios integradas entre si e falta implementar acesso restrito somente ao CCO</li>
+                    </ul>
+                </li>
+                <li>
+                    05/08/2018:
+                    <ul>
+                        <li>Novo esquema de tabelas</li>
+                    </ul>
+                </li>
+                <li>
+                    07/08/2018:
+                    <ul>
+                        <li>Log de Usuarios Pronto e interagindo com Banco de dados</li>
+                    </ul>
+                </li>
+                <li>
+                    16/08/2018:
+                    <ul>
+                        <li>Organizando o Projeto seguindo boas práticas de projeto e código</li>
+                        <li>Exclusão de arquivos não utilizados, e de toda a interação com SQL Alchemy</li>
+                        <li>Inserção de Doc Strings</li>
+                        <li>Divisão do Projeto em Protótipo e Software</li>
+                    </ul>
+                </li>
+            </ul><br><br>
+            {% endblock %}

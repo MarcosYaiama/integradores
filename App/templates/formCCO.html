@@ -1,0 +1,59 @@
+{% extends 'template.html' %}
+ {% block conteudo %}
+        <h2 style="text-align: center;">Informações da Carga</h2>
+        <a class="btn btn-primary form-control" href="{{ url_for('index') }}">Voltar</a>
+        <table class="table table-striped table-responsive table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fornecedor</th>
+                    <th>Data</th>
+                    <th>Hora</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>002</td>
+                    <td>Tabajara</td>
+                    <td>01/04/2018</td>
+                    <td>11:30</td>
+                </tr>
+
+            </tbody>
+        </table>
+        <h2 style="text-align: center;">Dados da Análise</h2>
+        <table class="table table-striped table-responsive table-bordered">
+            <thead>
+                <tr>
+                    <th>Grão</th>
+                    <th>Peso</th>
+                    <th>Umidade</th>
+                    <th>Temperatura</th>
+                    <th>Rugosidade</th>
+                    <th>Taxa de Aprovação</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Soja</td>
+                    <td>10kg</td>
+                    <td>X</td>
+                    <td>20º C</td>
+                    <td>Y</td>
+                    <td>60%</td>
+                </tr>
+            </tbody>
+        </table>
+        <form action="{{url_for('cco_reprova')}}">
+            <input type="hidden" value="Reprovar">
+            <button type="submit" class="btn btn-danger form-control">Reprovar</button>
+        </form>
+        <form action="#" method="POST">
+            <input type="hidden" value="nova_analise">
+            <button type="submit" class="btn btn-primary form-control">Nova Analise</button>
+        </form>
+        <form action="#" method="POST">
+            <input type="hidden" value="Reprovar">
+            <button type="submit" class="btn btn-success form-control">Aprovar</button>
+        </form>
+{% endblock %}

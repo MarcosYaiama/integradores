@@ -1,0 +1,55 @@
+{% extends 'template.html' %} {% block conteudo %}
+        <h2 style="text-align: center;">Analise Manual</h2>
+        <a class="btn btn-primary form-control" href="{{ url_for('index') }}">Voltar</a><br>
+        <br>
+        {% if arquivos[1] %}
+        <form action="#" method="POST">
+            
+            <table class="table table-striped table-responsive table-bordered">
+                <thead>
+                    <tr>
+                        <th>Grão</th>
+                        <th>Umidade</th>
+                        <th>Temperatura</th>
+                        <th>Hora</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <input type="hidden" name="grao" value="{{ arquivos[3] }}"><td>{{ arquivos[0][3] }}</td>
+                        <input type="hidden" name="peso" value="{{ arquivos[1] }}"><td>{{ arquivos[0][1] }}%</td>
+                        <input type="hidden" name="data" value="{{ arquivos[2] }}"><td>{{ arquivos[0][2] }} C</td>
+                        <input type="hidden" name="hora" value="{{ arquivos[4] }}"><td>{{ arquivos[1]['hora inicio'] }}</td>
+                        <input type="hidden" name="hora" value="{{ arquivos[5] }}"><td>{{ arquivos[0][5] }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            {% for k,v in arquivos[1].items() %}
+                {% if k not in ['id_carga','id registro','hora inicio','estado_analise_manual'] %}
+                    <label>{{k}}</label>
+                    <input class="form-control" type="text" name="{{k}}" required>
+                {% endif %}
+            {% endfor %}
+            
+            <br>
+
+            <label>Destino</label>
+            <select name="cargo" class="form-control">
+                <option value="#">Gate 1</option>
+                <option value="#">Gate 2</option>
+                <option value="#">Gate 3</option>
+            </select>
+            <br>
+            <button type="submit" class="btn btn-success form-control">Enviar</button>
+        </form>
+        {% else %}
+        Não foi possivel realizar a ação!
+        <br><br>
+        {% endif %}
+        Maquina
+        {{ arquivos[0] }}
+        <br><br>
+        Analise Manual
+        {{ arquivos[1] }}
+{% endblock %}
