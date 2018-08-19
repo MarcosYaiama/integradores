@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.4
+-- version 4.7.7
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1:3306
--- Generation Time: 09-Ago-2018 às 16:25
+-- Host: 127.0.0.1
+-- Generation Time: 19-Ago-2018 às 22:52
 -- Versão do servidor: 10.1.30-MariaDB
--- PHP Version: 5.6.31
+-- PHP Version: 7.2.2
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -28,46 +28,64 @@ SET time_zone = "+00:00";
 -- Estrutura da tabela `analise`
 --
 
-DROP TABLE IF EXISTS `analise`;
-CREATE TABLE IF NOT EXISTS `analise` (
+CREATE TABLE `analise` (
   `id_carga_fk` int(11) DEFAULT NULL,
   `umidade` int(11) DEFAULT NULL,
   `temperatura` int(11) DEFAULT NULL,
   `grao_fk` varchar(30) DEFAULT NULL,
-  `hora_inicio_analise` time DEFAULT NULL,
-  `data_inicio_analise` date DEFAULT NULL,
-  `estado_fk` varchar(30) DEFAULT NULL,
-  `resultado` varchar(35) DEFAULT NULL,
-  `tempo_analise` time DEFAULT NULL,
-  KEY `id_carga_fk` (`id_carga_fk`),
-  KEY `grao_fk` (`grao_fk`),
-  KEY `estado_fk` (`estado_fk`)
+  `data` date DEFAULT NULL,
+  `id` int(11) NOT NULL,
+  `hora_fim_analise_m` time DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `analise_manual`
+--
+
+CREATE TABLE `analise_manual` (
+  `id` int(11) NOT NULL,
+  `analista` varchar(126) DEFAULT NULL,
+  `dado_analisado` varchar(50) DEFAULT NULL,
+  `irregular` tinyint(1) DEFAULT NULL,
+  `hora_inicio_a` time DEFAULT NULL,
+  `hora_termino_a` time DEFAULT NULL,
+  `data` date DEFAULT NULL,
+  `n_analise` int(11) DEFAULT NULL,
+  `redirecionamento` varchar(40) DEFAULT NULL,
+  `id_carga_fk` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `carac_graos`
+--
+
+CREATE TABLE `carac_graos` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(50) DEFAULT NULL,
+  `grao_fk` varchar(30) DEFAULT NULL,
+  `taxa_minima` int(11) DEFAULT NULL,
+  `total` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Extraindo dados da tabela `analise`
+-- Extraindo dados da tabela `carac_graos`
 --
 
-INSERT INTO `analise` (`id_carga_fk`, `umidade`, `temperatura`, `grao_fk`, `hora_inicio_analise`, `data_inicio_analise`, `estado_fk`, `resultado`, `tempo_analise`) VALUES
-(1, 9, 21, 'Soja', '16:14:05', '2018-08-08', 'Analista', 'Indisponivel', '00:00:01'),
-(2, 9, 17, 'Milho', '16:14:06', '2018-08-08', 'Analista', 'Indisponivel', '00:00:01'),
-(3, 1, 14, 'Milho', '16:14:07', '2018-08-08', 'Analista', 'Indisponivel', '00:00:01'),
-(4, 0, 16, 'Soja', '16:14:08', '2018-08-08', 'Analista', 'Indisponivel', '00:00:01'),
-(5, 7, 19, 'Soja', '16:14:09', '2018-08-08', 'Analista', 'Indisponivel', '00:00:01'),
-(6, 5, 11, 'Soja', '16:14:10', '2018-08-08', 'Analista', 'Indisponivel', '00:00:01'),
-(7, 8, 18, 'Soja', '16:14:11', '2018-08-08', 'Analista', 'Indisponivel', '00:00:01'),
-(8, 7, 15, 'Milho', '16:14:12', '2018-08-08', 'Analista', 'Indisponivel', '00:00:01'),
-(9, 9, 10, 'Milho', '16:14:13', '2018-08-08', 'Analista', 'Indisponivel', '00:00:01'),
-(10, 0, 20, 'Soja', '16:14:14', '2018-08-08', 'Analista', 'Indisponivel', '00:00:01'),
-(11, 4, 20, 'Soja', '16:14:15', '2018-08-08', 'Analista', 'Indisponivel', '00:00:01'),
-(12, 1, 18, 'Soja', '16:14:17', '2018-08-08', 'Analista', 'Indisponivel', '00:00:01'),
-(13, 0, 20, 'Milho', '16:14:18', '2018-08-08', 'Analista', 'Indisponivel', '00:00:01'),
-(14, 7, 12, 'Soja', '16:14:19', '2018-08-08', 'Analista', 'Indisponivel', '00:00:01'),
-(15, 1, 15, 'Soja', '16:14:20', '2018-08-08', 'Analista', 'Indisponivel', '00:00:01'),
-(16, 9, 10, 'Soja', '16:14:21', '2018-08-08', 'Analista', 'Indisponivel', '00:00:01'),
-(17, 10, 20, 'Milho', '16:14:22', '2018-08-08', 'Analista', 'Indisponivel', '00:00:01'),
-(18, 5, 11, 'Soja', '16:41:34', '2018-08-08', 'Analista', 'Indisponivel', '00:00:01'),
-(19, 9, 15, 'Milho', '21:33:20', '2018-08-08', 'Analista', 'Indisponivel', '00:00:01');
+INSERT INTO `carac_graos` (`id`, `nome`, `grao_fk`, `taxa_minima`, `total`) VALUES
+(1, 'Avariados e Ardidos', 'milho', 2, 10),
+(2, 'Graos Quebrados', 'milho', 4, 10),
+(3, 'Impurezas', 'milho', 2, 10),
+(4, 'Carunchado', 'milho', 3, 10),
+(5, 'Ardidos e Queimados', 'soja', 4, 8),
+(6, 'Queimados', 'soja', 1, 8),
+(7, 'Mofados', 'soja', 6, 8),
+(8, 'Esverdeados', 'soja', 8, 8),
+(9, 'Partidos, Queimados e Amassados', 'soja', 30, 8),
+(10, 'Materias Estranhas e Impurezas', 'soja', 1, 8);
 
 -- --------------------------------------------------------
 
@@ -75,10 +93,8 @@ INSERT INTO `analise` (`id_carga_fk`, `umidade`, `temperatura`, `grao_fk`, `hora
 -- Estrutura da tabela `cargos`
 --
 
-DROP TABLE IF EXISTS `cargos`;
-CREATE TABLE IF NOT EXISTS `cargos` (
-  `nome` varchar(20) NOT NULL,
-  PRIMARY KEY (`nome`)
+CREATE TABLE `cargos` (
+  `nome` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -96,10 +112,8 @@ INSERT INTO `cargos` (`nome`) VALUES
 -- Estrutura da tabela `escala_gravidade`
 --
 
-DROP TABLE IF EXISTS `escala_gravidade`;
-CREATE TABLE IF NOT EXISTS `escala_gravidade` (
-  `nome` varchar(35) NOT NULL,
-  PRIMARY KEY (`nome`)
+CREATE TABLE `escala_gravidade` (
+  `nome` varchar(35) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -122,10 +136,8 @@ INSERT INTO `escala_gravidade` (`nome`) VALUES
 -- Estrutura da tabela `estado_analise`
 --
 
-DROP TABLE IF EXISTS `estado_analise`;
-CREATE TABLE IF NOT EXISTS `estado_analise` (
-  `nome` varchar(30) NOT NULL,
-  PRIMARY KEY (`nome`)
+CREATE TABLE `estado_analise` (
+  `nome` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -138,6 +150,7 @@ INSERT INTO `estado_analise` (`nome`) VALUES
 ('Finalizado'),
 ('Guarda'),
 ('Maquina'),
+('Nova analise'),
 ('OCR');
 
 -- --------------------------------------------------------
@@ -146,10 +159,8 @@ INSERT INTO `estado_analise` (`nome`) VALUES
 -- Estrutura da tabela `graos`
 --
 
-DROP TABLE IF EXISTS `graos`;
-CREATE TABLE IF NOT EXISTS `graos` (
-  `nome` varchar(30) NOT NULL,
-  PRIMARY KEY (`nome`)
+CREATE TABLE `graos` (
+  `nome` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -166,43 +177,17 @@ INSERT INTO `graos` (`nome`) VALUES
 -- Estrutura da tabela `info_cargas`
 --
 
-DROP TABLE IF EXISTS `info_cargas`;
-CREATE TABLE IF NOT EXISTS `info_cargas` (
-  `id_carga` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `info_cargas` (
+  `id_carga` int(11) NOT NULL,
   `grao` varchar(30) DEFAULT NULL,
   `fornecedor` varchar(50) DEFAULT NULL,
   `destino` varchar(50) DEFAULT NULL,
   `data_chegada` date DEFAULT NULL,
   `hora_chegada` time DEFAULT NULL,
   `hora_termino` time DEFAULT NULL,
-  PRIMARY KEY (`id_carga`),
-  KEY `grao` (`grao`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
-
---
--- Extraindo dados da tabela `info_cargas`
---
-
-INSERT INTO `info_cargas` (`id_carga`, `grao`, `fornecedor`, `destino`, `data_chegada`, `hora_chegada`, `hora_termino`) VALUES
-(1, 'Milho', 'Fazendeiros Tabajara', 'Guaruja', '2018-08-08', '03:18:06', '03:18:06'),
-(2, 'Milho', 'Granolandia', 'Guaruja', '2018-08-08', '03:19:29', '03:19:29'),
-(3, 'Soja', 'MM Grãos', 'Santos', '2018-08-08', '03:22:50', '03:22:50'),
-(4, 'Milho', 'Granolandia', 'Guaruja', '2018-08-08', '03:23:34', '03:23:34'),
-(5, 'Soja', 'Granolandia', 'São Paulo', '2018-08-08', '03:24:32', '03:24:32'),
-(6, 'Soja', 'Moinho Paulista', 'São Vicente', '2018-08-08', '03:29:26', '03:29:26'),
-(7, 'Soja', 'Fazendeiros Tabajara', 'Taiwan', '2018-08-08', '15:01:44', '15:01:44'),
-(8, 'Soja', 'Fazendeiros Tabajara', 'Guaruja', '2018-08-08', '15:01:57', '15:01:57'),
-(9, 'Milho', 'Moinho Paulista', 'Guaruja', '2018-08-08', '15:02:12', '15:02:12'),
-(10, 'Soja', 'Granolandia', 'Santos', '2018-08-08', '15:03:42', '15:03:42'),
-(11, 'Soja', 'Fazendeiros Tabajara', 'Taiwan', '2018-08-08', '15:04:48', '15:04:48'),
-(12, 'Milho', 'MM Grãos', 'São Paulo', '2018-08-08', '15:05:13', '15:05:13'),
-(13, 'Soja', 'Moinho Paulista', 'Santos', '2018-08-08', '15:05:59', '15:05:59'),
-(14, 'Soja', 'Fazendeiros Tabajara', 'Japão', '2018-08-08', '15:06:46', '15:06:46'),
-(15, 'Milho', 'MM Grãos', 'São Vicente', '2018-08-08', '15:07:14', '15:07:14'),
-(16, 'Milho', 'MM Grãos', 'Guaruja', '2018-08-08', '15:07:21', '15:07:21'),
-(17, 'Milho', 'Moinho Paulista', 'Taiwan', '2018-08-08', '15:45:21', '15:45:21'),
-(18, 'Soja', 'Fazendeiros Tabajara', 'Taiwan', '2018-08-08', '16:41:34', '16:41:34'),
-(19, 'Milho', 'Granolandia', 'Guaruja', '2018-08-08', '21:33:20', NULL);
+  `placa` varchar(20) NOT NULL,
+  `estado_fk` varchar(30) DEFAULT 'OCR'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -210,18 +195,14 @@ INSERT INTO `info_cargas` (`id_carga`, `grao`, `fornecedor`, `destino`, `data_ch
 -- Estrutura da tabela `logs_func`
 --
 
-DROP TABLE IF EXISTS `logs_func`;
-CREATE TABLE IF NOT EXISTS `logs_func` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `logs_func` (
+  `id` int(11) NOT NULL,
   `id_usuario` varchar(100) DEFAULT NULL,
   `Status` tinyint(1) DEFAULT NULL,
   `hora` time DEFAULT NULL,
   `data` date DEFAULT NULL,
-  `cargo` varchar(30) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `id_usuario` (`id_usuario`),
-  KEY `cargo` (`cargo`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
+  `cargo` varchar(30) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Extraindo dados da tabela `logs_func`
@@ -247,7 +228,60 @@ INSERT INTO `logs_func` (`id`, `id_usuario`, `Status`, `hora`, `data`, `cargo`) 
 (18, 'Nicholas', 0, '02:18:58', '2018-08-08', 'CCO'),
 (19, 'Marcos', 1, '02:26:55', '2018-08-08', 'CCO'),
 (20, 'Marcos', 0, '21:42:35', '2018-08-08', 'CCO'),
-(21, 'Mauro', 1, '21:43:14', '2018-08-08', 'ANALISTA DE GRAOS');
+(21, 'Mauro', 1, '21:43:14', '2018-08-08', 'ANALISTA DE GRAOS'),
+(22, 'Mauro', 0, '17:00:26', '2018-08-09', 'ANALISTA DE GRAOS'),
+(23, 'Mauro', 1, '17:00:35', '2018-08-09', 'ANALISTA DE GRAOS'),
+(24, 'Mauro', 1, '01:07:41', '2018-08-10', 'ANALISTA DE GRAOS'),
+(25, 'Mauro', 0, '01:17:29', '2018-08-10', 'ANALISTA DE GRAOS'),
+(26, 'Nicholas', 1, '01:17:52', '2018-08-10', 'CCO'),
+(27, 'Nicholas', 0, '01:18:04', '2018-08-10', 'CCO'),
+(28, 'Mauro', 0, '01:18:20', '2018-08-10', 'ANALISTA DE GRAOS'),
+(29, 'Mauro', 1, '01:18:28', '2018-08-10', 'ANALISTA DE GRAOS'),
+(30, 'Marcos', 1, '22:40:53', '2018-08-16', 'CCO'),
+(31, 'Marcos', 0, '22:40:55', '2018-08-16', 'CCO'),
+(32, 'Caruara', 1, '22:41:01', '2018-08-16', 'ANALISTA DE GRAOS'),
+(33, 'Caruara', 0, '22:41:06', '2018-08-16', 'ANALISTA DE GRAOS'),
+(34, 'Eduardo', 1, '22:41:10', '2018-08-16', 'GUARDA'),
+(35, 'Eduardo', 0, '22:41:13', '2018-08-16', 'GUARDA'),
+(36, 'Mauro', 1, '22:58:24', '2018-08-16', 'ANALISTA DE GRAOS'),
+(37, 'Mauro', 0, '23:02:03', '2018-08-16', 'ANALISTA DE GRAOS'),
+(38, 'Mauro', 1, '23:02:18', '2018-08-16', 'ANALISTA DE GRAOS'),
+(39, 'Mauro', 0, '23:03:08', '2018-08-16', 'ANALISTA DE GRAOS'),
+(40, 'Mauro', 1, '23:03:16', '2018-08-16', 'ANALISTA DE GRAOS'),
+(41, 'Mauro', 0, '23:03:31', '2018-08-16', 'ANALISTA DE GRAOS'),
+(42, 'Mauro', 1, '23:13:05', '2018-08-16', 'ANALISTA DE GRAOS'),
+(43, 'Mauro', 0, '23:24:40', '2018-08-16', 'ANALISTA DE GRAOS'),
+(44, 'Eduardo', 1, '23:24:49', '2018-08-16', 'GUARDA'),
+(45, 'Eduardo', 0, '23:24:51', '2018-08-16', 'GUARDA'),
+(46, 'Nicholas', 1, '23:38:39', '2018-08-16', 'CCO'),
+(47, 'Nicholas', 0, '00:14:07', '2018-08-17', 'CCO'),
+(48, 'Mauro', 1, '00:14:12', '2018-08-17', 'ANALISTA DE GRAOS'),
+(49, 'Mauro', 0, '00:46:20', '2018-08-17', 'ANALISTA DE GRAOS'),
+(50, 'Nicholas', 1, '00:46:27', '2018-08-17', 'CCO'),
+(51, 'Nicholas', 0, '00:53:01', '2018-08-17', 'CCO'),
+(52, 'Caruara', 1, '00:53:24', '2018-08-17', 'ANALISTA DE GRAOS'),
+(53, 'Caruara', 0, '01:56:10', '2018-08-17', 'ANALISTA DE GRAOS'),
+(54, 'Nicholas', 1, '01:56:15', '2018-08-17', 'CCO'),
+(55, 'Nicholas', 0, '01:56:28', '2018-08-17', 'CCO'),
+(56, 'Jessica', 1, '01:56:52', '2018-08-17', 'ANALISTA DE GRAOS'),
+(57, 'Jessica', 0, '01:57:17', '2018-08-17', 'ANALISTA DE GRAOS'),
+(58, 'Nicholas', 1, '18:46:51', '2018-08-18', 'CCO'),
+(59, 'Nicholas', 0, '18:49:02', '2018-08-18', 'CCO'),
+(60, 'Nicholas', 1, '18:49:09', '2018-08-18', 'CCO'),
+(61, 'Nicholas', 0, '19:39:31', '2018-08-18', 'CCO'),
+(62, 'Nicholas', 1, '19:40:09', '2018-08-18', 'CCO'),
+(63, 'Nicholas', 0, '19:40:42', '2018-08-18', 'CCO'),
+(64, 'Caruara', 1, '19:40:53', '2018-08-18', 'ANALISTA DE GRAOS'),
+(65, 'Caruara', 1, '07:27:48', '2018-08-19', 'ANALISTA DE GRAOS'),
+(66, 'Caruara', 1, '07:58:50', '2018-08-19', 'ANALISTA DE GRAOS'),
+(67, 'Caruara', 1, '08:09:25', '2018-08-19', 'ANALISTA DE GRAOS'),
+(68, 'Caruara', 1, '08:10:34', '2018-08-19', 'ANALISTA DE GRAOS'),
+(69, 'Caruara', 1, '08:14:22', '2018-08-19', 'ANALISTA DE GRAOS'),
+(70, 'Caruara', 0, '17:38:52', '2018-08-19', 'ANALISTA DE GRAOS'),
+(71, 'Nicholas', 1, '17:38:58', '2018-08-19', 'CCO'),
+(72, 'Nicholas', 0, '17:39:52', '2018-08-19', 'CCO'),
+(73, 'Eduardo', 1, '17:39:58', '2018-08-19', 'GUARDA'),
+(74, 'Eduardo', 0, '17:40:17', '2018-08-19', 'GUARDA');
 
 -- --------------------------------------------------------
 
@@ -255,8 +289,7 @@ INSERT INTO `logs_func` (`id`, `id_usuario`, `Status`, `hora`, `data`, `cargo`) 
 -- Estrutura da tabela `milho`
 --
 
-DROP TABLE IF EXISTS `milho`;
-CREATE TABLE IF NOT EXISTS `milho` (
+CREATE TABLE `milho` (
   `id_carga_fk` int(11) DEFAULT NULL,
   `avariados_ardidos` int(11) DEFAULT NULL,
   `quebrados` int(11) DEFAULT NULL,
@@ -266,18 +299,9 @@ CREATE TABLE IF NOT EXISTS `milho` (
   `hora_inicio` time DEFAULT NULL,
   `hora_termino` time DEFAULT NULL,
   `Analista` varchar(100) DEFAULT NULL,
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`id`),
-  KEY `id_carga_fk` (`id_carga_fk`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
-
---
--- Extraindo dados da tabela `milho`
---
-
-INSERT INTO `milho` (`id_carga_fk`, `avariados_ardidos`, `quebrados`, `impurezas`, `carunchado`, `data`, `hora_inicio`, `hora_termino`, `Analista`, `id`) VALUES
-(2, NULL, NULL, NULL, NULL, '2018-08-09', '03:08:09', NULL, 'Mauro O Analista', 4),
-(9, NULL, NULL, NULL, NULL, '2018-08-09', '03:10:13', NULL, 'Mauro O Analista', 6);
+  `id` int(11) NOT NULL,
+  `estado_analise_manual` varchar(30) DEFAULT 'Aguardando'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -285,8 +309,7 @@ INSERT INTO `milho` (`id_carga_fk`, `avariados_ardidos`, `quebrados`, `impurezas
 -- Estrutura da tabela `soja`
 --
 
-DROP TABLE IF EXISTS `soja`;
-CREATE TABLE IF NOT EXISTS `soja` (
+CREATE TABLE `soja` (
   `id_carga_fk` int(11) DEFAULT NULL,
   `ardidos` int(11) DEFAULT NULL,
   `queimados` int(11) DEFAULT NULL,
@@ -298,17 +321,9 @@ CREATE TABLE IF NOT EXISTS `soja` (
   `data` date DEFAULT NULL,
   `hora_inicio` time DEFAULT NULL,
   `hora_termino` time DEFAULT NULL,
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`id`),
-  KEY `id_carga_fk` (`id_carga_fk`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
-
---
--- Extraindo dados da tabela `soja`
---
-
-INSERT INTO `soja` (`id_carga_fk`, `ardidos`, `queimados`, `mofados`, `esverdeados`, `PQA`, `impurezas`, `Analista`, `data`, `hora_inicio`, `hora_termino`, `id`) VALUES
-(1, NULL, NULL, NULL, NULL, NULL, NULL, 'Mauro O Analista', '2018-08-09', '02:08:21', NULL, 1);
+  `id` int(11) NOT NULL,
+  `estado_analise_manual` varchar(30) DEFAULT 'Aguardando'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -316,10 +331,8 @@ INSERT INTO `soja` (`id_carga_fk`, `ardidos`, `queimados`, `mofados`, `esverdead
 -- Estrutura da tabela `status`
 --
 
-DROP TABLE IF EXISTS `status`;
-CREATE TABLE IF NOT EXISTS `status` (
-  `nome` varchar(30) NOT NULL,
-  PRIMARY KEY (`nome`)
+CREATE TABLE `status` (
+  `nome` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -336,14 +349,11 @@ INSERT INTO `status` (`nome`) VALUES
 -- Estrutura da tabela `ultimas_analises`
 --
 
-DROP TABLE IF EXISTS `ultimas_analises`;
-CREATE TABLE IF NOT EXISTS `ultimas_analises` (
+CREATE TABLE `ultimas_analises` (
   `id_carga_fk` int(11) DEFAULT NULL,
   `grao_fk` varchar(30) DEFAULT NULL,
   `resultado_fk` varchar(35) DEFAULT NULL,
-  `tempo_de_espera` time DEFAULT NULL,
-  KEY `id_carga_fk` (`id_carga_fk`),
-  KEY `grao_fk` (`grao_fk`)
+  `tempo_de_espera` time DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -352,15 +362,12 @@ CREATE TABLE IF NOT EXISTS `ultimas_analises` (
 -- Estrutura da tabela `usuarios`
 --
 
-DROP TABLE IF EXISTS `usuarios`;
-CREATE TABLE IF NOT EXISTS `usuarios` (
+CREATE TABLE `usuarios` (
   `id` varchar(100) NOT NULL,
   `senha` varchar(255) DEFAULT NULL,
   `cargo` varchar(20) DEFAULT NULL,
   `nome_completo` varchar(200) DEFAULT NULL,
-  `status_atual` varchar(30) DEFAULT 'Offline',
-  PRIMARY KEY (`id`),
-  KEY `status_atual` (`status_atual`)
+  `status_atual` varchar(30) DEFAULT 'Offline'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -374,27 +381,179 @@ INSERT INTO `usuarios` (`id`, `senha`, `cargo`, `nome_completo`, `status_atual`)
 ('Lara', 'mestra', 'GUARDA', 'Lara Croft', 'Offline'),
 ('Marcos', 'mestra', 'CCO', 'Marcos o CCO', 'Offline'),
 ('Mauricio', 'mestra', 'GUARDA', 'Mauricio Mendonça', 'Offline'),
-('Mauro', 'mestra', 'ANALISTA DE GRAOS', 'Mauro O Analista', 'Online'),
+('Mauro', 'mestra', 'ANALISTA DE GRAOS', 'Mauro O Analista', 'Offline'),
 ('Mazzei', 'mestra', 'CCO', 'Mazzei Testando', 'Offline'),
 ('Nicholas', 'mestra', 'CCO', 'Nicholas Wesley Mazzei', 'Offline');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `analise`
+--
+ALTER TABLE `analise`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_carga_fk` (`id_carga_fk`);
+
+--
+-- Indexes for table `analise_manual`
+--
+ALTER TABLE `analise_manual`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_carga_fk` (`id_carga_fk`),
+  ADD KEY `analista` (`analista`);
+
+--
+-- Indexes for table `carac_graos`
+--
+ALTER TABLE `carac_graos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `grao_fk` (`grao_fk`);
+
+--
+-- Indexes for table `cargos`
+--
+ALTER TABLE `cargos`
+  ADD PRIMARY KEY (`nome`);
+
+--
+-- Indexes for table `escala_gravidade`
+--
+ALTER TABLE `escala_gravidade`
+  ADD PRIMARY KEY (`nome`);
+
+--
+-- Indexes for table `estado_analise`
+--
+ALTER TABLE `estado_analise`
+  ADD PRIMARY KEY (`nome`);
+
+--
+-- Indexes for table `graos`
+--
+ALTER TABLE `graos`
+  ADD PRIMARY KEY (`nome`);
+
+--
+-- Indexes for table `info_cargas`
+--
+ALTER TABLE `info_cargas`
+  ADD PRIMARY KEY (`id_carga`),
+  ADD KEY `grao` (`grao`),
+  ADD KEY `estado_fk` (`estado_fk`);
+
+--
+-- Indexes for table `logs_func`
+--
+ALTER TABLE `logs_func`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_usuario` (`id_usuario`),
+  ADD KEY `cargo` (`cargo`);
+
+--
+-- Indexes for table `milho`
+--
+ALTER TABLE `milho`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_carga_fk` (`id_carga_fk`);
+
+--
+-- Indexes for table `soja`
+--
+ALTER TABLE `soja`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_carga_fk` (`id_carga_fk`);
+
+--
+-- Indexes for table `status`
+--
+ALTER TABLE `status`
+  ADD PRIMARY KEY (`nome`);
+
+--
+-- Indexes for table `ultimas_analises`
+--
+ALTER TABLE `ultimas_analises`
+  ADD KEY `id_carga_fk` (`id_carga_fk`),
+  ADD KEY `grao_fk` (`grao_fk`);
+
+--
+-- Indexes for table `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `status_atual` (`status_atual`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `analise`
+--
+ALTER TABLE `analise`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
+--
+-- AUTO_INCREMENT for table `analise_manual`
+--
+ALTER TABLE `analise_manual`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `carac_graos`
+--
+ALTER TABLE `carac_graos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `info_cargas`
+--
+ALTER TABLE `info_cargas`
+  MODIFY `id_carga` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
+-- AUTO_INCREMENT for table `logs_func`
+--
+ALTER TABLE `logs_func`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
+
+--
+-- AUTO_INCREMENT for table `milho`
+--
+ALTER TABLE `milho`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `soja`
+--
+ALTER TABLE `soja`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
 --
 
 --
--- Limitadores para a tabela `analise`
+-- Limitadores para a tabela `analise_manual`
 --
-ALTER TABLE `analise`
-  ADD CONSTRAINT `analise_ibfk_1` FOREIGN KEY (`id_carga_fk`) REFERENCES `info_cargas` (`id_carga`),
-  ADD CONSTRAINT `analise_ibfk_2` FOREIGN KEY (`grao_fk`) REFERENCES `info_cargas` (`grao`),
-  ADD CONSTRAINT `analise_ibfk_3` FOREIGN KEY (`estado_fk`) REFERENCES `estado_analise` (`nome`);
+ALTER TABLE `analise_manual`
+  ADD CONSTRAINT `analise_manual_ibfk_1` FOREIGN KEY (`id_carga_fk`) REFERENCES `info_cargas` (`id_carga`),
+  ADD CONSTRAINT `analise_manual_ibfk_2` FOREIGN KEY (`analista`) REFERENCES `usuarios` (`id`);
+
+--
+-- Limitadores para a tabela `carac_graos`
+--
+ALTER TABLE `carac_graos`
+  ADD CONSTRAINT `carac_graos_ibfk_1` FOREIGN KEY (`grao_fk`) REFERENCES `graos` (`nome`);
 
 --
 -- Limitadores para a tabela `info_cargas`
 --
 ALTER TABLE `info_cargas`
-  ADD CONSTRAINT `info_cargas_ibfk_1` FOREIGN KEY (`grao`) REFERENCES `graos` (`nome`);
+  ADD CONSTRAINT `info_cargas_ibfk_1` FOREIGN KEY (`grao`) REFERENCES `graos` (`nome`),
+  ADD CONSTRAINT `info_cargas_ibfk_2` FOREIGN KEY (`estado_fk`) REFERENCES `estado_analise` (`nome`);
 
 --
 -- Limitadores para a tabela `logs_func`
