@@ -13,12 +13,12 @@
                 <tbody>
                     {% for analise in analises %}
                     <tr>
-                        <td>{{ analise['id_carga_fk'] }}</td>
-                        <td>{{ analise['grao_fk'] }}</td>
+                        <td>{{ analise[0] }}</td>
+                        <td>{{ analise[1] }}</td>
                         <td>
                             <form action="{{ url_for('analise_form') }}" method="POST">
-                                <input type="hidden" name="id_carga_fk" value="{{ analise['id_carga_fk'] }}">
-                                {% if analise['analise_iniciada'] == '1' %}
+                                <input type="hidden" name="id_carga_fk" value="{{ analise[0] }}">
+                                {% if analise[2] == 'Analista' %}
                                     <button class="btn btn-primary form-control">Continuar Analise</button>
                                 {% else %}
                                     <button class="btn btn-success form-control">Iniciar Análise</button>

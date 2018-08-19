@@ -26,11 +26,9 @@
                     </tr>
                 </tbody>
             </table>
-            {% for k,v in arquivos[1].items() %}
-                {% if k not in ['id_carga','id registro','hora inicio','estado_analise_manual'] %}
-                    <label>{{k}}</label>
-                    <input class="form-control" type="text" name="{{k}}" required>
-                {% endif %}
+            {% for dado in arquivos[1] %}
+                    <label>{{dado[0]}}</label>
+                    <input class="form-control" type="text" name="{{dado[0]}}" required>
             {% endfor %}
             
             <br>
@@ -51,6 +49,6 @@
         Maquina
         {{ arquivos[0] }}
         <br><br>
-        Analise Manual
+        Dados do Grao
         {{ arquivos[1] }}
 {% endblock %}

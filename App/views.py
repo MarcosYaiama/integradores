@@ -57,21 +57,14 @@ def autenticar():
     senha = request.form['senha']
     if(mySQL):
         usuario = usuario_dao.buscar_por_id(nome)
-    print(usuario.id)
     if usuario:
-        # print('Entrei')
-        # print(usuario.senha)
-        # print(usuario.nome)
         if (senha == usuario.senha):
-            print('LOGADO')
-            print(usuario.cargo)
             session['usuario_logado'] = usuario.id
             session['usuario_nome'] = usuario.nome
             session['usuario_cargo'] = usuario.cargo
             session['nivel_acesso'] = nivel_de_acesso(usuario.cargo)
             usuario_dao.atualiza_status("Online", usuario.id)
             usuario_dao.atualiza_log(usuario.id, 1, usuario.cargo)
-            print(session['nivel_acesso'])
             return redirect(url_for('index'))
     flash('Não logado')
     return redirect(url_for('index'))
@@ -114,7 +107,7 @@ def cco_reprova():
     '''
     return protege_rota('reprovaCCO.html')
 
-
+#CONTINUAR
 @app.route('/formAnalise', methods = ['POST',])
 def analise_form():
     '''
@@ -122,12 +115,9 @@ def analise_form():
         com as informacoes retornadas da maquina, alem de gerar os campos a serem 
         preenchidos pelo analista
     '''
-    id_carga = request.form['id_carga_fk']
-    # print(id_carga)
-    dados_maquina = analise.busca_por_analise_por_id('id_carga_fk', id_carga, 'analise')  # Nao cumpre bem o proposito
-    analise_manual = analise.inicia_analise_manual(id_carga, dados_maquina[0][0], session['usuario_nome'])
-    # print(analise_manual)
-    # dados_manual = analise.busca_por_id_tabela('id_carga_fk', id_carga, 'analise')
+    id_carga = int(request.form['id_carga_fk'])
+    dados_maquina = analise.busca_por_analise_por_id('id_carga_fk', id_carga, 'analise')  # Retorna os dados da Tabela Analise com o ID passado
+    analise_manual = analise.inicia_analise_manual(dados_maquina[0][0], id_carga, session['usuario_logado'])
     dados = [dados_maquina, analise_manual]
     return protege_rota('formAnalise.html', dados)
 
@@ -176,7 +166,7 @@ def controle_funcionarios():
             for i in range(len(cargos)):
                 if user.cargo == cargos[i] and user.status == "Online":
                     status_dict_cargos[cargos[i]] = True   #Caso o status do usuario esteja online, seta o cargo como True
-        print(status_dict_cargos)            
+        # print(status_dict_cargos)            
         return render_template('controle_funcionariosCCO.html', usuarios = usuarios, cargos = status_dict_cargos, logs = logs)
     else:
         flash('Não foi possivel acessar essa página')
