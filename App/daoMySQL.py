@@ -217,7 +217,7 @@ class Analise():
             # print('RESULTADO : {}'.format(resultado))
             return resultado
     
-    #POSSIVEL REFATORACAO
+    #Feita para ser usada somente na Analise Form
     def busca_por_analise_por_id(self, coluna:str, valor:int, tabela:str) -> list:
         '''
             Retorna os dados da tabela analise referente ao id_carga_fk especifico,
@@ -229,12 +229,9 @@ class Analise():
             View: /formAnalise
         '''
         cursor = self.__db.connection.cursor()
-        cursor.execute('SELECT * from {} where {} = {}'.format(tabela,coluna, valor))
-        dado = list(cursor.fetchall())
-        for i in range(len(dado)):
-            dado = list(dado[i])
-            for a in range(len(dado)):
-                dado[a] = str(dado[a])
+        cursor.execute('SELECT grao_fk,umidade,temperatura,hora_inicio_analise,data_inicio_analise from {} where {} = {}'.format(tabela,coluna, valor))
+        dado = cursor.fetchall()
+        # print(dado)
         return dado
 
     def sorteia(self) -> dict:
@@ -419,7 +416,7 @@ class Analise():
         analista, os outros valores referentes são jogados no formulario na pagina formAnalise.html
         para ficar a cargo do analista preencher.
         '''
-        
+        print(grao)
         #Inserir dado na tabela Relativa ao grao e retornar a tabela
         if(grao == 'Soja'):
             colunas = ['id_carga','Ardidos', 'Queimados', 'Mofados', 'Esverdeados', 'Partidos,Quebrados ou Amassados',
@@ -470,8 +467,8 @@ class Analise():
         Esse valor é usado depois fora do método para verificar se precisa-se fazer uma nova inserção
         '''
         cursor = self.__db.connection.cursor()
-        # print('SELECT * from {} where id_carga_fk = {} order by id desc'.format(grao.lower(), valor_id_carga_fk))
-        cursor.execute('SELECT * from {} where id_carga_fk = {} order by id desc'.format(grao.lower(), valor_id_carga_fk))
+        print('SELECT * from {} where id_carga_fk = {} order by id desc'.format(grao, valor_id_carga_fk))
+        cursor.execute('SELECT * from {} where id_carga_fk = {} order by id desc'.format(grao, valor_id_carga_fk))
 
         retorno_bd = list(cursor.fetchall())
         # print(retorno_bd)

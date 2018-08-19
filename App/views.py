@@ -1,4 +1,4 @@
-from flask import render_template, redirect, session, url_for, flash, request
+from flask import render_template, redirect,session, url_for, flash,request, jsonify
 from app import app, db
 from models import Usuario
 from helpers import nivel_de_acesso
@@ -123,10 +123,10 @@ def analise_form():
         preenchidos pelo analista
     '''
     id_carga = request.form['id_carga_fk']
-    print(id_carga)
+    # print(id_carga)
     dados_maquina = analise.busca_por_analise_por_id('id_carga_fk', id_carga, 'analise')  # Nao cumpre bem o proposito
-    analise_manual = analise.inicia_analise_manual(id_carga, dados_maquina[3], session['usuario_nome'])
-    print(analise_manual)
+    analise_manual = analise.inicia_analise_manual(id_carga, dados_maquina[0][0], session['usuario_nome'])
+    # print(analise_manual)
     # dados_manual = analise.busca_por_id_tabela('id_carga_fk', id_carga, 'analise')
     dados = [dados_maquina, analise_manual]
     return protege_rota('formAnalise.html', dados)
@@ -186,4 +186,10 @@ def controle_funcionarios():
 def gera_analise():
     analise.cria_analise()
     return "<h1>OI</h1>"
+
+
+@app.route('/json_teste')
+def jsonTeste():
+    return jsonify({'key': [0,1,2,3,4,5]})
+    
 

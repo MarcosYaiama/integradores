@@ -17,11 +17,12 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <input type="hidden" name="grao" value="{{ arquivos[3] }}"><td>{{ arquivos[0][3] }}</td>
-                        <input type="hidden" name="peso" value="{{ arquivos[1] }}"><td>{{ arquivos[0][1] }}%</td>
-                        <input type="hidden" name="data" value="{{ arquivos[2] }}"><td>{{ arquivos[0][2] }} C</td>
-                        <input type="hidden" name="hora" value="{{ arquivos[4] }}"><td>{{ arquivos[1]['hora inicio'] }}</td>
-                        <input type="hidden" name="hora" value="{{ arquivos[5] }}"><td>{{ arquivos[0][5] }}</td>
+                        <!-- arquivos[tupla de tuplas do banco][a tupla respectiva][item] -->
+                        <input type="hidden" name="grao" value="{{ arquivos[0][0][0] }}"><td>{{ arquivos[0][0][0] }}</td>
+                        <input type="hidden" name="umidade" value="{{ arquivos[0][0][1] }}"><td>{{ arquivos[0][0][1] }}%</td>
+                        <input type="hidden" name="temperatura" value="{{ arquivos[0][0][2] }}"><td>{{ arquivos[0][0][2] }} C</td>
+                        <input type="hidden" name="hora" value="{{ arquivos[0][0][3] }}"><td>{{ arquivos[0][0][3] }}</td>
+                        <input type="hidden" name="data" value="{{ arquivos[0][0][4] }}"><td>{{ arquivos[0][0][4] }}</td>
                     </tr>
                 </tbody>
             </table>
