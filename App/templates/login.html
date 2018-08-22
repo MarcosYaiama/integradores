@@ -4,12 +4,12 @@
 <form action="{{ url_for('autenticar') }}" method="POST" style="padding: 1em;">
     <p>
     <label>Nome:</label>
-    <input class="form-control" type="text" name="usuario" required>
+    <input class="form-control" id="name_bar" type="text" name="usuario" required>
     </p>
     <p><label>Senha:</label>
-    <input class="form-control" type="password" name="senha" required><br>
+    <input class="form-control" id="psswd_bar" type="password" name="senha" required><br>
     </p>
-    <button class="btn btn-success form-control" type="submit">Entrar</button>
+    <button class="btn btn-success form-control" id="submit_btn" type="submit">Entrar</button>
     
 </form>
 <h3 style="text-align: center">BUG ALERT</h3>
@@ -132,6 +132,17 @@
                         <li>Exclusão de comentarios inuteis no código</li>
                         <li>Edição de algumas DOCStrings</li>
                         <li>Alteração na função de alguns métodos da classe Analise</li>
+                    </ul>
+                </li>
+                <li>
+                    21/08/2018:
+                    <ul>
+                        <li>Correção de bug</li>
+                        <li>Criação de alguns novos métodos e da view de envio da analise</li>
+                        <li>Mais interações do software com a tabela analise_manual e info_cargas</li>
+                        <li>Atualização do estado da analise</li>
+                        <li>Inicio da implementação do envio da mesma</li>
+                        
                     </ul>
                 </li>
             </ul><br><br>

@@ -3,7 +3,7 @@
         <a class="btn btn-primary form-control" href="{{ url_for('index') }}">Voltar</a><br>
         <br>
         {% if arquivos[1] %}
-        <form action="#" method="POST">
+        <form action="/enviaAnalise" method="POST">
             
             <table class="table table-striped table-responsive table-bordered">
                 <thead>
@@ -34,7 +34,7 @@
             <br>
 
             <label>Destino</label>
-            <select name="cargo" class="form-control">
+            <select name="redirec" class="form-control">
                 <option value="#">Gate 1</option>
                 <option value="#">Gate 2</option>
                 <option value="#">Gate 3</option>

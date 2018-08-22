@@ -6,7 +6,15 @@
                 "C:\\Users\\HighLander2\\AppData\\Local\\Arduino15\\packages\\esp8266\\tools\\**",
                 "C:\\Users\\HighLander2\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.4.0\\**"
             ],
-            "forcedInclude": []
+            "forcedInclude": [],
+            "browse": {
+                "path": [
+                    "C:\\Users\\HighLander2\\AppData\\Local\\Arduino15\\packages\\esp8266\\tools\\**",
+                    "C:\\Users\\HighLander2\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.4.0\\**"
+                ]
+            },
+            "intelliSenseMode": "msvc-x64"
         }
-    ]
+    ],
+    "version": 4
 }

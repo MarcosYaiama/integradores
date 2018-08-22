@@ -21,7 +21,7 @@
             {% if session['usuario_logado'] != None and session['usuario_logado'] %}
                 <h1 style="text-align: center">{{ session['usuario_cargo'] }}</h1>
                 <p style="text-align: center">Logado como : {{session['usuario_nome']}}</p><br>
-                <a href="{{ url_for('logout') }}" class="btn-primary btn form-control">Logout</a><br><br>
+                <a href="{{ url_for('logout') }}" id="btn_logout" class="btn-primary btn form-control">Logout</a><br><br>
             {% endif %}
             <br>
         {% block conteudo %}{% endblock %}
