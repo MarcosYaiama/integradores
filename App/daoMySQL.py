@@ -224,9 +224,6 @@ class Analise():
             Retorna os dados da tabela analise referente ao id_carga_fk especifico,
             esses dados dessa tabela referentes a analise foram preenchidos automaticamente.
 
-            PS: Só é exibido no navegador Grao, Umidade, Temperatura, Data e hora. Porem e enviado
-            todos os dados, FAZER REFATORACAO
-
             View: /formAnalise
         '''
         cursor = self.__db.connection.cursor()
@@ -251,7 +248,7 @@ class Analise():
         destinos = ["Guaruja", "Santos", "São Vicente","São Paulo", "Japão", "Taiwan"]
         fornecedores = ["MM Grãos", "Granolandia", "Fazenda dos Grãos","Fazendeiros Tabajara", "Moinho Paulista"]
         graos = self.__busca("graos")
-        estados = self.__busca("estado_analise")
+        # estados = self.__busca("estado_analise")
         letras = ["JAN", 'SWA', "SKL", "ASD", "AOS", "FOA", "FWH", "EJN", "0WA",
                   "YQ8", "RSA", "SQI", "OSJ", "IQG", "DFI", "JUI", "NWE", "RSD", "FYM", "OIJ"]
         umidade = randint(0,10)
@@ -299,9 +296,6 @@ class Analise():
         cursor = self.__db.connection.cursor()
         tempo_inicio = [datetime.now().hour, datetime.now().minute, datetime.now().second]
         sleep(1)
-        tempo_final = [abs(datetime.now().hour - tempo_inicio[0]),
-                       abs(datetime.now().minute - tempo_inicio[1]),
-                       abs(datetime.now().second - tempo_inicio[2])]
         cursor.execute("INSERT into analise(id_carga_fk, umidade, temperatura, grao_fk,data,hora_fim_analise_m) values (%s, %s, %s, %s, %s, %s)",
                                           (id_carga_fk,
                                            umidade,
@@ -386,7 +380,7 @@ class Analise():
         return resultados
 
     #CONTINUAR
-    def inicia_analise_manual(self, grao:str, id_carga:int, analista:str):
+    def inicia_analise_manual(self, grao:str, id_carga:int, analista:str) -> bool:
         '''
         É chamada sempre que o analista clica em iniciar analise em algum retorno da maquina que
         aparece no index. Essa função registra a hora em que o Analista deu esse clique e cria
@@ -394,14 +388,14 @@ class Analise():
         analista, os outros valores referentes são jogados no formulario na pagina formAnalise.html
         para ficar a cargo do analista preencher.
         '''
-        consultas = self.__busca_dados_analise_grao(id_carga)
+        consulta = self.__verifica_se_existe_analise_manual_da_carga(id_carga)
         colunas = self.__busca_colunas_analise_grao(grao)
-
-        for consulta in consultas:
-            if(not consulta):
-                self.__inicia_analise_manual_bd(analista ,id_carga ,colunas)
-                self.__atualiza_status_analise_iniciada("Analista", id_carga)
-                # consulta = self.__busca_dados_analise_grao(grao, id_carga, colunas)
+        print("CONSULTA")
+        print(consulta)
+        if(not consulta):
+            self.__inicia_analise_manual_bd(analista, id_carga, grao)
+            self.__atualiza_status_analise_iniciada("Analista", id_carga)
+            # consulta = self.__busca_dados_analise_grao(grao, id_carga, colunas)
         return colunas
 
     #CONTINUAR
@@ -419,36 +413,58 @@ class Analise():
             estado, id_carga))
         self.__db.connection.commit()
 
+    def __verifica_analise_manual_mesmos_id(self, id_carga:int) -> int:
+        '''
+            Retorna o número de analises com o id_carga existentes na tabela analise_manual.
+        
+            Métodos usando: __inicia_analise_manual_bd
+        '''
+        cursor = self.__db.connection.cursor()
+        cursor.execute('SELECT * from analise_manual where id={}'.format(id_carga))
+        resultado = cursor.fetchall()
+        self.__db.connection.commit()
+        if(resultado):
+            return len(resultado)
+        else:
+            return 0
+
     #CONTINUAR
-    def __inicia_analise_manual_bd(self, analista:str, id_carga:int, colunas:tuple):
+    def __inicia_analise_manual_bd(self, analista:str, id_carga:int, grao:str):
         '''
-        Cria linha no banco de dados que será usada para a analise, inserindo a data atual, horario atual, analista
+        Cria uma linha no banco de dados que será usada para a analise, inserindo a data atual, horario atual, analista
         E deixa como NULL os valores que serão preenchidos pelo analista no form e a hora_termino que será inserida
-        quando o analista clickar em enviar.
+        quando o analista clicar em enviar.
         '''
+        n_analises = self.__verifica_analise_manual_mesmos_id(id_carga)
+        carac_graos = self.__retorna_carac_graos(grao)
         cursor = self.__db.connection.cursor()
         hora = '{}:{}:{}'.format(datetime.now().hour,
                                     datetime.now().minute,
                                     datetime.now().second)
         data = str(datetime.now().date())
-        for dado in colunas:
-            cursor.execute('INSERT INTO analise_manual(analista, dado_analisado, ,hora_inicio_a, data, n_analise,id_carga_fk) values (%s,%s,%s,%s,%s,%s)'.format(analista, dado, hora, data, 1, id_carga))
+        for dado in carac_graos:
+            cursor.execute('INSERT INTO analise_manual(analista, dado_analisado, hora_inicio_a, data, n_analise,id_carga_fk) values (%s,%s,%s,%s,%s,%s)',
+            (analista,dado,hora,data,(n_analises+1),id_carga))
         self.__db.connection.commit()
     
 
     #CONTINUAR
-    def __busca_dados_analise_grao(self, id_carga:int):
+    def __verifica_se_existe_analise_manual_da_carga(self, id_carga:int):
         '''
-        Retorna todas as tabelas em uma tupla de tuplas com o nome e grao.
-        Esse valor é usado para fazer os campos que o usuario tem que preencher.
+        Verifica se o id_carga tem alguma analise iniciada que não foi terminada.
+
+        Esse true ou False retornado pelo método, serve para saber se é preciso criar
+        uma nova analise na tabela analise_manual.
+
+        Métodos usando: inicia_analise_manual
         '''
         cursor = self.__db.connection.cursor()
-        cursor.execute('SELECT * from analise_manual where id_carga_fk = "{}"'.format(id_carga))
+        cursor.execute('SELECT * from analise_manual where id_carga_fk = "{}" and irregular is NULL'.format(id_carga))
 
         retorno_bd = cursor.fetchall()
         # print(retorno_bd)
         if(retorno_bd):
-            return retorno_bd
+            return True
         else:
             return False
         
@@ -456,9 +472,11 @@ class Analise():
         '''
         Retorna todas as tabelas em uma tupla de tuplas com o nome e grao.
         Esse valor é usado para fazer os campos que o usuario tem que preencher.
+
+        Métodos usando : inicia_analise_manual
         '''
         cursor = self.__db.connection.cursor()
-        cursor.execute('SELECT nome, grao_fk from carac_graos where grao_fk = "{}"'.format(grao))
+        cursor.execute('SELECT nome, grao_fk from carac_graos where grao_fk = "{}" order by nome'.format(grao))
 
         retorno_bd = cursor.fetchall()
         # print(retorno_bd)
@@ -467,7 +485,28 @@ class Analise():
         else:
             return False
 
+    def __retorna_carac_graos(self, grao):
+        '''
+            Temporaria, apenas para retornar todas as caracteristicas do grao,
+            para ser executado um for para criar uma linha para cada caracteristica na
+            tabela analise.
+
+            Metodos usando: __inicia_analise_manual_bd
+        '''
+        cursor = self.__db.connection.cursor()
+        cursor.execute("SELECT nome from carac_graos where grao_fk = '{}'".format(grao))
+        retorno_bd = cursor.fetchall()
+        return retorno_bd
 
     def finaliza_analise_manual(self):
         pass
     
+    def caracteristicas_grao_analise(self,grao:str) -> tuple:
+        '''
+            Retorna todas as caracteristicas do grao junto com os dados para que o
+            software verifique se o mesmo esta irregular ou nao
+        '''
+        cursor = self.__db.connection.cursor()
+        cursor.execute('SELECT nome ,taxa_minima, total from carac_graos where grao_fk="{}" order by nome'.format(grao))
+        retorno_bd = cursor.fetchall()
+        return retorno_bd
