@@ -121,6 +121,18 @@ def analise_form():
     dados = [dados_maquina, analise_manual]
     return protege_rota('formAnalise.html', dados)
 
+@app.route('/enviaAnalise', methods=['POST',])
+def verifica_analise():
+    caracteristicas = analise.caracteristicas_grao_analise(request.form['grao'])
+    for c in caracteristicas:
+        print('Carac: {}  Minimo: {}  de um Total:{}  Resposta: {}'.format(
+            c[0],
+            c[1],
+            c[2],
+            request.form[c[0]]))
+        
+    print(caracteristicas)
+    return '<h1>Hello</h1>'
 
 @app.route('/chamados')
 def chamado_guarda():
