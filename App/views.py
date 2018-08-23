@@ -38,9 +38,12 @@ def index():
     else:
         if(session['usuario_cargo'] == "ANALISTA DE GRAOS"):
             analises = analise.registros_maquina()
-            return render_template(session['nivel_acesso'][0], analises = analises)
+            ultimas_analises = analise.analises_finalizadas()
+            return render_template(session['nivel_acesso'][0], analises=analises, ultimas_analises=ultimas_analises)
         elif(session['usuario_cargo'] == "CCO"):
-            pass
+            ultimas_analises = analise.analises_finalizadas()
+            return render_template(session['nivel_acesso'][0], ultimas_analises=ultimas_analises)
+
         elif(session['usuario_cargo'] == "GUARDA"):
             pass
             
@@ -118,21 +121,21 @@ def analise_form():
     id_carga = int(request.form['id_carga_fk'])
     dados_maquina = analise.busca_por_analise_por_id('id_carga_fk', id_carga, 'analise')  # Retorna os dados da Tabela Analise com o ID passado
     analise_manual = analise.inicia_analise_manual(dados_maquina[0][0], id_carga, session['usuario_logado'])
+    # ids_analise_manual = analise.busca_analise_manual_incompleta(id_carga)
     dados = [dados_maquina, analise_manual]
     return protege_rota('formAnalise.html', dados)
 
 @app.route('/enviaAnalise', methods=['POST',])
 def verifica_analise():
+    '''
+        Faz a analise e redireciona para a pagina inicial
+    '''
     caracteristicas = analise.caracteristicas_grao_analise(request.form['grao'])
-    for c in caracteristicas:
-        print('Carac: {}  Minimo: {}  de um Total:{}  Resposta: {}'.format(
-            c[0],
-            c[1],
-            c[2],
-            request.form[c[0]]))
-        
-    print(caracteristicas)
-    return '<h1>Hello</h1>'
+    dados_analisados = []
+    for d in caracteristicas:
+        dados_analisados.append(int(request.form[d[0]]))
+    analise.analisar_graos(caracteristicas, dados_analisados, request.form['id_carga'], request.form['redirec'], request.form['grao'])
+    return redirect(url_for('index'))
 
 @app.route('/chamados')
 def chamado_guarda():
