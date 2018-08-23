@@ -18,6 +18,7 @@
                 <tbody>
                     <tr>
                         <!-- arquivos[tupla de tuplas do banco][a tupla respectiva][item] -->
+                        <input type="hidden" name="id_carga" value="{{ request.form['id_carga_fk'] }}">
                         <input type="hidden" name="grao" value="{{ arquivos[0][0][0] }}"><td>{{ arquivos[0][0][0] }}</td>
                         <input type="hidden" name="umidade" value="{{ arquivos[0][0][1] }}"><td>{{ arquivos[0][0][1] }}%</td>
                         <input type="hidden" name="temperatura" value="{{ arquivos[0][0][2] }}"><td>{{ arquivos[0][0][2] }} C</td>
@@ -35,9 +36,9 @@
 
             <label>Destino</label>
             <select name="redirec" class="form-control">
-                <option value="#">Gate 1</option>
-                <option value="#">Gate 2</option>
-                <option value="#">Gate 3</option>
+                <option value="Gate 1">Gate 1</option>
+                <option value="Gate 2">Gate 2</option>
+                <option value="Gate 3">Gate 3</option>
             </select>
             <br>
             <button type="submit" class="btn btn-success form-control">Enviar</button>
