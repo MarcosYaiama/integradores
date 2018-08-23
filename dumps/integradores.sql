@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: 19-Ago-2018 às 22:52
+-- Generation Time: 23-Ago-2018 às 09:06
 -- Versão do servidor: 10.1.30-MariaDB
 -- PHP Version: 7.2.2
 
@@ -38,6 +38,16 @@ CREATE TABLE `analise` (
   `hora_fim_analise_m` time DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Extraindo dados da tabela `analise`
+--
+
+INSERT INTO `analise` (`id_carga_fk`, `umidade`, `temperatura`, `grao_fk`, `data`, `id`, `hora_fim_analise_m`) VALUES
+(17, 2, 22, 'Soja', '2018-08-19', 16, '14:15:11'),
+(18, 5, 12, 'Soja', '2018-08-19', 17, '14:15:26'),
+(19, 10, 10, 'Milho', '2018-08-19', 18, '14:15:43'),
+(20, 7, 20, 'Milho', '2018-08-23', 19, '03:56:59');
+
 -- --------------------------------------------------------
 
 --
@@ -54,8 +64,35 @@ CREATE TABLE `analise_manual` (
   `data` date DEFAULT NULL,
   `n_analise` int(11) DEFAULT NULL,
   `redirecionamento` varchar(40) DEFAULT NULL,
-  `id_carga_fk` int(11) DEFAULT NULL
+  `id_carga_fk` int(11) DEFAULT NULL,
+  `analise` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Extraindo dados da tabela `analise_manual`
+--
+
+INSERT INTO `analise_manual` (`id`, `analista`, `dado_analisado`, `irregular`, `hora_inicio_a`, `hora_termino_a`, `data`, `n_analise`, `redirecionamento`, `id_carga_fk`, `analise`) VALUES
+(11, 'Mauro', 'Ardidos e Queimados', 0, '23:51:15', '03:34:48', '2018-08-21', 1, 'Gate 2', 17, 1),
+(12, 'Mauro', 'Queimados', 1, '23:51:15', '03:34:48', '2018-08-21', 1, 'Gate 2', 17, 1),
+(13, 'Mauro', 'Mofados', 0, '23:51:15', '03:34:48', '2018-08-21', 1, 'Gate 2', 17, 1),
+(14, 'Mauro', 'Esverdeados', 0, '23:51:15', '03:34:48', '2018-08-21', 1, 'Gate 2', 17, 1),
+(15, 'Mauro', 'Partidos, Queimados e Amassados', 0, '23:51:15', '03:34:48', '2018-08-21', 1, 'Gate 2', 17, 1),
+(16, 'Mauro', 'Materias Estranhas e Impurezas', 1, '23:51:15', '03:34:48', '2018-08-21', 1, 'Gate 2', 17, 1),
+(17, 'Mauro', 'Avariados e Ardidos', 0, '03:39:37', '03:39:48', '2018-08-23', 1, 'Gate 3', 19, 1),
+(18, 'Mauro', 'Graos Quebrados', 0, '03:39:37', '03:39:48', '2018-08-23', 1, 'Gate 3', 19, 1),
+(19, 'Mauro', 'Impurezas', 0, '03:39:37', '03:39:48', '2018-08-23', 1, 'Gate 3', 19, 1),
+(20, 'Mauro', 'Carunchado', 0, '03:39:37', '03:39:48', '2018-08-23', 1, 'Gate 3', 19, 1),
+(21, 'Mauro', 'Ardidos e Queimados', 0, '03:40:04', '03:40:14', '2018-08-23', 2, 'Gate 2', 18, 1),
+(22, 'Mauro', 'Queimados', 1, '03:40:04', '03:40:14', '2018-08-23', 2, 'Gate 2', 18, 1),
+(23, 'Mauro', 'Mofados', 0, '03:40:04', '03:40:14', '2018-08-23', 2, 'Gate 2', 18, 1),
+(24, 'Mauro', 'Esverdeados', 0, '03:40:04', '03:40:14', '2018-08-23', 2, 'Gate 2', 18, 1),
+(25, 'Mauro', 'Partidos, Queimados e Amassados', 0, '03:40:04', '03:40:14', '2018-08-23', 2, 'Gate 2', 18, 1),
+(26, 'Mauro', 'Materias Estranhas e Impurezas', 1, '03:40:04', '03:40:14', '2018-08-23', 2, 'Gate 2', 18, 1),
+(27, 'Caruara', 'Avariados e Ardidos', 0, '03:57:07', '03:57:14', '2018-08-23', 2, 'Gate 3', 20, 1),
+(28, 'Caruara', 'Graos Quebrados', 0, '03:57:07', '03:57:15', '2018-08-23', 2, 'Gate 3', 20, 1),
+(29, 'Caruara', 'Impurezas', 0, '03:57:07', '03:57:15', '2018-08-23', 2, 'Gate 3', 20, 1),
+(30, 'Caruara', 'Carunchado', 0, '03:57:07', '03:57:15', '2018-08-23', 2, 'Gate 3', 20, 1);
 
 -- --------------------------------------------------------
 
@@ -186,8 +223,19 @@ CREATE TABLE `info_cargas` (
   `hora_chegada` time DEFAULT NULL,
   `hora_termino` time DEFAULT NULL,
   `placa` varchar(20) NOT NULL,
-  `estado_fk` varchar(30) DEFAULT 'OCR'
+  `estado_fk` varchar(30) DEFAULT 'OCR',
+  `resultado_analise` varchar(30) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Extraindo dados da tabela `info_cargas`
+--
+
+INSERT INTO `info_cargas` (`id_carga`, `grao`, `fornecedor`, `destino`, `data_chegada`, `hora_chegada`, `hora_termino`, `placa`, `estado_fk`, `resultado_analise`) VALUES
+(17, 'Soja', 'Fazenda dos Grãos', 'Taiwan', '2018-08-19', '14:15:11', '03:34:48', 'FYM-6482', 'Finalizado', 'Aprovado'),
+(18, 'Soja', 'Fazendeiros Tabajara', 'Santos', '2018-08-19', '14:15:26', '03:40:14', 'AOS-2385', 'Finalizado', 'Aprovado'),
+(19, 'Milho', 'Granolandia', 'Guaruja', '2018-08-19', '14:15:43', '03:39:48', 'SQI-9187', 'Finalizado', 'Aprovado'),
+(20, 'Milho', 'Fazenda dos Grãos', 'Taiwan', '2018-08-23', '03:56:58', '03:57:15', 'OIJ-7793', 'Finalizado', 'Aprovado');
 
 -- --------------------------------------------------------
 
@@ -281,7 +329,44 @@ INSERT INTO `logs_func` (`id`, `id_usuario`, `Status`, `hora`, `data`, `cargo`) 
 (71, 'Nicholas', 1, '17:38:58', '2018-08-19', 'CCO'),
 (72, 'Nicholas', 0, '17:39:52', '2018-08-19', 'CCO'),
 (73, 'Eduardo', 1, '17:39:58', '2018-08-19', 'GUARDA'),
-(74, 'Eduardo', 0, '17:40:17', '2018-08-19', 'GUARDA');
+(74, 'Eduardo', 0, '17:40:17', '2018-08-19', 'GUARDA'),
+(75, 'Caruara', 0, '09:49:53', '2018-08-21', 'ANALISTA DE GRAOS'),
+(76, 'Nicholas', 1, '10:02:47', '2018-08-21', 'CCO'),
+(77, 'Nicholas', 1, '10:07:51', '2018-08-21', 'CCO'),
+(78, 'Caruara', 1, '22:20:50', '2018-08-21', 'ANALISTA DE GRAOS'),
+(79, 'Caruara', 0, '23:39:22', '2018-08-21', 'ANALISTA DE GRAOS'),
+(80, 'Mauro', 1, '23:39:29', '2018-08-21', 'ANALISTA DE GRAOS'),
+(81, 'Mauro', 1, '00:19:21', '2018-08-23', 'ANALISTA DE GRAOS'),
+(82, 'Mauro', 0, '03:47:04', '2018-08-23', 'ANALISTA DE GRAOS'),
+(83, 'Nicholas', 1, '03:47:10', '2018-08-23', 'CCO'),
+(84, 'Caruara', 1, '03:56:52', '2018-08-23', 'ANALISTA DE GRAOS');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `log_analise`
+--
+
+CREATE TABLE `log_analise` (
+  `id` int(11) NOT NULL,
+  `n_analises` int(11) DEFAULT NULL,
+  `decisao_final` varchar(30) DEFAULT NULL,
+  `guarda` tinyint(1) DEFAULT NULL,
+  `resultado` varchar(30) DEFAULT NULL,
+  `estado` varchar(40) DEFAULT NULL,
+  `id_carga_fk` int(11) DEFAULT NULL,
+  `grao` varchar(30) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Extraindo dados da tabela `log_analise`
+--
+
+INSERT INTO `log_analise` (`id`, `n_analises`, `decisao_final`, `guarda`, `resultado`, `estado`, `id_carga_fk`, `grao`) VALUES
+(5, 1, 'Analista', 0, 'Aprovado', 'Finalizado', 17, 'Soja'),
+(6, 1, 'Analista', 0, 'Aprovado', 'Finalizado', 19, 'Milho'),
+(7, 1, 'Analista', 0, 'Aprovado', 'Finalizado', 18, 'Soja'),
+(8, 1, 'Analista', 0, 'Aprovado', 'Finalizado', 20, 'Milho');
 
 -- --------------------------------------------------------
 
@@ -375,7 +460,7 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `senha`, `cargo`, `nome_completo`, `status_atual`) VALUES
-('Caruara', 'mestra', 'ANALISTA DE GRAOS', 'Anderton Aleluia', 'Offline'),
+('Caruara', 'mestra', 'ANALISTA DE GRAOS', 'Anderton Aleluia', 'Online'),
 ('Eduardo', 'mestra', 'GUARDA', 'Eduardo Portos', 'Offline'),
 ('Jessica', 'mestra', 'ANALISTA DE GRAOS', 'Jessica Portos', 'Offline'),
 ('Lara', 'mestra', 'GUARDA', 'Lara Croft', 'Offline'),
@@ -383,7 +468,7 @@ INSERT INTO `usuarios` (`id`, `senha`, `cargo`, `nome_completo`, `status_atual`)
 ('Mauricio', 'mestra', 'GUARDA', 'Mauricio Mendonça', 'Offline'),
 ('Mauro', 'mestra', 'ANALISTA DE GRAOS', 'Mauro O Analista', 'Offline'),
 ('Mazzei', 'mestra', 'CCO', 'Mazzei Testando', 'Offline'),
-('Nicholas', 'mestra', 'CCO', 'Nicholas Wesley Mazzei', 'Offline');
+('Nicholas', 'mestra', 'CCO', 'Nicholas Wesley Mazzei', 'Online');
 
 --
 -- Indexes for dumped tables
@@ -452,6 +537,12 @@ ALTER TABLE `logs_func`
   ADD KEY `cargo` (`cargo`);
 
 --
+-- Indexes for table `log_analise`
+--
+ALTER TABLE `log_analise`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `milho`
 --
 ALTER TABLE `milho`
@@ -493,13 +584,13 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT for table `analise`
 --
 ALTER TABLE `analise`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `analise_manual`
 --
 ALTER TABLE `analise_manual`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `carac_graos`
@@ -511,13 +602,19 @@ ALTER TABLE `carac_graos`
 -- AUTO_INCREMENT for table `info_cargas`
 --
 ALTER TABLE `info_cargas`
-  MODIFY `id_carga` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id_carga` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `logs_func`
 --
 ALTER TABLE `logs_func`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=85;
+
+--
+-- AUTO_INCREMENT for table `log_analise`
+--
+ALTER TABLE `log_analise`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `milho`
