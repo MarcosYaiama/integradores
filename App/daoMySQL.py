@@ -358,7 +358,7 @@ class Analise():
         print('Cria analise')
         print(resultado_busca)
         self.insere_analise_maquina(resultado_busca[0][0], dados['umidade'], dados['temperatura'], dados['grao'], dados['estado'], dados['resultado'])
-        self.__atualiza_status_analise_iniciada(
+        self.__atualiza_status_analise_info_cargas(
             "Maquina", resultado_busca[0][0])
 
     def registros_maquina(self) -> dict:
@@ -394,12 +394,12 @@ class Analise():
         print(consulta)
         if(not consulta):
             self.__inicia_analise_manual_bd(analista, id_carga, grao)
-            self.__atualiza_status_analise_iniciada("Analista", id_carga)
+            self.__atualiza_status_analise_info_cargas("Analista", id_carga)
             # consulta = self.__busca_dados_analise_grao(grao, id_carga, colunas)
         return colunas
 
     #CONTINUAR
-    def __atualiza_status_analise_iniciada(self,estado:str, id_carga:int):
+    def __atualiza_status_analise_info_cargas(self,estado:str, id_carga:int):
         '''
         Atualiza o valor da coluna estado_fk da tabela info_cargas
         Essa coluna diz se a analise já está em andamento ou não.
@@ -510,3 +510,133 @@ class Analise():
         cursor.execute('SELECT nome ,taxa_minima, total from carac_graos where grao_fk="{}" order by nome'.format(grao))
         retorno_bd = cursor.fetchall()
         return retorno_bd
+
+    #ESTA DESPREZANDO UMIDADE E TEMPERATURA
+    def analisar_graos(self, caracteristicas: tuple, dados_analisados:list, id_carga:int, redir:str, grao:str):
+        '''
+            Analisa os graos, publica os dados na tabela ultimas analises, atualiza
+            o estado de acordo com o resultado;
+
+            Tabelas: analise_manual, info_cargas, log_analise,
+
+            Views: /enviaAnalise
+        '''
+        total_permitido, total_analisado = 0, 0
+        ids_analise = self.__busca_ids_analise_manual_incompleta(id_carga)
+        indice = 0
+        for c in caracteristicas:
+            irregular = False
+            #c[0] - Nome caracteristica direto do banco
+            #c[1] - Valor maximo permitido direto do banco
+            #request.form[c[0]] - A caracteristica sendo pega do request
+            valor_analisado = dados_analisados[0]
+            maximo_permitido = int(c[1])
+            total_analisado += valor_analisado          # Soma todos os valores analisados
+            total_permitido = int(c[2])                 #Total é pego do banco e se refere a soma de todos
+            
+            print('Carac: {}  Maximo: {}  de um Total:{}  Resposta: {}'.format(
+                c[0],
+                maximo_permitido,
+                total_permitido,
+                valor_analisado))
+            if(maximo_permitido <= valor_analisado):
+                #BLOCO ONDE SERA INSERIDO NO BANCO OS DADOS DOS CARAC QUE ESTAO OK
+                irregular = True
+                print('Irregular'.format(c[0]))
+            else:
+                #BLOCO ONDE SERA INSERIDO NO BANCO OS DADOS DAS CARAC QUE N ESTAO OK
+                print('Regular'.format(c[0]))
+            self.__posta_resultado_analise_manual(
+                ids_analise[indice][0], id_carga, irregular, redir, valor_analisado)
+            indice += 1
+        estado = ''
+        irregular = False
+        if(total_analisado >= total_permitido):
+            print("Total analisado: {}".format(total_analisado))
+            print("Irregular")
+            irregular = True
+            estado = 'CCO'
+            #encaminha cco
+            self.__atualiza_status_analise_info_cargas("CCO", id_carga)
+        else:
+            #aprovado
+            self.__atualiza_status_analise_info_cargas("Finalizado", id_carga)
+            self.__posta_resultado_final_info_cargas(id_carga, "Aprovado")
+            print('Aprovado')
+            estado = 'Finalizado'
+        #Postagem da analise na tabela log_analise
+        if(not irregular):
+            self.__posta_log_analise(estado, id_carga, grao, n_analises=1 ,decisao_final = 'Analista', resultado='Aprovado', guarda=0)
+
+
+    def __posta_resultado_analise_manual(self, id_analise:int, id_carga:int, irregular:bool, redir:str, valor_dado_analisado:int):
+        '''
+            Posta os dados relativos ao termino da analise e seus resultados.
+
+            Tabelas: analise_manual
+
+            Metodos usando: analisar_graos
+        '''
+        
+        cursor = self.__db.connection.cursor()
+        hora_termino = '{}:{}:{}'.format(datetime.now().hour,
+                                         datetime.now().minute,
+                                         datetime.now().second)
+        cursor.execute('UPDATE analise_manual set irregular = %s, hora_termino_a = %s, redirecionamento = %s, analise = %s where id_carga_fk = %s and id = %s',
+        (irregular,hora_termino, redir, valor_dado_analisado, id_carga, id_analise))
+        self.__db.connection.commit()
+
+    def __posta_resultado_final_info_cargas(self, id_carga:int, resultado:str):
+        '''
+            Atualiza a linha referente à analise da tabela quando a analise for finalizada.
+
+            Tabelas: info_cargas
+
+            Metodos usando: analisar_graos
+        '''
+        cursor = self.__db.connection.cursor()
+        hora_termino = '{}:{}:{}'.format(datetime.now().hour,
+                                         datetime.now().minute,
+                                         datetime.now().second)
+        cursor.execute('UPDATE info_cargas set resultado_analise = "{}", hora_termino = "{}"  where id_carga = {}'.format(
+            resultado, hora_termino, id_carga))
+        self.__db.connection.commit()
+
+    def __busca_ids_analise_manual_incompleta(self, id_carga:int)->tuple:
+        ''''
+            Retorna do banco de dados todas os ID's das analises manuais incompletas.
+
+            Metodos usando: 
+
+            Tabelas: analisar_graos
+        '''
+        cursor = self.__db.connection.cursor()
+        cursor.execute('SELECT id from analise_manual where id_carga_fk = {} and irregular is NULL order by dado_analisado'.format(id_carga))
+        return cursor.fetchall()
+
+    def __posta_log_analise(self, estado:str, id_carga:int, grao:str, n_analises:int = 0, decisao_final:str = "NULL", guarda:bool = None, resultado:str = "NULL"):
+        '''
+            Posta o log da analise, para depois ser exibido na interface.
+
+            Metodos usando: analisar_graos
+        '''
+        cursor = self.__db.connection.cursor()
+        cursor.execute('INSERT INTO log_analise(n_analises, decisao_final, guarda, resultado,estado, id_carga_fk, grao) values ({}, "{}", {}, "{}", "{}", {}, "{}")'.format(n_analises, decisao_final, guarda, resultado, estado, id_carga, grao))
+        self.__db.connection.commit()
+
+    def analises_finalizadas(self):
+        '''
+            Retorna todas as analises que tem o status Finalizada
+
+            Views: /    
+            Acesso: CCO e Analista
+
+            Tabelas: log_analise
+        '''
+        cursor = self.__db.connection.cursor()
+        cursor.execute('SELECT * from log_analise where estado = "Finalizado"')
+        resultado = cursor.fetchall()
+        print(resultado)
+        return resultado
+
+
