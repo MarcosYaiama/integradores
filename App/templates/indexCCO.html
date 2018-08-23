@@ -19,23 +19,41 @@
                 </tr>
             </tbody>
         </table>
-        <table class="table table-striped table-responsive table-bordered">
-            <label>Situação da Ultima análise</label>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Grão</th>
-                    <th>Resultado</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>001</td>
-                    <td>Soja</td>
-                    <td>Reprovado</td>
-                </tr>
-            </tbody>
-        </table>
+             {% if ultimas_analises %}
+            <table class="table table-striped table-responsive table-bordered">
+                <label>Situação das Ultimas análises</label>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>ID Carga</th>
+                        <th>Grão</th>
+                        <th>N Analises</th>
+                        <th>Guarda</th>
+                        <th>Estado</th>
+                        <th>Decisão</th>
+                        <th>Resultado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in ultimas_analises %}
+                    <tr>
+                        <td>{{r[0]}}</td>
+                        <td>{{r[6]}}</td>
+                        <td>{{r[7]}}</td>
+                        <td>{{r[1]}}</td>
+                        {% if r[3] %}
+                            <td>Sim</td>
+                        {% else %}
+                            <td>Não</td>
+                        {% endif %}
+                        <td>{{r[5]}}</td>
+                        <td>{{r[2]}}</td>
+                        <td>{{r[4]}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
         <table class="table table-striped table-responsive table-bordered">
             <thead>
                 <label>Requisições do Posto de Analise Finalizadas</label>
