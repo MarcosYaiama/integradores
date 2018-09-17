@@ -1,5 +1,6 @@
 
 from models import Usuario
+import requests
 
 
 def nivel_de_acesso(cargo):
@@ -13,3 +14,13 @@ def nivel_de_acesso(cargo):
         return False
 
 
+def envia_pagina_arduino(usuarios=None, cargo=None, pagina=None):
+    ...
+    # ip = 'http://192.168.1.34'
+    # try:
+    #     p = {'Usuario': usuarios, 'Cargo': cargo, 'Pagina': pagina}
+    #     #r = requests.post('http://192.168.0.6/pantilt', json=p)
+    #     requests.post('{}/arduino'.format(ip), json=p)
+    #     return True
+    # except:
+    #     return False

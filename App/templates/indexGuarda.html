@@ -1,6 +1,50 @@
 {% extends 'template.html' %} {% block conteudo %}
-
-
+{{resultados[0]}}<br><br>
+{{resultados[1]}}
+{% if(resultados) %}
+    <table class="table table-striped table-responsive table-bordered">
+        <thead>
+            <tr>
+                <th>Placa</th>
+                <th>Fornecedor</th>
+                <th>CCO</th>
+                <th>Requisição</th>
+                <th>Situação</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dado_recebido in range(resultados[0]|length) %}
+                <tr>
+                    <td>{{resultados[1][dado_recebido][0][7]}}</td>
+                    <td>{{resultados[1][dado_recebido][0][2]}}</td>
+                    <td>{{resultados[0][dado_recebido][3]}}</td>
+                    <td>
+                        <form action="{{ url_for('chamado_guarda') }}" method="POST">
+                            <input type="hidden" value="{{resultados[1][dado_recebido][0][7]}}" name="placa">
+                            <input type="hidden" value="{{resultados[1][dado_recebido][0][2]}}" name="fornecedor">
+                            <input type="hidden" value="{{resultados[1][dado_recebido][0][1]}}" name="grao">
+                            <input type="hidden" value="{{resultados[1][dado_recebido][0][0]}}" name="id_carga">
+                            <input type="hidden" value="{{resultados[0][dado_recebido][3]}}" name="cco">
+                            <input type="hidden" value="{{resultados[0][dado_recebido][-1]}}" name="situacao">
+                            <input type="hidden" value="{{resultados[0][dado_recebido][0]}}" name="id">
+                            <button class="btn btn-success form-control">Aceitar</button>
+                        
+                        </form>
+                    </td>
+                    {% if resultados[0][dado_recebido][-1] == "Aguardando" %} True
+                        <td style="text-align: center; background-color: #337ab7; color: white; font-weight: bolder">{{resultados[0][dado_recebido][-1]}}</td>
+                    {%else%}
+                        <td style="text-align: center; background-color: #d9534f; color: white; font-weight: bolder">{{resultados[0][dado_recebido][-1]}}</td>
+                    {%endif%}
+                    
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <h2 style="text-align: center; background-color: #337ab7; color: white"><strong>Nenhuma chamado do CCO até o momento</strong></h2>
+{% endif %}
+<!-- 
         <table class="table table-striped table-responsive table-bordered">
             <h2 style="text-align: center">Chamados</h2>
             <br>
@@ -51,7 +95,7 @@
                     <td class="btn-primary" style="text-align: center; font-weight: bold;">Aguardando</td>
                 </tr>
             </tbody>
-        </table>
+        </table> -->
         <br>
         <br>
 {% endblock %}

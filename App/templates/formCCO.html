@@ -1,59 +1,104 @@
 {% extends 'template.html' %}
  {% block conteudo %}
+        {{arquivos[0]}}<br><br><br>
+        {{arquivos[1]}}<br><br><br>
+        {{arquivos[2]}}<br><br><br>
+        {{arquivos[3]}}<br><br><br>
         <h2 style="text-align: center;">Informações da Carga</h2>
         <a class="btn btn-primary form-control" href="{{ url_for('index') }}">Voltar</a>
         <table class="table table-striped table-responsive table-bordered">
             <thead>
                 <tr>
+                    <th>Grão</th>
                     <th>ID</th>
                     <th>Fornecedor</th>
+                    <th>Destino</th>
                     <th>Data</th>
                     <th>Hora</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>002</td>
-                    <td>Tabajara</td>
-                    <td>01/04/2018</td>
-                    <td>11:30</td>
+                    <td>{{arquivos[0][0][1]}}</td>
+                    <td>{{arquivos[0][0][0]}}</td>
+                    <td>{{arquivos[0][0][2]}}</td>
+                    <td>{{arquivos[0][0][3]}}</td>
+                    <td>{{arquivos[0][0][4]}}</td>
+                    <td>{{arquivos[0][0][5]}}</td>
                 </tr>
 
             </tbody>
         </table>
-        <h2 style="text-align: center;">Dados da Análise</h2>
+        <h2 style="text-align: center;">Dados da Análise Maquina</h2>
         <table class="table table-striped table-responsive table-bordered">
             <thead>
                 <tr>
-                    <th>Grão</th>
-                    <th>Peso</th>
                     <th>Umidade</th>
                     <th>Temperatura</th>
-                    <th>Rugosidade</th>
-                    <th>Taxa de Aprovação</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>Soja</td>
-                    <td>10kg</td>
-                    <td>X</td>
-                    <td>20º C</td>
-                    <td>Y</td>
-                    <td>60%</td>
+                    <td>{{arquivos[2][0][1]}}%</td>
+                    <td>{{arquivos[2][0][2]}} C</td>
                 </tr>
             </tbody>
         </table>
-        <form action="{{url_for('cco_reprova')}}">
-            <input type="hidden" value="Reprovar">
+        <h2 style="text-align: center;">Dados da Análise Manual</h2>
+        Analista Responsavel:{{arquivos[1][0][1]}}
+        {% for i in range(arquivos[1]|length) %}<br><br>
+        
+        <div>
+        
+            <table class="table table-striped table-responsive table-bordered">
+                <label>Tabela Referencia</label>
+                    <thead>
+                        <tr>
+                            <th>Dado</th>
+                            <th>Maximo Permitido</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <td>{{arquivos[3][i][0]}}</td>
+                        <td>{{arquivos[3][i][1]}}</td>
+                        <td>{{arquivos[3][i][2]}}</td>
+                    </tbody>
+            </table>
+            <table class="table table-striped table-responsive table-bordered">
+                <label >Dados da Analise</label>
+                <thead>
+                    <tr>
+                        <th>Dado Analisado</th>
+                        <th>Irregular</th>
+                        <th>Resultado Analise</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td>{{arquivos[1][i][2]}}</td>
+                        <td>{% if arquivos[1][i][3] %}Sim{% else %}Não{% endif %}
+                        </td>
+                        <td>{{arquivos[1][i][-1]}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+        <form action="{{url_for('cco_reprova')}}" method="POST">
+            <input type="hidden" name="id_carga" value="{{arquivos[0][0][0]}}">
             <button type="submit" class="btn btn-danger form-control">Reprovar</button>
         </form>
-        <form action="#" method="POST">
-            <input type="hidden" value="nova_analise">
+        <form action="{{url_for('index')}}" method="POST">
+            <input type="hidden" name="id_carga" value="{{arquivos[0][0][0]}}">
+            <input type="hidden" name="decisao_cco" value="nova_analise">
             <button type="submit" class="btn btn-primary form-control">Nova Analise</button>
         </form>
-        <form action="#" method="POST">
-            <input type="hidden" value="Reprovar">
+        <form action="{{url_for('index')}}" method="POST">
+            <input type="hidden" name="id_carga" value="{{arquivos[0][0][0]}}">
+            <input type="hidden" name="decisao_cco" value="aprovado">
             <button type="submit" class="btn btn-success form-control">Aprovar</button>
         </form>
 {% endblock %}

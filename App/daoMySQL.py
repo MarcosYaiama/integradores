@@ -38,7 +38,7 @@ class UsuarioDao:
         # print(usuario)
         return usuario
 
-    def listar(self) -> list:
+    def listar(self,cargo:str = None, json:bool = False, online:bool = False, disponibilidade:bool = False) -> list:
         '''
             Retorna em uma lista com todos os usuarios do banco. 
             Essa função é usada para listar os usuarios e seu Status no
@@ -49,11 +49,34 @@ class UsuarioDao:
                 Tabela : usuarios
                 Colunas: *
         '''
+        query = 'SELECT * from usuarios'
+        if(cargo):
+            if(cargo.lower == 'cco'):
+                query += ' where cargo = "cco"' 
+            elif(cargo.lower == 'analista'):
+                query += ' where cargo = "analista"' 
+            else:
+                query += ' where cargo = "guarda"'
+        if(online):
+            query += ' and status_atual="Online"' 
+        
         cursor = self.__db.connection.cursor()
-        cursor.execute('SELECT * from usuarios')
+        cursor.execute(query)
         usuarios = traduz_user(cursor.fetchall())   #Transforma a tupla de tuplas em uma lista de objetos   
-        # print(usuarios)
         # print(type(usuarios))
+        if(json):
+
+            dicionario_resposta = []
+            for user in usuarios:
+                # print(user.nome)
+                if(disponibilidade):
+                    ...
+                else:
+                    dicionario_resposta.append({'id':user.id,
+                                            'cargo':user.cargo,
+                                            'nome': user.nome,
+                                            'status':user.status})
+            return dicionario_resposta        
         return usuarios
 
     def listar_logs(self) -> list:
@@ -355,8 +378,8 @@ class Analise():
         dados = self.sorteia()
         self.insere_info_cargas(dados['grao'], dados['fornecedor'], dados['destino'], dados['placa'])
         resultado_busca = self.busca_info_cargas_sem_analise()
-        print('Cria analise')
-        print(resultado_busca)
+        # print('Cria analise')
+        # print(resultado_busca)
         self.insere_analise_maquina(resultado_busca[0][0], dados['umidade'], dados['temperatura'], dados['grao'], dados['estado'], dados['resultado'])
         self.__atualiza_status_analise_info_cargas(
             "Maquina", resultado_busca[0][0])
@@ -390,8 +413,8 @@ class Analise():
         '''
         consulta = self.__verifica_se_existe_analise_manual_da_carga(id_carga)
         colunas = self.__busca_colunas_analise_grao(grao)
-        print("CONSULTA")
-        print(consulta)
+        # print("CONSULTA")
+        # print(consulta)
         if(not consulta):
             self.__inicia_analise_manual_bd(analista, id_carga, grao)
             self.__atualiza_status_analise_info_cargas("Analista", id_carga)
@@ -424,6 +447,7 @@ class Analise():
         resultado = cursor.fetchall()
         self.__db.connection.commit()
         if(resultado):
+            # print(len(resultado))
             return len(resultado)
         else:
             return 0
@@ -444,7 +468,7 @@ class Analise():
         data = str(datetime.now().date())
         for dado in carac_graos:
             cursor.execute('INSERT INTO analise_manual(analista, dado_analisado, hora_inicio_a, data, n_analise,id_carga_fk) values (%s,%s,%s,%s,%s,%s)',
-            (analista,dado,hora,data,(n_analises+1),id_carga))
+            (analista,dado,hora,data,(n_analises),id_carga))
         self.__db.connection.commit()
     
 
@@ -512,7 +536,7 @@ class Analise():
         return retorno_bd
 
     #ESTA DESPREZANDO UMIDADE E TEMPERATURA
-    def analisar_graos(self, caracteristicas: tuple, dados_analisados:list, id_carga:int, redir:str, grao:str):
+    def analisar_graos(self, caracteristicas: tuple, dados_analisados:dict, id_carga:int, redir:str, grao:str):
         '''
             Analisa os graos, publica os dados na tabela ultimas analises, atualiza
             o estado de acordo com o resultado;
@@ -529,40 +553,42 @@ class Analise():
             #c[0] - Nome caracteristica direto do banco
             #c[1] - Valor maximo permitido direto do banco
             #request.form[c[0]] - A caracteristica sendo pega do request
-            valor_analisado = dados_analisados[0]
+            valor_analisado = dados_analisados[c[0]]
             maximo_permitido = int(c[1])
             total_analisado += valor_analisado          # Soma todos os valores analisados
             total_permitido = int(c[2])                 #Total é pego do banco e se refere a soma de todos
             
-            print('Carac: {}  Maximo: {}  de um Total:{}  Resposta: {}'.format(
-                c[0],
-                maximo_permitido,
-                total_permitido,
-                valor_analisado))
-            if(maximo_permitido <= valor_analisado):
+            # print('Carac: {}  Maximo: {}  de um Total:{}  Resposta: {}'.format(
+            #     c[0],
+            #     maximo_permitido,
+            #     total_permitido,
+            #     valor_analisado))
+            if(not(maximo_permitido <= valor_analisado)):    #CCO é para quando o CCO mudar a decisão do Analista
                 #BLOCO ONDE SERA INSERIDO NO BANCO OS DADOS DOS CARAC QUE ESTAO OK
+                print('Regular'.format(c[0]))
+            else:
                 irregular = True
                 print('Irregular'.format(c[0]))
-            else:
-                #BLOCO ONDE SERA INSERIDO NO BANCO OS DADOS DAS CARAC QUE N ESTAO OK
-                print('Regular'.format(c[0]))
             self.__posta_resultado_analise_manual(
                 ids_analise[indice][0], id_carga, irregular, redir, valor_analisado)
             indice += 1
+                #BLOCO ONDE SERA INSERIDO NO BANCO OS DADOS DAS CARAC QUE N ESTAO OK
         estado = ''
         irregular = False
         if(total_analisado >= total_permitido):
-            print("Total analisado: {}".format(total_analisado))
-            print("Irregular")
+            # print("Total analisado: {}".format(total_analisado))
+            # print("Irregular")
             irregular = True
             estado = 'CCO'
             #encaminha cco
+
             self.__atualiza_status_analise_info_cargas("CCO", id_carga)
         else:
             #aprovado
+            
             self.__atualiza_status_analise_info_cargas("Finalizado", id_carga)
             self.__posta_resultado_final_info_cargas(id_carga, "Aprovado")
-            print('Aprovado')
+
             estado = 'Finalizado'
         #Postagem da analise na tabela log_analise
         if(not irregular):
@@ -614,14 +640,16 @@ class Analise():
         cursor.execute('SELECT id from analise_manual where id_carga_fk = {} and irregular is NULL order by dado_analisado'.format(id_carga))
         return cursor.fetchall()
 
-    def __posta_log_analise(self, estado:str, id_carga:int, grao:str, n_analises:int = 0, decisao_final:str = "NULL", guarda:bool = None, resultado:str = "NULL"):
+    def __posta_log_analise(self, estado:str, id_carga:int, grao:str, n_analises:int = 0, decisao_final:str = "NULL", guarda:str = None, resultado:str = "NULL"):
         '''
             Posta o log da analise, para depois ser exibido na interface.
 
+            Tabelas: log_analise
             Metodos usando: analisar_graos
         '''
+        # print('INSERT INTO log_analise(n_analises, decisao_final, guarda, resultado,estado, id_carga_fk, grao) values ({}, "{}", "{}", "{}", "{}", {}, "{}")'.format(n_analises, decisao_final, guarda, resultado, estado, id_carga, grao))
         cursor = self.__db.connection.cursor()
-        cursor.execute('INSERT INTO log_analise(n_analises, decisao_final, guarda, resultado,estado, id_carga_fk, grao) values ({}, "{}", {}, "{}", "{}", {}, "{}")'.format(n_analises, decisao_final, guarda, resultado, estado, id_carga, grao))
+        cursor.execute('INSERT INTO log_analise(n_analises, decisao_final, guarda, resultado,estado, id_carga_fk, grao) values ({}, "{}", "{}", "{}", "{}", {}, "{}")'.format(n_analises, decisao_final, guarda, resultado, estado, id_carga, grao))
         self.__db.connection.commit()
 
     def analises_finalizadas(self):
@@ -636,7 +664,143 @@ class Analise():
         cursor = self.__db.connection.cursor()
         cursor.execute('SELECT * from log_analise where estado = "Finalizado"')
         resultado = cursor.fetchall()
-        print(resultado)
         return resultado
 
+    def busca_chamados_cco(self):
+        cursor = self.__db.connection.cursor()
+        cursor.execute('SELECT * from info_cargas where estado_fk = "CCO"')
+        return cursor.fetchall()
 
+    def busca_info_cargas_por_id(self, id_carga:int):
+        '''
+            Busca todos os registro de info_cargas com o id_carga e retorna uma tupla com os resultados
+
+            Tabelas: info_cargas
+            Métodos usando: retorno_guarda
+            Views Usando : /reprovaCCO
+        '''
+        cursor = self.__db.connection.cursor()
+        cursor.execute('SELECT * from info_cargas where id_carga = {}'.format(id_carga))
+        return cursor.fetchall()
+
+    def busca_analise_manual_por_id(self, id_carga):
+        cursor = self.__db.connection.cursor()
+        cursor.execute(
+            'SELECT * from analise_manual where id_carga_fk = {} order by dado_analisado'.format(id_carga))
+        return cursor.fetchall()
+
+    def busca_analise_maquina_por_id(self, id_carga):
+        cursor = self.__db.connection.cursor()
+        # print('SELECT * from analise_manual where id_carga_fk = {}'.format(id_carga))
+        cursor.execute(
+            'SELECT * from analise where id_carga_fk = {}'.format(id_carga))
+        return cursor.fetchall()
+
+    def __busca_grao_por_id_carga(self, id_carga):
+        '''
+            Recebe um id_carga e retorna o grao da tabela info_cargas, respectivo ao id inserido.
+
+            Tabelas: info_cargas
+            Métodos usando: decisao_cco
+        '''
+        cursor = self.__db.connection.cursor()
+        cursor.execute('SELECT grao from info_cargas where id_carga = {}'.format(id_carga))
+        return cursor.fetchall()[0][0]
+
+    def cco_decisao_info_cargas_reprovado(self, id_carga):
+            # Mudar o Resultado para reprovado info_cargas
+            # Mudar o estado_fk para Guarda info_cargas
+            # Coloca o horario termino para a carga no info_cargas
+            cursor = self.__db.connection.cursor()
+            hora_termino = '{}:{}:{}'.format(datetime.now().hour,
+                                             datetime.now().minute,
+                                             datetime.now().second)
+            # print('UPDATE info_cargas set resultado_analise = "Reprovado", estado_fk = "Guarda", hora_termino="{}" where id_carga = {}'.format(
+            #     hora_termino,id_carga))
+            cursor.execute(
+                'UPDATE info_cargas set resultado_analise = "Reprovado", estado_fk = "Guarda", hora_termino="{}" where id_carga = {}'.format(
+                    hora_termino,id_carga))
+            cursor.connection.commit()
+
+    def decisao_cco(self, decisao:str,id_carga:int, guarda:str = None, cco:str = None):
+        if(decisao == 'reprovado'):
+            # Mudar o Resultado para reprovado info_cargas
+            # Mudar o estado_fk para Guarda info_cargas
+            # Coloca o horario termino para a carga no info_cargas
+            self.cco_decisao_info_cargas_reprovado(id_carga)
+
+            # Verifica quantas analises finalizadas tem no analise_manual
+            n_analises = self.__verifica_analise_manual_mesmos_id(id_carga)
+            # Criar linha log_analise decisao final CCO e nome do Guarda responsavel
+            self.__posta_log_analise(
+                'Finalizado', id_carga, self.__busca_grao_por_id_carga(id_carga), guarda=guarda, n_analises=n_analises, decisao_final="CCO",resultado="Reprovado")
+            # Criar linha pedido_guarda especificando qual guarda será chamado
+            cursor = self.__db.connection.cursor()
+            cursor.execute('INSERT into pedido_guarda(nome, id_carga_fk, cco_responsavel, status) values ("{}",{},"{}","{}")'.format(guarda, id_carga, cco, "Aguardando"))
+            # print('INSERT into pedido_guarda(nome, id_carga_fk, cco_responsavel, status) values ("{}",{},"{}","{}")'.format(guarda, id_carga, cco, "Aguardando"))
+
+            cursor.connection.commit()
+            
+
+        elif(decisao == 'aprovado'):
+            # Mudar o resultado para aprovado info_cargas
+            # Postar hora de termino info_cargas
+            # Mudar estado_fk para Finalizado info_cargas
+            # Criar linha log_analise decisao final CCO e responsavel
+            ...
+        elif(decisao == 'Nova Analise'):
+            # Mudar estado para nova analise info_cargas
+            # Criar Pedido de Analise_manual para o Analista, especificando que é a segunda analise
+            ...
+
+    
+    def __pesquisa_chamados_guarda(self, id_guarda:str)-> tuple:
+        '''
+            Todos os chamados relativos ao id do guarda.
+
+            Métodos usando: retorno_guarda
+        '''
+
+        cursor = self.__db.connection.cursor()
+        cursor.execute('SELECT * from pedido_guarda where nome = "{}" and status != "Finalizado"'.format(id_guarda))
+        resultado_busca = cursor.fetchall()
+        if(resultado_busca):
+            return resultado_busca
+        else:
+            return False
+
+
+    def retorno_guarda(self, id_guarda:str)-> tuple:
+        '''
+            Recebe o id do Guarda e retorna uma tupla de tuplas com as informações da carga
+            e dados do pedido.
+
+            Tabelas: info_cargas, pedido_guarda
+            Views: / , /chamado_guarda
+            Tipo de Usuario: Guarda
+        '''
+        print(id_guarda)
+        chamados = self.__pesquisa_chamados_guarda(id_guarda)
+        info_cargas_retorno = []
+        if(chamados):
+            for chamado in chamados:
+                #Busca info_cargas atraves do id_carga e adiciona a lista
+                info_cargas_retorno.append(self.busca_info_cargas_por_id(chamado[2])) # O item 2 é o id da CARGA
+        # A ideia é a tupla chamada ter o mesmo tamanho da lista resultado, assim posso usar o MESMO indice 
+        #pois os itens vão ser relativos um ao outro através da ordem dos indices. 
+            return (chamados, info_cargas_retorno)
+        return False
+
+    def atualiza_estado_pedido_guarda(self, id_pedido:int, estado:str):
+        cursor = self.__db.connection.cursor()
+        cursor.execute(
+            'update pedido_guarda set status ="{}" where id={}'.format(estado, id_pedido))
+        cursor.connection.commit()
+
+    def guarda_finaliza_pedido(self, id_pedido:int, id_carga:int):
+        self.atualiza_estado_pedido_guarda(id_pedido, "Finalizado")
+        self.__atualiza_status_analise_info_cargas("Finalizado", id_carga)
+        
+
+
+    

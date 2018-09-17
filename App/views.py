@@ -1,7 +1,7 @@
 from flask import render_template, redirect,session, url_for, flash,request, jsonify
 from app import app, db
 from models import Usuario
-from helpers import nivel_de_acesso
+from helpers import nivel_de_acesso, envia_pagina_arduino
 from daoMySQL import UsuarioDao, Analise
 
 mySQL = True
@@ -19,7 +19,7 @@ def protege_rota(pagina:str, arquivos=None):
     else:
         redirect(url_for('index'))
 
-@app.route('/')
+@app.route('/', methods=['POST','GET',])
 def index():
     '''
     Página inicial:
@@ -37,15 +37,27 @@ def index():
         return render_template('login.html')
     else:
         if(session['usuario_cargo'] == "ANALISTA DE GRAOS"):
+           
+            envia_pagina_arduino(
+                usuarios=session['usuario_logado'], cargo=session['usuario_cargo'], pagina='Index')
+           
             analises = analise.registros_maquina()
             ultimas_analises = analise.analises_finalizadas()
             return render_template(session['nivel_acesso'][0], analises=analises, ultimas_analises=ultimas_analises)
         elif(session['usuario_cargo'] == "CCO"):
+            if('decisao_cco' in request.form):
+                # AQUI ENTRA OS METODOS DO CCO QUE ALTERAM A DECISAO DO ANALISTA
+                print(request.form['decisao_cco'])
+                print(request.form['id_carga'])
+            chamadas_cco = analise.busca_chamados_cco()
             ultimas_analises = analise.analises_finalizadas()
-            return render_template(session['nivel_acesso'][0], ultimas_analises=ultimas_analises)
+            return render_template(session['nivel_acesso'][0], ultimas_analises=ultimas_analises, chamadas_cco = chamadas_cco)
 
         elif(session['usuario_cargo'] == "GUARDA"):
-            pass
+            
+            resultado = analise.retorno_guarda(session['usuario_logado'])
+            return render_template(session['nivel_acesso'][0], resultados=resultado)
+            
             
         return render_template(session['nivel_acesso'][0])
 
@@ -56,6 +68,9 @@ def autenticar():
         cria uma nova sessao, atualiza o status do usuario no banco 
         e cria um registro de log para o respectivo usuario
     '''
+    
+    envia_pagina_arduino('Autenticar')
+    
     nome = request.form['usuario']
     senha = request.form['senha']
     if(mySQL):
@@ -78,6 +93,8 @@ def registro():
     '''
         Renderiza a tela de registros de novos usuarios
     '''
+    envia_pagina_arduino(usuarios=session['usuario_logado'],
+                         cargo=session['usuario_cargo'], pagina='Registro')
     cargos = usuario_dao.cargos()   # Busca os cargos para popular os options
     return render_template('registro.html', cargos = cargos)
 
@@ -87,6 +104,7 @@ def novo_usuario():
         Verifica se as senhas enviadas via POST correspondem 
         cria um objeto e registra um novo usuario no banco de dados.
     '''
+    envia_pagina_arduino('Autenticação')
     if(request.form['senha'] == request.form['senha_conf']):
         novo_usuario = Usuario(request.form['id'],
                             request.form['senha'],
@@ -98,17 +116,38 @@ def novo_usuario():
         flash('As senhas não correspondem')
         return redirect(url_for('registro'))
 
-@app.route('/formCCO')
+@app.route('/formCCO', methods=['POST',])
 def cco_form():
 
-    return protege_rota('formCCO.html')
+    print(request.form['id_carga'])
+    envia_pagina_arduino(
+        usuarios=session['usuario_logado'], cargo=session['usuario_cargo'], pagina='Form CCO')
+    dados = []
+    dados.append(analise.busca_info_cargas_por_id(request.form['id_carga']))
+    dados.append(analise.busca_analise_manual_por_id(request.form['id_carga']))
+    dados.append(analise.busca_analise_maquina_por_id(request.form['id_carga']))
+    dados.append(analise.caracteristicas_grao_analise(dados[0][0][1]))
+    
 
-@app.route('/reprovaCCO')
+    return protege_rota('formCCO.html', arquivos = dados)
+
+@app.route('/reprovaCCO', methods=['POST',])
 def cco_reprova():
     '''
         Renderiza a tela de reprova do CCO
     '''
-    return protege_rota('reprovaCCO.html')
+    # envia_pagina_arduino(usuarios=session['usuario_logado'],
+    #                      cargo=session['usuario_cargo'], pagina='Tela de Reprova CCO')
+
+    dados = []
+    dados.append(analise.busca_info_cargas_por_id(request.form['id_carga']))
+    dados.append(analise.busca_analise_manual_por_id(request.form['id_carga']))
+    dados.append(analise.busca_analise_maquina_por_id(request.form['id_carga']))
+    dados.append(usuario_dao.listar("GUARDA", online=True))
+
+
+    return protege_rota('reprovaCCO.html', arquivos=dados)
+
 
 #CONTINUAR
 @app.route('/formAnalise', methods = ['POST',])
@@ -118,6 +157,10 @@ def analise_form():
         com as informacoes retornadas da maquina, alem de gerar os campos a serem 
         preenchidos pelo analista
     '''
+
+    envia_pagina_arduino(usuarios=session['usuario_logado'],
+                         cargo=session['usuario_cargo'], pagina='Form Analise')
+    
     id_carga = int(request.form['id_carga_fk'])
     dados_maquina = analise.busca_por_analise_por_id('id_carga_fk', id_carga, 'analise')  # Retorna os dados da Tabela Analise com o ID passado
     analise_manual = analise.inicia_analise_manual(dados_maquina[0][0], id_carga, session['usuario_logado'])
@@ -125,23 +168,45 @@ def analise_form():
     dados = [dados_maquina, analise_manual]
     return protege_rota('formAnalise.html', dados)
 
-@app.route('/enviaAnalise', methods=['POST',])
+@app.route('/enviaAnalise', methods=['POST','GET',])
 def verifica_analise():
     '''
         Faz a analise e redireciona para a pagina inicial
+        Paginas que redirecionam para cá: formAnalise
     '''
-    caracteristicas = analise.caracteristicas_grao_analise(request.form['grao'])
-    dados_analisados = []
-    for d in caracteristicas:
-        dados_analisados.append(int(request.form[d[0]]))
-    analise.analisar_graos(caracteristicas, dados_analisados, request.form['id_carga'], request.form['redirec'], request.form['grao'])
+    print(session['usuario_cargo'])
+    envia_pagina_arduino(usuarios=session['usuario_logado'],
+                         cargo=session['usuario_cargo'], pagina='Verificacao da Analise')
+    if(session['usuario_cargo'] == 'CCO'):
+        analise.decisao_cco(request.form['decisao'],request.form['id_carga'], guarda = request.form['guarda'], cco = session['usuario_logado'])
+    elif(session['usuario_cargo'] == 'ANALISTA DE GRAOS'):
+        caracteristicas = analise.caracteristicas_grao_analise(request.form['grao'])
+        dados_analisados = {}
+        for d in caracteristicas:
+        
+            print(d)
+            print(int(request.form[d[0]]))
+        
+            dados_analisados[d[0]] = int(request.form[d[0]])
+        print(dados_analisados)
+        analise.analisar_graos(caracteristicas, dados_analisados, request.form['id_carga'], request.form['redirec'], request.form['grao'])
+    else:
+        flash('Não foi possivel realizar sua requisição!')
+
     return redirect(url_for('index'))
 
-@app.route('/chamados')
+
+
+@app.route('/chamados', methods=['POST',])
 def chamado_guarda():
     '''
         Vai para a tela de chamados do guarda
     '''
+
+    if(request.form['situacao'] == 'Aguardando'):
+        print('Entrei')
+        analise.atualiza_estado_pedido_guarda(request.form['id'], "Em Andamento")
+    
     return protege_rota('chamadoGuarda.html')
 
 
@@ -150,6 +215,10 @@ def logout():
     '''
         Desloga o funcionario
     '''
+    
+    envia_pagina_arduino(
+        usuarios=session['usuario_logado'], cargo=session['usuario_cargo'], pagina='Logout')
+
     usuario_dao.atualiza_status("Offline", session['usuario_logado'])
     usuario_dao.atualiza_log(session['usuario_logado'], 0, session['usuario_cargo'])
     session['usuario_logado'] = None
@@ -169,6 +238,10 @@ def controle_funcionarios():
         Recebe duas listas de objetos de duas tabelas diferentes do banco de dados.
             logs_func e usuarios
     '''
+
+    envia_pagina_arduino(usuarios=session['usuario_logado'],
+                         cargo=session['usuario_cargo'], pagina='Controle Funcionarios')
+
     if(session['usuario_cargo'] == 'CCO'):  #Faz a verificação de nivel de acesso
         usuarios = usuario_dao.listar()
         cargos = usuario_dao.cargos()
@@ -189,12 +262,63 @@ def controle_funcionarios():
 
 @app.route('/gera_analise')
 def gera_analise():
+    
+    envia_pagina_arduino(usuarios=session['usuario_logado'],
+                         cargo=session['usuario_cargo'], pagina='Gera Analise')
+    
     analise.cria_analise()
     return "<h1>OI</h1>"
 
 
-@app.route('/json_teste')
-def jsonTeste():
+#REFATORACAO EM BREVE
+@app.route('/resposta_json/<dado>/<int:num>')
+def jsonTeste(dado, num):
+    '''
+        Recebe oque deve ser retornado via GET e retorna um JSON com os dados do banco
+
+        Dado - > Guarda
+                    num - > 0 - Todos
+                    num - > 1 - Apenas os Online
+                    num - > 2 - Os que estão online e visão de disponibilidade a partir da tabela pedido_guarda
+        
+        Dado - > CCO
+                    num - > 0 - Todos
+                    num - > 1 - Apenas os Online
+
+        Dado - > Analista
+                    num - > 0 - Todos
+                    num - > 1 - Apenas os Online
+                    num - > 2 - Os que estão online e visão de disponibilidade a partir da tabela pedido_guarda
+        
+        Dado - > All
+                    num - > 0 - Todos
+                    num - > 1 - Apenas os Online
+    '''
+    if('usuario_logado' in session):
+        print(dado)
+        print(num)
+        if(dado == 'guarda'):
+            if(int(num) == 1):
+                return jsonify(usuario_dao.listar(cargo='guarda', json=True, online=True))
+            elif(int(num) == 2):
+                ...
+            else:
+                return jsonify(usuario_dao.listar(cargo='guarda', json=True))
+        # return jsonify({'key': [0,1,2,3,4,5]})
+    else:
+        return redirect(url_for('index'))
+
+@app.route('/mapa_processo')
+def mapa_processo():
+    '''
+        Retorna um Json para o Ajax do JS fazer o mapeamento do processo no desenho
+    '''
     return jsonify({'key': [0,1,2,3,4,5]})
+
+@app.route('/acao_guarda', methods=['POST',])
+def acao_guarda():
+    analise.guarda_finaliza_pedido(request.form['id'],request.form['id_carga'])
+    flash(request.form['id'] + request.form['id_carga'])
     
+    return redirect(url_for('index'))
 
