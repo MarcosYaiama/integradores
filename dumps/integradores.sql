@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: 19-Set-2018 às 06:40
+-- Generation Time: 20-Set-2018 às 11:20
 -- Versão do servidor: 10.1.30-MariaDB
 -- PHP Version: 7.2.2
 
@@ -139,7 +139,21 @@ INSERT INTO `analise_manual` (`id`, `analista`, `dado_analisado`, `irregular`, `
 (79, 'Caruara', 'Mofados', 1, '10:36:10', '10:36:39', '2018-09-11', 0, 'Armazem 2', 30, 32),
 (80, 'Caruara', 'Esverdeados', 1, '10:36:10', '10:36:38', '2018-09-11', 0, 'Armazem 2', 30, 12),
 (81, 'Caruara', 'Partidos, Queimados e Amassados', 0, '10:36:10', '10:36:39', '2018-09-11', 0, 'Armazem 2', 30, 23),
-(82, 'Caruara', 'Materias Estranhas e Impurezas', 1, '10:36:10', '10:36:39', '2018-09-11', 0, 'Armazem 2', 30, 32);
+(82, 'Caruara', 'Materias Estranhas e Impurezas', 1, '10:36:10', '10:36:39', '2018-09-11', 0, 'Armazem 2', 30, 32),
+(83, 'Caruara', 'Avariados e Ardidos', NULL, '21:04:26', NULL, '2018-09-19', 0, NULL, 31, NULL),
+(84, 'Caruara', 'Graos Quebrados', NULL, '21:04:26', NULL, '2018-09-19', 0, NULL, 31, NULL),
+(85, 'Caruara', 'Impurezas', NULL, '21:04:26', NULL, '2018-09-19', 0, NULL, 31, NULL),
+(86, 'Caruara', 'Carunchado', NULL, '21:04:26', NULL, '2018-09-19', 0, NULL, 31, NULL),
+(87, 'Caruara', 'Ardidos e Queimados', NULL, '21:41:48', NULL, '2018-09-19', 0, NULL, 32, NULL),
+(88, 'Caruara', 'Queimados', NULL, '21:41:48', NULL, '2018-09-19', 0, NULL, 32, NULL),
+(89, 'Caruara', 'Mofados', NULL, '21:41:48', NULL, '2018-09-19', 0, NULL, 32, NULL),
+(90, 'Caruara', 'Esverdeados', NULL, '21:41:48', NULL, '2018-09-19', 0, NULL, 32, NULL),
+(91, 'Caruara', 'Partidos, Queimados e Amassados', NULL, '21:41:48', NULL, '2018-09-19', 0, NULL, 32, NULL),
+(92, 'Caruara', 'Materias Estranhas e Impurezas', NULL, '21:41:48', NULL, '2018-09-19', 0, NULL, 32, NULL),
+(93, 'Caruara', 'Avariados e Ardidos', NULL, '21:43:33', NULL, '2018-09-19', 0, NULL, 33, NULL),
+(94, 'Caruara', 'Graos Quebrados', NULL, '21:43:33', NULL, '2018-09-19', 0, NULL, 33, NULL),
+(95, 'Caruara', 'Impurezas', NULL, '21:43:33', NULL, '2018-09-19', 0, NULL, 33, NULL),
+(96, 'Caruara', 'Carunchado', NULL, '21:43:33', NULL, '2018-09-19', 0, NULL, 33, NULL);
 
 -- --------------------------------------------------------
 
@@ -235,7 +249,8 @@ INSERT INTO `estado_analise` (`nome`) VALUES
 ('Guarda'),
 ('Maquina'),
 ('Nova analise'),
-('OCR');
+('OCR'),
+('Pedido CCO');
 
 -- --------------------------------------------------------
 
@@ -291,9 +306,9 @@ INSERT INTO `info_cargas` (`id_carga`, `grao`, `fornecedor`, `destino`, `data_ch
 (28, 'Milho', 'Moinho Paulista', 'São Paulo', '2018-09-02', '17:42:15', '20:55:05', 'SQI-2303', 'Guarda', 'Reprovado'),
 (29, 'Soja', 'Fazendeiros Tabajara', 'Japão', '2018-09-02', '17:47:40', '20:54:15', 'FWH-3791', 'Finalizado', 'Reprovado'),
 (30, 'Soja', 'Granolandia', 'Santos', '2018-09-11', '10:36:02', '10:38:02', '0WA-6222', 'Guarda', 'Reprovado'),
-(31, 'Milho', 'Fazendeiros Tabajara', 'Taiwan', '2018-09-17', '14:02:10', NULL, 'OSJ-7053', 'Maquina', NULL),
-(32, 'Soja', 'Fazendeiros Tabajara', 'São Vicente', '2018-09-17', '14:02:13', NULL, 'YQ8-2455', 'Maquina', NULL),
-(33, 'Milho', 'Fazenda dos Grãos', 'Japão', '2018-09-17', '14:02:28', NULL, 'JUI-3604', 'Maquina', NULL);
+(31, 'Milho', 'Fazendeiros Tabajara', 'Taiwan', '2018-09-17', '14:02:10', NULL, 'OSJ-7053', 'Analista', NULL),
+(32, 'Soja', 'Fazendeiros Tabajara', 'São Vicente', '2018-09-17', '14:02:13', NULL, 'YQ8-2455', 'Analista', NULL),
+(33, 'Milho', 'Fazenda dos Grãos', 'Japão', '2018-09-17', '14:02:28', NULL, 'JUI-3604', 'Analista', NULL);
 
 -- --------------------------------------------------------
 
@@ -633,7 +648,8 @@ INSERT INTO `logs_func` (`id`, `id_usuario`, `Status`, `hora`, `data`, `cargo`) 
 (317, 'Eduardo', 0, '12:56:27', '2018-09-17', 'GUARDA'),
 (318, 'Nicholas', 1, '12:56:32', '2018-09-17', 'CCO'),
 (319, 'Nicholas', 0, '14:02:18', '2018-09-17', 'CCO'),
-(320, 'Caruara', 1, '14:02:24', '2018-09-17', 'ANALISTA DE GRAOS');
+(320, 'Caruara', 1, '14:02:24', '2018-09-17', 'ANALISTA DE GRAOS'),
+(321, 'Caruara', 1, '01:49:51', '2018-09-19', 'ANALISTA DE GRAOS');
 
 -- --------------------------------------------------------
 
@@ -668,6 +684,31 @@ INSERT INTO `log_analise` (`id`, `n_analises`, `decisao_final`, `guarda`, `resul
 (15, 1, 'CCO', 'Lara', 'Reprovado', 'Finalizado', 27, 'Soja'),
 (16, 1, 'CCO', 'Mauricio', 'Reprovado', 'Finalizado', 30, 'Soja'),
 (17, 1, 'CCO', '0', 'Aprovado', 'Finalizado', 25, 'Milho');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `pedido_guarda`
+--
+
+CREATE TABLE `pedido_guarda` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(255) DEFAULT NULL,
+  `id_carga_fk` int(11) DEFAULT NULL,
+  `cco_responsavel` varchar(255) DEFAULT NULL,
+  `status` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Extraindo dados da tabela `pedido_guarda`
+--
+
+INSERT INTO `pedido_guarda` (`id`, `nome`, `id_carga_fk`, `cco_responsavel`, `status`) VALUES
+(1, 'Eduardo', 23, 'Nicholas', 'Finalizado'),
+(2, 'Eduardo', 29, 'Nicholas', 'Finalizado'),
+(3, 'Caruara', 28, 'Nicholas', 'Aguardando'),
+(4, 'Lara', 27, 'Nicholas', 'Aguardando'),
+(5, 'Mauricio', 30, 'Nicholas', 'Aguardando');
 
 -- --------------------------------------------------------
 
@@ -802,6 +843,12 @@ ALTER TABLE `log_analise`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `pedido_guarda`
+--
+ALTER TABLE `pedido_guarda`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `status`
 --
 ALTER TABLE `status`
@@ -835,7 +882,7 @@ ALTER TABLE `analise`
 -- AUTO_INCREMENT for table `analise_manual`
 --
 ALTER TABLE `analise_manual`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
 
 --
 -- AUTO_INCREMENT for table `carac_graos`
@@ -853,13 +900,19 @@ ALTER TABLE `info_cargas`
 -- AUTO_INCREMENT for table `logs_func`
 --
 ALTER TABLE `logs_func`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=321;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=322;
 
 --
 -- AUTO_INCREMENT for table `log_analise`
 --
 ALTER TABLE `log_analise`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+
+--
+-- AUTO_INCREMENT for table `pedido_guarda`
+--
+ALTER TABLE `pedido_guarda`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
