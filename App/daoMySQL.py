@@ -256,7 +256,7 @@ class Analise():
         # print(dado)
         return dado
 
-    def sorteia(self) -> dict:
+    def sorteia(self, destino:str=False, fornecedor:str=False, grao:str=False, placa:str=False) -> dict:
         '''
             Retorna um dicionario com valores que sao escolhidos de forma aleatoria 
             baseado em valores pre-definidos para depois serem inseridos atraves de 
@@ -276,14 +276,14 @@ class Analise():
                   "YQ8", "RSA", "SQI", "OSJ", "IQG", "DFI", "JUI", "NWE", "RSD", "FYM", "OIJ"]
         umidade = randint(0,10)
         temperatura = randint(10,22)
-        return {'destino' : destinos[randint(0, len(destinos) - 1)],
-                'fornecedor' : fornecedores[randint(0, len(fornecedores) - 1)],
-                'grao' : graos[randint(0, len(graos) - 1)],
+        return {'destino' : destinos[randint(0, len(destinos) - 1)] if not destino else destino,
+                'fornecedor' : fornecedores[randint(0, len(fornecedores) - 1)] if not fornecedor else fornecedor,
+                'grao' : graos[randint(0, len(graos) - 1)] if not grao else grao,
                 'estado': 'Analista',
                 'resultado': 'Indisponivel',
                 'umidade': str(umidade),
                 'temperatura': str(temperatura),
-                'placa': "{}-{}".format(letras[randint(0,len(letras)-1)],randint(1000, 9999))}
+                'placa': "{}-{}".format(letras[randint(0,len(letras)-1)],randint(1000, 9999)) if not placa else placa}
 
     def insere_info_cargas(self, grao:str, fornecedor:str, destino:str, placa:str):
         '''
@@ -364,7 +364,7 @@ class Analise():
                 # self.insere_analise_maquina(item[0], dados['umidade'], dados['temperatura'], dados['grao'], dados['estado'], dados['resultado'] )
     
 
-    def cria_analise(self):
+    def cria_analise(self, dados_inseridos:bool=False):
         '''
             Pega os dados do dicionario passado pelo metodo sorteia e os insere na tabela info_cargas.
             Depois busca todas as colunas de info_cargas que nao possuem analise e cria um registro para
@@ -375,16 +375,19 @@ class Analise():
             View: /gera_analise
 
         '''
-        dados = self.sorteia()
-        self.insere_info_cargas(dados['grao'], dados['fornecedor'], dados['destino'], dados['placa'])
-        resultado_busca = self.busca_info_cargas_sem_analise()
-        # print('Cria analise')
-        # print(resultado_busca)
-        self.insere_analise_maquina(resultado_busca[0][0], dados['umidade'], dados['temperatura'], dados['grao'], dados['estado'], dados['resultado'])
-        self.__atualiza_status_analise_info_cargas(
-            "Maquina", resultado_busca[0][0])
+        if(not dados_inseridos):
+            dados = self.sorteia()
+            self.insere_info_cargas(dados['grao'], dados['fornecedor'], dados['destino'], dados['placa'])
+            resultado_busca = self.busca_info_cargas_sem_analise()
+            # print('Cria analise')
+            # print(resultado_busca)
+            self.insere_analise_maquina(resultado_busca[0][0], dados['umidade'], dados['temperatura'], dados['grao'], dados['estado'], dados['resultado'])
+            self.__atualiza_status_analise_info_cargas(
+                "Maquina", resultado_busca[0][0])
+        else:
+            ...
 
-    def registros_maquina(self) -> dict:
+    def registros_analise(self, estado_fk:int = 0) -> dict:
         '''
             Busca todos os registros na tabela info_cargas que tenham o estado_fk = Maquina.
             Caso tenha, retorna apenas o grao e o id_carga de cada item em uma tupla de tuplas.
@@ -392,13 +395,20 @@ class Analise():
             Caso exista esses dados sao exibidos para o analista no seu index, caso nao
             a tabela referente ao retorno da maquina de analise nao e exibida
 
+            estado_fk:
+
+                0 = Maquina
+                1 = Pedido CCO
+
             View: /
             Arquivo HTML: indexAnalise.html
-            Tabela: analise
+            Tabela: info_cargas
 
         '''
+        condicao = ['Pedido CCO', 'Nova Analise'] if estado_fk else ['Maquina', 'Analista'] 
+        
         cursor = self.__db.connection.cursor()
-        cursor.execute('SELECT id_carga, grao,estado_fk from info_cargas where estado_fk = "Maquina" or estado_fk = "Analista"')
+        cursor.execute('SELECT id_carga, grao,estado_fk from info_cargas where estado_fk = "{}" or estado_fk = "{}"'.format(condicao[0], condicao[1]))
         resultados = cursor.fetchall()
         return resultados
 
@@ -440,12 +450,11 @@ class Analise():
         '''
             Retorna o número de analises com o id_carga existentes na tabela analise_manual.
         
-            Métodos usando: __inicia_analise_manual_bd
+            Métodos usando: __inicia_analise_manual_bd, decisao_cco
         '''
         cursor = self.__db.connection.cursor()
-        cursor.execute('SELECT * from analise_manual where id={}'.format(id_carga))
+        cursor.execute('SELECT * from analise_manual where id_carga_fk={}'.format(id_carga))
         resultado = cursor.fetchall()
-        self.__db.connection.commit()
         if(resultado):
             # print(len(resultado))
             return len(resultado)
@@ -468,7 +477,7 @@ class Analise():
         data = str(datetime.now().date())
         for dado in carac_graos:
             cursor.execute('INSERT INTO analise_manual(analista, dado_analisado, hora_inicio_a, data, n_analise,id_carga_fk) values (%s,%s,%s,%s,%s,%s)',
-            (analista,dado,hora,data,(n_analises),id_carga))
+            (analista,dado,hora,data,n_analises,id_carga))
         self.__db.connection.commit()
     
 
@@ -662,7 +671,7 @@ class Analise():
             Tabelas: log_analise
         '''
         cursor = self.__db.connection.cursor()
-        cursor.execute('SELECT * from log_analise where estado = "Finalizado"')
+        cursor.execute('SELECT * from log_analise where estado = "Finalizado" order by id desc')
         resultado = cursor.fetchall()
         return resultado
 
@@ -707,33 +716,49 @@ class Analise():
         cursor.execute('SELECT grao from info_cargas where id_carga = {}'.format(id_carga))
         return cursor.fetchall()[0][0]
 
-    def cco_decisao_info_cargas_reprovado(self, id_carga):
-            # Mudar o Resultado para reprovado info_cargas
-            # Mudar o estado_fk para Guarda info_cargas
-            # Coloca o horario termino para a carga no info_cargas
-            cursor = self.__db.connection.cursor()
-            hora_termino = '{}:{}:{}'.format(datetime.now().hour,
-                                             datetime.now().minute,
-                                             datetime.now().second)
-            # print('UPDATE info_cargas set resultado_analise = "Reprovado", estado_fk = "Guarda", hora_termino="{}" where id_carga = {}'.format(
-            #     hora_termino,id_carga))
-            cursor.execute(
-                'UPDATE info_cargas set resultado_analise = "Reprovado", estado_fk = "Guarda", hora_termino="{}" where id_carga = {}'.format(
-                    hora_termino,id_carga))
-            cursor.connection.commit()
+    def __cco_decisao_info_cargas(self, id_carga:int, aprovado:bool):
+        '''
+            Método responsavel por aplicar a decisão do CCO na tabela info_cargas.
+            Recebe o ID da carga, e se foi aprovado ou não.
+
+            Tabelas: info_cargas
+
+            Métodos usando: decisao_cco
+        '''
+
+        # Mudar o Resultado para reprovado info_cargas
+        # Mudar o estado_fk para Guarda info_cargas
+        # Coloca o horario termino para a carga no info_cargas
+        resultado = "Reprovado"
+        guarda_query = "Guarda"
+        if(aprovado):
+            guarda_query = "Finalizado"
+            resultado = "Aprovado"
+
+        cursor = self.__db.connection.cursor()
+        hora_termino = '{}:{}:{}'.format(datetime.now().hour,
+                                            datetime.now().minute,
+                                            datetime.now().second)
+        # print('UPDATE info_cargas set resultado_analise = "Reprovado", estado_fk = "Guarda", hora_termino="{}" where id_carga = {}'.format(
+        #     hora_termino,id_carga))
+        cursor.execute(
+            'UPDATE info_cargas set resultado_analise = "{}", estado_fk = "{}", hora_termino="{}" where id_carga = {}'.format(
+                resultado, guarda_query, hora_termino,id_carga))
+        cursor.connection.commit()
 
     def decisao_cco(self, decisao:str,id_carga:int, guarda:str = None, cco:str = None):
         if(decisao == 'reprovado'):
             # Mudar o Resultado para reprovado info_cargas
             # Mudar o estado_fk para Guarda info_cargas
             # Coloca o horario termino para a carga no info_cargas
-            self.cco_decisao_info_cargas_reprovado(id_carga)
+            self.__cco_decisao_info_cargas(id_carga, 0)
 
             # Verifica quantas analises finalizadas tem no analise_manual
             n_analises = self.__verifica_analise_manual_mesmos_id(id_carga)
             # Criar linha log_analise decisao final CCO e nome do Guarda responsavel
             self.__posta_log_analise(
                 'Finalizado', id_carga, self.__busca_grao_por_id_carga(id_carga), guarda=guarda, n_analises=n_analises, decisao_final="CCO",resultado="Reprovado")
+            
             # Criar linha pedido_guarda especificando qual guarda será chamado
             cursor = self.__db.connection.cursor()
             cursor.execute('INSERT into pedido_guarda(nome, id_carga_fk, cco_responsavel, status) values ("{}",{},"{}","{}")'.format(guarda, id_carga, cco, "Aguardando"))
@@ -743,11 +768,17 @@ class Analise():
             
 
         elif(decisao == 'aprovado'):
+            # Verifica quantas analises finalizadas tem no analise_manual
+            n_analises = self.__verifica_analise_manual_mesmos_id(id_carga)
+            
             # Mudar o resultado para aprovado info_cargas
-            # Postar hora de termino info_cargas
             # Mudar estado_fk para Finalizado info_cargas
+            # Coloca o horario termino para a carga no info_cargas
+            self.__cco_decisao_info_cargas(id_carga, 1)
             # Criar linha log_analise decisao final CCO e responsavel
-            ...
+            self.__posta_log_analise(
+                'Finalizado', id_carga, self.__busca_grao_por_id_carga(id_carga), guarda=guarda, n_analises=n_analises, decisao_final="CCO",resultado="Aprovado")
+            
         elif(decisao == 'Nova Analise'):
             # Mudar estado para nova analise info_cargas
             # Criar Pedido de Analise_manual para o Analista, especificando que é a segunda analise
@@ -802,5 +833,6 @@ class Analise():
         self.__atualiza_status_analise_info_cargas("Finalizado", id_carga)
         
 
+    
 
     

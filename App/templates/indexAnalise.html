@@ -30,6 +30,38 @@
                 </tbody>
             </table>
             {% endif %}
+
+            {% if nova_analise %}
+            <table class="table table-bordered table-responsive table-striped">
+                <label>Pedidos Nova Analise CCO</label>
+                {{nova_analise}}
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Grão</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for analise in nova_analise %}
+                    <tr>
+                        <td>{{ analise[0] }}</td>
+                        <td>{{ analise[1] }}</td>
+                        <td>
+                            <form action="{{ url_for('analise_form') }}" method="POST">
+                                <input type="hidden" name="id_carga_fk" value="{{ analise[0] }}">
+                                {% if analise[2] == 'Nova Analise' %}
+                                    <button class="btn btn-primary form-control">Continuar Analise</button>
+                                {% else %}
+                                    <button class="btn btn-success form-control">Iniciar Análise</button>
+                                {% endif %}
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
             {% if ultimas_analises %}
             <table class="table table-striped table-responsive table-bordered">
                 <label>Situação das Ultimas análises</label>

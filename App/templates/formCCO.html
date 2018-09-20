@@ -96,9 +96,10 @@
             <input type="hidden" name="decisao_cco" value="nova_analise">
             <button type="submit" class="btn btn-primary form-control">Nova Analise</button>
         </form>
-        <form action="{{url_for('index')}}" method="POST">
+        <form action="{{url_for('verifica_analise')}}" method="POST">
             <input type="hidden" name="id_carga" value="{{arquivos[0][0][0]}}">
-            <input type="hidden" name="decisao_cco" value="aprovado">
+            <input type="hidden" name="decisao" value="aprovado">
+            <input type="hidden" name="guarda" value="0">
             <button type="submit" class="btn btn-success form-control">Aprovar</button>
         </form>
 {% endblock %}

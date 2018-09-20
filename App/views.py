@@ -41,9 +41,10 @@ def index():
             envia_pagina_arduino(
                 usuarios=session['usuario_logado'], cargo=session['usuario_cargo'], pagina='Index')
            
-            analises = analise.registros_maquina()
+            analises = analise.registros_analise()
+            nova_analise = analise.registros_analise(estado_fk=1)
             ultimas_analises = analise.analises_finalizadas()
-            return render_template(session['nivel_acesso'][0], analises=analises, ultimas_analises=ultimas_analises)
+            return render_template(session['nivel_acesso'][0], analises=analises, ultimas_analises=ultimas_analises, nova_analise=nova_analise)
         elif(session['usuario_cargo'] == "CCO"):
             if('decisao_cco' in request.form):
                 # AQUI ENTRA OS METODOS DO CCO QUE ALTERAM A DECISAO DO ANALISTA
@@ -148,7 +149,6 @@ def cco_reprova():
 
     return protege_rota('reprovaCCO.html', arquivos=dados)
 
-
 #CONTINUAR
 @app.route('/formAnalise', methods = ['POST',])
 def analise_form():
@@ -178,7 +178,10 @@ def verifica_analise():
     envia_pagina_arduino(usuarios=session['usuario_logado'],
                          cargo=session['usuario_cargo'], pagina='Verificacao da Analise')
     if(session['usuario_cargo'] == 'CCO'):
-        analise.decisao_cco(request.form['decisao'],request.form['id_carga'], guarda = request.form['guarda'], cco = session['usuario_logado'])
+        guarda = 0
+        if(len(request.form['guarda']) > 1):
+            guarda = request.form['guarda']
+        analise.decisao_cco(request.form['decisao'],request.form['id_carga'], guarda = guarda, cco = session['usuario_logado'])
     elif(session['usuario_cargo'] == 'ANALISTA DE GRAOS'):
         caracteristicas = analise.caracteristicas_grao_analise(request.form['grao'])
         dados_analisados = {}

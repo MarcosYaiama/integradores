@@ -18,6 +18,6 @@ from views import *
 #     print('received message: ' + message)
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
     # socketio.run(app)
-    app.run(debug=True, threaded=True)
+    # app.run(debug=True, threaded=True)
