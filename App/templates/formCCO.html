@@ -91,9 +91,12 @@
             <input type="hidden" name="id_carga" value="{{arquivos[0][0][0]}}">
             <button type="submit" class="btn btn-danger form-control">Reprovar</button>
         </form>
-        <form action="{{url_for('index')}}" method="POST">
+        <form action="{{url_for('gera_analise')}}" method="POST">
             <input type="hidden" name="id_carga" value="{{arquivos[0][0][0]}}">
-            <input type="hidden" name="decisao_cco" value="nova_analise">
+            <input type="hidden" name="grao" value={{arquivos[0][0][1]}}>
+            <input type="hidden" name="umidade" value="{{arquivos[2][0][1]}}">
+            <input type="hidden" name="temperatura" value="{{arquivos[2][0][2]}}">
+            <input type="hidden" name="nova_analise" value="True">
             <button type="submit" class="btn btn-primary form-control">Nova Analise</button>
         </form>
         <form action="{{url_for('verifica_analise')}}" method="POST">

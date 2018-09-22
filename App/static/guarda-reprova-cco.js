@@ -3,7 +3,7 @@ var tabela_criada = false;
 var dados_carregados = false;
 setInterval(function(){
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', "http://localhost:5000/resposta_json/guarda/1");
+    xhr.open('GET', "http://192.168.43.81:5000/resposta_json/guarda/1");
     xhr.addEventListener('load', function(){
         console.log(xhr.status);                   
         if (xhr.status == 200) {

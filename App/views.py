@@ -128,7 +128,8 @@ def cco_form():
     dados.append(analise.busca_analise_manual_por_id(request.form['id_carga']))
     dados.append(analise.busca_analise_maquina_por_id(request.form['id_carga']))
     dados.append(analise.caracteristicas_grao_analise(dados[0][0][1]))
-    
+    print("TAMANHO==>>",len(dados[1]))
+    print("TAMANHO==>>",dados[1])
 
     return protege_rota('formCCO.html', arquivos = dados)
 
@@ -163,7 +164,7 @@ def analise_form():
     
     id_carga = int(request.form['id_carga_fk'])
     dados_maquina = analise.busca_por_analise_por_id('id_carga_fk', id_carga, 'analise')  # Retorna os dados da Tabela Analise com o ID passado
-    analise_manual = analise.inicia_analise_manual(dados_maquina[0][0], id_carga, session['usuario_logado'])
+    analise_manual = analise.inicia_analise_manual(dados_maquina[0][0], id_carga, session['usuario_logado'], nova_analise = False if not request.form.get('nova_analise', False) else True)
     # ids_analise_manual = analise.busca_analise_manual_incompleta(id_carga)
     dados = [dados_maquina, analise_manual]
     return protege_rota('formAnalise.html', dados)
@@ -197,8 +198,6 @@ def verifica_analise():
         flash('Não foi possivel realizar sua requisição!')
 
     return redirect(url_for('index'))
-
-
 
 @app.route('/chamados', methods=['POST',])
 def chamado_guarda():
@@ -263,15 +262,28 @@ def controle_funcionarios():
         flash('Não foi possivel acessar essa página')
         return redirect(url_for('index'))
 
-@app.route('/gera_analise')
+@app.route('/gera_analise', methods=['POST','GET'])
 def gera_analise():
     
-    envia_pagina_arduino(usuarios=session['usuario_logado'],
-                         cargo=session['usuario_cargo'], pagina='Gera Analise')
-    
-    analise.cria_analise()
-    return "<h1>OI</h1>"
+    if(len(request.form)):
+        try:
+            if(request.form['nova_analise'] == 'True'):
+                analise.cria_analise(
+                        dados_inseridos = [
+                            request.form['id_carga'],
+                            request.form['grao'],
+                            request.form['umidade'],
+                            request.form['temperatura']])
+            flash('Pedido de Nova analise enviado com Sucesso!')
+        except:
+            flash('Erro ao enviar pedido Nova Analise!!!! Gera Analise')
+            return redirect(url_for('index'))
 
+    else:
+        analise.cria_analise()
+        flash('OCR e Analise manual simuladas, criadas com sucesso')
+
+    return redirect(url_for('index'))
 
 #REFATORACAO EM BREVE
 @app.route('/resposta_json/<dado>/<int:num>')

@@ -50,6 +50,7 @@
                         <td>
                             <form action="{{ url_for('analise_form') }}" method="POST">
                                 <input type="hidden" name="id_carga_fk" value="{{ analise[0] }}">
+                                <input type="hidden" name="nova_analise" value="{%if pedido %}1{%else%}0{%endif%}">
                                 {% if analise[2] == 'Nova Analise' %}
                                     <button class="btn btn-primary form-control">Continuar Analise</button>
                                 {% else %}

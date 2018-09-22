@@ -256,7 +256,7 @@ class Analise():
         # print(dado)
         return dado
 
-    def sorteia(self, destino:str=False, fornecedor:str=False, grao:str=False, placa:str=False) -> dict:
+    def sorteia(self, destino:bool=False, fornecedor:bool=False, grao:str=False, placa:bool=False, temperatura_r:str=False, umidade_r:str=False, nova_analise:bool=False) -> dict:
         '''
             Retorna um dicionario com valores que sao escolhidos de forma aleatoria 
             baseado em valores pre-definidos para depois serem inseridos atraves de 
@@ -274,12 +274,12 @@ class Analise():
         # estados = self.__busca("estado_analise")
         letras = ["JAN", 'SWA', "SKL", "ASD", "AOS", "FOA", "FWH", "EJN", "0WA",
                   "YQ8", "RSA", "SQI", "OSJ", "IQG", "DFI", "JUI", "NWE", "RSD", "FYM", "OIJ"]
-        umidade = randint(0,10)
-        temperatura = randint(10,22)
+        umidade = randint(0,10) if not umidade_r else randint(int(umidade_r)-2, int(umidade_r)+2)
+        temperatura = randint(10,22) if not temperatura_r else randint(int(temperatura_r)-2, int(temperatura_r)+2)
         return {'destino' : destinos[randint(0, len(destinos) - 1)] if not destino else destino,
                 'fornecedor' : fornecedores[randint(0, len(fornecedores) - 1)] if not fornecedor else fornecedor,
                 'grao' : graos[randint(0, len(graos) - 1)] if not grao else grao,
-                'estado': 'Analista',
+                'estado': 'Analista' if not nova_analise else 'Pedido CCO',
                 'resultado': 'Indisponivel',
                 'umidade': str(umidade),
                 'temperatura': str(temperatura),
@@ -364,7 +364,7 @@ class Analise():
                 # self.insere_analise_maquina(item[0], dados['umidade'], dados['temperatura'], dados['grao'], dados['estado'], dados['resultado'] )
     
 
-    def cria_analise(self, dados_inseridos:bool=False):
+    def cria_analise(self, dados_inseridos:list=[]):
         '''
             Pega os dados do dicionario passado pelo metodo sorteia e os insere na tabela info_cargas.
             Depois busca todas as colunas de info_cargas que nao possuem analise e cria um registro para
@@ -375,7 +375,8 @@ class Analise():
             View: /gera_analise
 
         '''
-        if(not dados_inseridos):
+        #estado_fk do metodo insere_analise_maquina parece estar sem uso REFATORAR!!!
+        if(len(dados_inseridos) == 0):
             dados = self.sorteia()
             self.insere_info_cargas(dados['grao'], dados['fornecedor'], dados['destino'], dados['placa'])
             resultado_busca = self.busca_info_cargas_sem_analise()
@@ -385,7 +386,18 @@ class Analise():
             self.__atualiza_status_analise_info_cargas(
                 "Maquina", resultado_busca[0][0])
         else:
-            ...
+            dados = self.sorteia(
+                    grao = dados_inseridos[1],
+                    umidade_r=dados_inseridos[2],
+                    temperatura_r =dados_inseridos[3],
+                    nova_analise = 1,
+                    fornecedor = 1,
+                    destino = 1,
+                    placa = [1,1,1,1])
+            
+            self.insere_analise_maquina(dados_inseridos[0], dados['umidade'], dados['temperatura'], dados['grao'], dados['estado'], dados['resultado'])
+            self.__atualiza_status_analise_info_cargas(
+                "Pedido CCO", dados_inseridos[0])
 
     def registros_analise(self, estado_fk:int = 0) -> dict:
         '''
@@ -413,7 +425,7 @@ class Analise():
         return resultados
 
     #CONTINUAR
-    def inicia_analise_manual(self, grao:str, id_carga:int, analista:str) -> bool:
+    def inicia_analise_manual(self, grao:str, id_carga:int, analista:str, nova_analise=False) -> bool:
         '''
         É chamada sempre que o analista clica em iniciar analise em algum retorno da maquina que
         aparece no index. Essa função registra a hora em que o Analista deu esse clique e cria
@@ -421,13 +433,16 @@ class Analise():
         analista, os outros valores referentes são jogados no formulario na pagina formAnalise.html
         para ficar a cargo do analista preencher.
         '''
-        consulta = self.__verifica_se_existe_analise_manual_da_carga(id_carga)
+        consulta = self.__verifica_se_existe_analise_manual_da_carga(id_carga) if not nova_analise else False 
         colunas = self.__busca_colunas_analise_grao(grao)
         # print("CONSULTA")
         # print(consulta)
         if(not consulta):
-            self.__inicia_analise_manual_bd(analista, id_carga, grao)
-            self.__atualiza_status_analise_info_cargas("Analista", id_carga)
+            if self.__busca_estado_info_cargas(id_carga) if nova_analise else True:
+                print("Criando nova Analise")
+                self.__inicia_analise_manual_bd(analista, id_carga, grao)
+            self.__atualiza_status_analise_info_cargas("Analista" if not nova_analise else 'Nova Analise', id_carga)
+
             # consulta = self.__busca_dados_analise_grao(grao, id_carga, colunas)
         return colunas
 
@@ -446,18 +461,19 @@ class Analise():
             estado, id_carga))
         self.__db.connection.commit()
 
-    def __verifica_analise_manual_mesmos_id(self, id_carga:int) -> int:
+    def __verifica_analise_manual_mesmos_id(self, id_carga:int, grao:str) -> int:
         '''
             Retorna o número de analises com o id_carga existentes na tabela analise_manual.
         
             Métodos usando: __inicia_analise_manual_bd, decisao_cco
         '''
+        n_atributos_grao = len(self.__retorna_carac_graos(grao))
         cursor = self.__db.connection.cursor()
-        cursor.execute('SELECT * from analise_manual where id_carga_fk={}'.format(id_carga))
+        cursor.execute('SELECT count(*) from analise_manual where id_carga_fk={}'.format(id_carga))
         resultado = cursor.fetchall()
-        if(resultado):
+        if(resultado[0][0]):
             # print(len(resultado))
-            return len(resultado)
+            return resultado[0][0] / n_atributos_grao
         else:
             return 0
 
@@ -468,8 +484,9 @@ class Analise():
         E deixa como NULL os valores que serão preenchidos pelo analista no form e a hora_termino que será inserida
         quando o analista clicar em enviar.
         '''
-        n_analises = self.__verifica_analise_manual_mesmos_id(id_carga)
         carac_graos = self.__retorna_carac_graos(grao)
+        n_analises = self.__verifica_analise_manual_mesmos_id(id_carga, grao)
+        n_analises = 1 if not n_analises else n_analises + 1
         cursor = self.__db.connection.cursor()
         hora = '{}:{}:{}'.format(datetime.now().hour,
                                     datetime.now().minute,
@@ -747,17 +764,17 @@ class Analise():
         cursor.connection.commit()
 
     def decisao_cco(self, decisao:str,id_carga:int, guarda:str = None, cco:str = None):
+        grao = self.__busca_grao_por_id_carga(id_carga)
         if(decisao == 'reprovado'):
             # Mudar o Resultado para reprovado info_cargas
             # Mudar o estado_fk para Guarda info_cargas
             # Coloca o horario termino para a carga no info_cargas
             self.__cco_decisao_info_cargas(id_carga, 0)
-
             # Verifica quantas analises finalizadas tem no analise_manual
-            n_analises = self.__verifica_analise_manual_mesmos_id(id_carga)
+            n_analises = self.__verifica_analise_manual_mesmos_id(id_carga, grao)
             # Criar linha log_analise decisao final CCO e nome do Guarda responsavel
             self.__posta_log_analise(
-                'Finalizado', id_carga, self.__busca_grao_por_id_carga(id_carga), guarda=guarda, n_analises=n_analises, decisao_final="CCO",resultado="Reprovado")
+                'Finalizado', id_carga, grao, guarda=guarda, n_analises=n_analises, decisao_final="CCO",resultado="Reprovado")
             
             # Criar linha pedido_guarda especificando qual guarda será chamado
             cursor = self.__db.connection.cursor()
@@ -769,7 +786,7 @@ class Analise():
 
         elif(decisao == 'aprovado'):
             # Verifica quantas analises finalizadas tem no analise_manual
-            n_analises = self.__verifica_analise_manual_mesmos_id(id_carga)
+            n_analises = self.__verifica_analise_manual_mesmos_id(id_carga, grao)
             
             # Mudar o resultado para aprovado info_cargas
             # Mudar estado_fk para Finalizado info_cargas
@@ -831,8 +848,25 @@ class Analise():
     def guarda_finaliza_pedido(self, id_pedido:int, id_carga:int):
         self.atualiza_estado_pedido_guarda(id_pedido, "Finalizado")
         self.__atualiza_status_analise_info_cargas("Finalizado", id_carga)
-        
-
     
+
+    def __busca_estado_info_cargas(self, id_carga:int)->bool:
+        '''
+            Serve para evitar a criação de novas analises no caso de o status estar igual a Nova Analise
+
+        Tabelas: info_cargas
+
+        Métodos usando: inicia_analise_manual
+        '''
+        cursor = self.__db.connection.cursor()
+        cursor.execute(
+                'Select estado_fk from info_cargas where id_carga={}'.format(id_carga))
+        resultado = cursor.fetchall()
+        if resultado[0][0] == 'Pedido CCO':
+            return True 
+        else:
+            return False
+
+
 
     
