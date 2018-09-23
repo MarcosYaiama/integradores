@@ -3,6 +3,7 @@ from app import app, db
 from models import Usuario
 from helpers import nivel_de_acesso, envia_pagina_arduino
 from daoMySQL import UsuarioDao, Analise
+from pprint import pprint
 
 mySQL = True
 usuario_dao = UsuarioDao(db)
@@ -128,8 +129,11 @@ def cco_form():
     dados.append(analise.busca_analise_manual_por_id(request.form['id_carga']))
     dados.append(analise.busca_analise_maquina_por_id(request.form['id_carga']))
     dados.append(analise.caracteristicas_grao_analise(dados[0][0][1]))
-    print("TAMANHO==>>",len(dados[1]))
-    print("TAMANHO==>>",dados[1])
+    print("TAMANHO_TUPLE==>>", len(dados[1]))
+    print()
+    for i in dados[1]:
+        print("Dados==>>", i)
+        print()
 
     return protege_rota('formCCO.html', arquivos = dados)
 

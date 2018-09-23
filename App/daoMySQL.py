@@ -595,6 +595,7 @@ class Analise():
             else:
                 irregular = True
                 print('Irregular'.format(c[0]))
+            print("AQUI==>>",ids_analise)
             self.__posta_resultado_analise_manual(
                 ids_analise[indice][0], id_carga, irregular, redir, valor_analisado)
             indice += 1
@@ -611,9 +612,12 @@ class Analise():
             self.__atualiza_status_analise_info_cargas("CCO", id_carga)
         else:
             #aprovado
-            
-            self.__atualiza_status_analise_info_cargas("Finalizado", id_carga)
-            self.__posta_resultado_final_info_cargas(id_carga, "Aprovado")
+            print('CHEGUEI')
+            if(self.busca_info_cargas_por_id(id_carga)[0][8] in ['Nova Analise', 'Pedido CCO']):
+                self.__atualiza_status_analise_info_cargas("CCO", id_carga)
+            else:
+                self.__atualiza_status_analise_info_cargas("Finalizado", id_carga)
+                self.__posta_resultado_final_info_cargas(id_carga, "Aprovado")
 
             estado = 'Finalizado'
         #Postagem da analise na tabela log_analise
@@ -664,6 +668,7 @@ class Analise():
         '''
         cursor = self.__db.connection.cursor()
         cursor.execute('SELECT id from analise_manual where id_carga_fk = {} and irregular is NULL order by dado_analisado'.format(id_carga))
+        print('SELECT id from analise_manual where id_carga_fk = {} and irregular is NULL order by dado_analisado'.format(id_carga))
         return cursor.fetchall()
 
     def __posta_log_analise(self, estado:str, id_carga:int, grao:str, n_analises:int = 0, decisao_final:str = "NULL", guarda:str = None, resultado:str = "NULL"):
@@ -711,10 +716,41 @@ class Analise():
 
     def busca_analise_manual_por_id(self, id_carga):
         cursor = self.__db.connection.cursor()
+        #busca o tipo do grao peçp id
+        
         cursor.execute(
             'SELECT * from analise_manual where id_carga_fk = {} order by dado_analisado'.format(id_carga))
-        return cursor.fetchall()
+        dados = cursor.fetchall()
+        if(len(dados) > 4):
+            return self.organiza_multiplas_analises(dados, id_carga)
+        else:
+            return ((dados[0],dados[1],dados[2],dados[3]),)
+            
+    def organiza_multiplas_analises(self, dados:tuple, id_carga:int):
+        arr = dados
+        quantidade_carac = len(self.__retorna_carac_graos(self.__busca_grao_por_id_carga(id_carga)))
+        tamanho_array = len(arr)
+        n_analises = tamanho_array // quantidade_carac
 
+        resultado = []
+
+        for i in range(n_analises):
+            resultado.append([])
+
+        c = 0
+
+        for i in range(tamanho_array):
+            resultado[c].append(arr[i])
+            if(c == n_analises-1): 
+                c = 0
+            else:
+                c+=1
+
+        for r in resultado:
+            print("RESULTADO=>",r)
+            print()
+        return resultado
+    
     def busca_analise_maquina_por_id(self, id_carga):
         cursor = self.__db.connection.cursor()
         # print('SELECT * from analise_manual where id_carga_fk = {}'.format(id_carga))
@@ -722,7 +758,7 @@ class Analise():
             'SELECT * from analise where id_carga_fk = {}'.format(id_carga))
         return cursor.fetchall()
 
-    def __busca_grao_por_id_carga(self, id_carga):
+    def __busca_grao_por_id_carga(self, id_carga:int)->str:
         '''
             Recebe um id_carga e retorna o grao da tabela info_cargas, respectivo ao id inserido.
 
