@@ -312,6 +312,9 @@ def jsonTeste(dado, num):
         Dado - > All
                     num - > 0 - Todos
                     num - > 1 - Apenas os Online
+
+        Dado - > processo
+                    num - > 0 - Em Andamento
     '''
     if('usuario_logado' in session):
         print(dado)
@@ -323,6 +326,9 @@ def jsonTeste(dado, num):
                 ...
             else:
                 return jsonify(usuario_dao.listar(cargo='guarda', json=True))
+        elif(dado == 'processo'):
+            print(analise.busca_dados_prototipo())
+            return jsonify(analise.busca_dados_prototipo())
         # return jsonify({'key': [0,1,2,3,4,5]})
     else:
         return redirect(url_for('index'))
@@ -341,3 +347,6 @@ def acao_guarda():
     
     return redirect(url_for('index'))
 
+@app.route('/prototype')
+def prototype():
+    return render_template('prototipo.html')

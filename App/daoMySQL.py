@@ -719,7 +719,7 @@ class Analise():
         #busca o tipo do grao peçp id
         
         cursor.execute(
-            'SELECT * from analise_manual where id_carga_fk = {} order by dado_analisado'.format(id_carga))
+            'SELECT * from analise_manual where id_carga_fk = {} order by dado_analisado, id'.format(id_carga))
         dados = cursor.fetchall()
         if(len(dados) > 4):
             return self.organiza_multiplas_analises(dados, id_carga)
@@ -904,5 +904,10 @@ class Analise():
             return False
 
 
-
+    def busca_dados_prototipo(self)-> tuple:
+        cursor = self.__db.connection.cursor()
+        cursor.execute(
+            'Select id_carga, grao, fornecedor, destino, placa, estado_fk from info_cargas where estado_fk != "Finalizado"'
+        )
+        return cursor.fetchall()
     
