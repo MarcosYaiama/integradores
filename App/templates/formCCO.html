@@ -53,8 +53,8 @@
         {% for analise_manual in range(arquivos[1]|length) %}
         <br>
         <br>
-        <section>
-            <h3>ANALISE {{analise_manual+1}}</h3>
+        <h2 class="btn btn-primary form-control botao-hide">ANALISE {{analise_manual+1}}</h2>
+        <section class="analise" style=" opacity: 90%;">
             <label> Responsavel:{{arquivos[1][analise_manual][1][1]}}</label>
             {%for a in range(arquivos[3]|length)%}
                 <div>
@@ -86,7 +86,7 @@
                         </thead>
                         <tbody>
                     {{analise_manual}}
-                   aaaa
+                   
                             <tr>
                                 <td>{{arquivos[1][analise_manual][a][2]}}</td>
                                 <td>{% if arquivos[1][analise_manual][a][3] %}Sim{% else %}Não{% endif %}
@@ -104,24 +104,48 @@
         <br>
         {% endfor %}
 
-        <form action="{{url_for('cco_reprova')}}" method="POST">
-            <input type="hidden" name="id_carga" value="{{arquivos[0][0][0]}}">
-            <button type="submit" class="btn btn-danger form-control">Reprovar</button>
-        </form>
-        <form action="{{url_for('gera_analise')}}" method="POST">
-            <input type="hidden" name="id_carga" value="{{arquivos[0][0][0]}}">
-            <input type="hidden" name="grao" value={{arquivos[0][0][1]}}>
-            <input type="hidden" name="umidade" value="{{arquivos[2][0][1]}}">
-            <input type="hidden" name="temperatura" value="{{arquivos[2][0][2]}}">
-            <input type="hidden" name="nova_analise" value="True">
-            <button type="submit" class="btn btn-primary form-control">Nova Analise</button>
-        </form>
-        <form action="{{url_for('verifica_analise')}}" method="POST">
-            <input type="hidden" name="id_carga" value="{{arquivos[0][0][0]}}">
-            <input type="hidden" name="decisao" value="aprovado">
-            <input type="hidden" name="guarda" value="0">
-            <button type="submit" class="btn btn-success form-control">Aprovar</button>
-        </form>
+        <div class="decisao_cco" style="margin-top: 2%; background-color: rgba(0,0,0,90%); padding: 2%;">
+            <form action="{{url_for('cco_reprova')}}" method="POST">
+                <input type="hidden" name="id_carga" value="{{arquivos[0][0][0]}}">
+                <button type="submit" class="btn btn-danger form-control">Reprovar</button>
+            </form>
+            <form action="{{url_for('gera_analise')}}" method="POST">
+                <input type="hidden" name="id_carga" value="{{arquivos[0][0][0]}}">
+                <input type="hidden" name="grao" value={{arquivos[0][0][1]}}>
+                <input type="hidden" name="umidade" value="{{arquivos[2][0][1]}}">
+                <input type="hidden" name="temperatura" value="{{arquivos[2][0][2]}}">
+                <input type="hidden" name="nova_analise" value="True">
+                <button type="submit" class="btn btn-primary form-control">Nova Analise</button>
+            </form>
+            <form action="{{url_for('verifica_analise')}}" method="POST">
+                <input type="hidden" name="id_carga" value="{{arquivos[0][0][0]}}">
+                <input type="hidden" name="decisao" value="aprovado">
+                <input type="hidden" name="guarda" value="0">
+                <button type="submit" class="btn btn-success form-control">Aprovar</button>
+            </form>
+        </div>
+        <script src="{{url_for('static', filename='js/FormCCO.js')}}"></script>
 
+        <script>
+            let analises = new FormCCO();
+        
+            for (let index = 0; index < analises._analises.length; index++) {
+                console.log(index);
+                if(index != (analises._analises.length -1)){
+                    analises._analises[index].classList.add('hide');
+                }
+                analises._btn_hide[index].addEventListener('click', function () {
+                    for (let a = 0; a < analises._analises.length; a++) {
+                        if(a != index){
+                        analises._analises[a].classList.add('hide');
+                        }
+                    }
+                    if(analises._analises[index].classList.contains('hide')){
+                        analises._analises[index].classList.remove('hide')
+                        analises._btn_hide[index].focus();
+                    }
+                });
+            }
+        </script>
 
 {% endblock %}
