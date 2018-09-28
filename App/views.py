@@ -317,18 +317,24 @@ def jsonTeste(dado, num):
                     num - > 0 - Em Andamento
     '''
     if('usuario_logado' in session):
-        print(dado)
+        print(dado.lower())
         print(num)
-        if(dado == 'guarda'):
-            if(int(num) == 1):
-                return jsonify(usuario_dao.listar(cargo='guarda', json=True, online=True))
-            elif(int(num) == 2):
-                ...
-            else:
-                return jsonify(usuario_dao.listar(cargo='guarda', json=True))
-        elif(dado == 'processo'):
-            print(analise.busca_dados_prototipo())
-            return jsonify(analise.busca_dados_prototipo())
+
+        
+        return jsonify(usuario_dao.listar(cargo=dado, json=True, online=int(num)))
+
+        # elif(dado == 'cco'):
+        #     if(int(num) == 1):
+        #         return jsonify(usuario_dao.listar(cargo='cco', json=True, online=True))
+
+        # elif(dado == 'analista'):
+        #     ...
+        # elif(dado == 'all'):
+        #     ...
+
+        # elif(dado == 'processo'):
+        #     print(analise.busca_dados_prototipo())
+        #     return jsonify(analise.busca_dados_prototipo())
         # return jsonify({'key': [0,1,2,3,4,5]})
     else:
         return redirect(url_for('index'))

@@ -51,9 +51,9 @@ class UsuarioDao:
         '''
         query = 'SELECT * from usuarios'
         if(cargo):
-            if(cargo.lower == 'cco'):
+            if(cargo.lower() == 'cco'):
                 query += ' where cargo = "cco"' 
-            elif(cargo.lower == 'analista'):
+            elif(cargo.lower() == 'analista'):
                 query += ' where cargo = "analista"' 
             else:
                 query += ' where cargo = "guarda"'

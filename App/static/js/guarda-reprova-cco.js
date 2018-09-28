@@ -29,10 +29,10 @@ setInterval(function(){
                 //adicionaNovosItens();
                 let a = 0;
             }
+            let lista_guardas = [];
             if(guardas <= 0){
-                atualizar(tabela, false,lista_guardas);
+                atualizar(tabela, false, lista_guardas);
             }else{
-                let lista_guardas = [];
                 
                 guardas.forEach(function(guarda){
                     lista_guardas.push(guarda.id);
