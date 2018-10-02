@@ -78,7 +78,7 @@
         <script src="{{url_for('static', filename='js/EstadoUsuarios.js')}}"></script>
         <script src="{{url_for('static', filename='js/Tabelas.js')}}"></script>
         <script>
-            let tabela = new Tabelas('reprovaCCO');
+            let tabela = new TabelasUsuarios('usuariosGuarda', ['nome','cargo', 'status'], online=1);
         </script>
         <!-- <script src="{{url_for('static', filename='js/guarda-reprova-cco.js')}}"></script>
         <script src="{{url_for('static', filename='js/helpers.js')}}"></script> -->

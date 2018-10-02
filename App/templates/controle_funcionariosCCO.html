@@ -2,9 +2,12 @@
 <h2 style="text-align: center;">Controle de Usuarios</h2>
 <a class="btn btn-primary form-control" href="{{ url_for('index') }}">Voltar</a><br>
 <br>
+  <div id="div-tabela-cco-JS">Funcionarios CCO Online:</div>
+  <div id="div-tabela-analise-JS">Funcionarios Analise Online:</div>
+  <div id="div-tabela-guardas-JS">Funcionarios Guarda Online:</div>
 {% for cargo, online in cargos.items() %}
-  {% if online %}
-  Funcionarios {{ cargo }} Online:
+  <!-- {% if online %}
+Funcionarios {{ cargo }} Online:
 <table class="table table-striped table-responsive table-bordered">
   <thead>
     <tr>
@@ -27,10 +30,10 @@
   </tbody>
 </table>
   {% endif %}
-{% endfor %}
+{% endfor %} -->
 
 
-Log dos Usuarios:
+<u>Log dos Usuarios:</u>
 <table class="table table-striped table-responsive table-bordered">
   <thead>
     <tr>
@@ -55,7 +58,6 @@ Log dos Usuarios:
 
   </tbody>
 </table>
-<a class="btn btn-success form-control" href="{{ url_for('registro') }}">Registrar novo Funcionario</a>
 
 
 Funcionarios Offline:
@@ -80,6 +82,30 @@ Funcionarios Offline:
 
   </tbody>
 </table>
+<div id="div-tabela-all-JS">Funcionarios Offline:</div>
+______________________________________________________________________________________________________
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+<script src="{{url_for('static', filename='js/EstadoUsuarios.js')}}"></script>
+<script src="{{url_for('static', filename='js/Tabelas.js')}}"></script>
+<script>
+  let tabelaCCO = new TabelasUsuarios('usuariosCCO', ['nome', 'cargo'], online = 1);
+  let tabelaGuarda = new TabelasUsuarios('usuariosGuarda', ['nome', 'cargo'], online = 1);
+  let tabelaAnalise = new TabelasUsuarios('usuariosAnalise', ['nome', 'cargo'], online = 1);
+  let offline = new TabelasUsuarios('usuarios', ['nome', 'cargo', 'status'], online = 0);
+</script>
 <a class="btn btn-success form-control" href="{{ url_for('registro') }}">Registrar novo Funcionario</a>
 
 {% endblock %}

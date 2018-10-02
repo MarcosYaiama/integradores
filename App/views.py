@@ -296,9 +296,10 @@ def jsonTeste(dado, num):
         Recebe oque deve ser retornado via GET e retorna um JSON com os dados do banco
 
         Dado - > Guarda
-                    num - > 0 - Todos
+                    num - > 0 - Offline
                     num - > 1 - Apenas os Online
-                    num - > 2 - Os que estão online e visão de disponibilidade a partir da tabela pedido_guarda
+                    num - > 2 - Todos
+                    num - > 3 - Os que estão online e visão de disponibilidade a partir da tabela pedido_guarda
         
         Dado - > CCO
                     num - > 0 - Todos
@@ -317,21 +318,24 @@ def jsonTeste(dado, num):
                     num - > 0 - Em Andamento
     '''
     if('usuario_logado' in session):
-        print(dado.lower())
+        # print(dado.lower())
         print(num)
 
-        
-        return jsonify(usuario_dao.listar(cargo=dado, json=True, online=int(num)))
+        cargo_chamada = ""
+        if(dado):
+            if(dado == 'cco'):
+                cargo_chamada = 'CCO'
 
-        # elif(dado == 'cco'):
-        #     if(int(num) == 1):
-        #         return jsonify(usuario_dao.listar(cargo='cco', json=True, online=True))
+            elif(dado == 'analista'):
+                cargo_chamada = 'ANALISTA DE GRAOS'
 
-        # elif(dado == 'analista'):
-        #     ...
-        # elif(dado == 'all'):
-        #     ...
+            elif(dado == 'guarda'):
+                cargo_chamada = 'GUARDA'
 
+            elif(dado == 'all'):
+                cargo_chamada = True
+            return jsonify(usuario_dao.listar(cargo=cargo_chamada, json=True, online=int(num)))
+            
         # elif(dado == 'processo'):
         #     print(analise.busca_dados_prototipo())
         #     return jsonify(analise.busca_dados_prototipo())

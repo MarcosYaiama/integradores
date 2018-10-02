@@ -49,16 +49,29 @@ class UsuarioDao:
                 Tabela : usuarios
                 Colunas: *
         '''
-        query = 'SELECT * from usuarios'
+        query = 'SELECT * from usuarios '
         if(cargo):
-            if(cargo.lower() == 'cco'):
-                query += ' where cargo = "cco"' 
-            elif(cargo.lower() == 'analista'):
-                query += ' where cargo = "analista"' 
+            if(type(cargo) == bool):
+                query += ' where'
             else:
-                query += ' where cargo = "guarda"'
-        if(online):
-            query += ' and status_atual="Online"' 
+                query += " where cargo = '{}'".format(cargo)
+                print(cargo)
+                # if(cargo.lower() == 'cco'):
+                #     query += ' where cargo = "cco"' 
+                # elif(cargo.lower() == 'analista'):
+                #     query += ' where cargo = "analista de graos"' 
+                # else:
+                #     query += ' where cargo = "guarda"'
+                query += ' and'
+            if(online):
+                if(online == 1):
+                    query += ' status_atual="Online"'
+                elif(online == 2):
+                    ...
+            else:
+                query += ' status_atual="Offline"'
+
+        print(query)
         
         cursor = self.__db.connection.cursor()
         cursor.execute(query)

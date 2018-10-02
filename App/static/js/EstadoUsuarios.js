@@ -1,36 +1,47 @@
 class EstadoUsuarios{
 
-    constructor(cargo, div, selecao=false){
+    constructor(cargo, div, dados, selecao = null, online){
         this._cargo = cargo;
         this.lista_usuarios_banco = [];
         this.lista_usuarios_tabela = [];
-        this._div = document.querySelector(div);
-        this._selecao = document.querySelector(selecao);
-        console.log("Construtor")
+        this.dados_a_serem_exibidos = dados;
+        this.online = online;
+        // console.log(this.dados_a_serem_exibidos);
+        this._div = document.querySelector(div);    // A div onde ficara a tabela com os usuarios
+        this._selecao = !(selecao === null) ? document.querySelector(selecao):false;    //Verifica quando é necessario criar a caixa de options
+        console.log("Construtor");
         this.atualizaObjeto();
     }
 
-    usuarioTabela(){
-        // console.log('CHILDREN=> ',document.querySelector('#tabela-guardas-JS').children.length);
-        // console.log('CHILDREN=> ',document.querySelector('#tabela-guardas-JS').children);
+    usuarioTabela(){    // Retorna todos os dados da tabela carregada para exibir os usuarios
+
+
+
         let lista_usuarios = [];
-        if (document.querySelector('#div-tabela-guardas-JS').children.length){
+        let dados = this.dados_a_serem_exibidos;
+        if (this._div.children.length){
             let tabela = document.querySelector(".tabela-usuarios-JS");
             let usuarios = tabela.querySelectorAll('.usuario-JS');
             
             // console.log('Usuarios=> ',usuarios);
+      
             usuarios.forEach(
                 usuario => {
-                    lista_usuarios.push({
-                        id: usuario.querySelector('.id').textContent,
-                        nome: usuario.querySelector('.nome').textContent,
-                        disponibilidade: usuario.querySelector('.disponibilidade').textContent
+                    // console.log(usuario);
+                    lista_usuarios.push(function(dados) {
+                        let obj = {};
+                        dados.forEach(dado =>{
+                            obj[dado] = usuario.querySelector('.'+ dado).textContent; 
+                        });
+                        return obj;
                     });
                 });
             }
-        // console.log('ListaUsuarios=> ',lista_usuarios)
-        this.lista_usuarios_tabela = lista_usuarios;
-    }
+      
+            this.lista_usuarios_tabela = lista_usuarios;
+        }
+    
+
 
     usuarioBanco(){
         
@@ -42,10 +53,14 @@ class EstadoUsuarios{
         let div = this._div;
         let div_selec = this._selecao;
         //Vars
-        let lista_usuarios = [];
+        let lista_usuarios = [];    //Armazenara todos os usuarios e suas caracteristicas
         let tamanho_tabela = this.lista_usuarios_tabela;
+        let dados = this.dados_a_serem_exibidos;
+        let cargo = this._cargo.toUpperCase();
+        let online = this.online;
+        
         let xhr = new XMLHttpRequest();
-        xhr.open('GET', "http://localhost:5000/resposta_json/"+ this._cargo +"/1");
+        xhr.open('GET', "http://localhost:5000/resposta_json/"+ this._cargo +"/" + this.online);
         xhr.addEventListener('load', function(){
             if(xhr.status == 200){
                 let resultados = JSON.parse(xhr.responseText);
@@ -54,20 +69,22 @@ class EstadoUsuarios{
                     lista_usuarios.push({
                         id: resultado.id,
                         nome: resultado.nome,
-                        disponibilidade: resultado.status
+                        status: resultado.status,
+                        cargo: resultado.cargo
                     });
                 });
             }
-            console.log(tamanho_tabela.length, lista_usuarios.length);
-            console.log(tamanho_tabela, lista_usuarios);
-            
+            // console.log(tamanho_tabela.length, lista_usuarios.length);
+            // console.log(tamanho_tabela, lista_usuarios);
+            // console.log("CARGO  ", cargo);
             if(tamanho_tabela.length != lista_usuarios.length){
-                update(lista_usuarios,div, template);
-                update(lista_usuarios, div_selec, template_selec);
+                update(lista_usuarios, div, template, dados, cargo, online);
+                div_selec ? update(lista_usuarios, div_selec, template_selec, dados):null;
             }
             if (lista_usuarios.length == 0) {
                 div.innerHTML = "";
-                div_selec.innerHTML = "";
+                    // div_selec?div_selec.innerHTML = "":null;
+                
             }
         });
         xhr.send();
@@ -85,34 +102,37 @@ class EstadoUsuarios{
                 </select>`
     }
 
-    _template(model){
-        let htmlReturn = '';
+    _template(model, exibir_dados, cargo, online){
+        let htmlBody = '';
+        let htmlHead = '<tr>';
+        let exibir = exibir_dados;
+        // console.log("EXIBIR=> ", exibir_dados);
         model.forEach(item => {
             // console.log('Entrei')
-            htmlReturn += `<tr class="usuario-JS">
-                <td class="id">${item.id}</td>
-                <td class="nome">${item.nome}</td>
-                <td class="disponibilidade">${item.disponibilidade}</td>
-                </tr>`});
-        // console.log(htmlReturn);
+            htmlBody += '<tr class="usuario-JS">'
+            exibir.forEach(dado => {
+                htmlBody += `<td class="${dado}">${item[dado]}</td>`
+            });
+            htmlBody+="</tr>";
+        });
+        exibir.forEach(dado => {
+            htmlHead += `<th>${dado.charAt(0).toUpperCase() + dado.substr(1).toLowerCase()}</th>` //O mesmo que Capitalize do Python
+        });
+        htmlHead+= "</tr>"
 
-        return `<table class="table table-striped table-responsive table-bordered tabela-usuarios-JS">
+        return `Funcionarios ${cargo=='ALL'?"":cargo} ${online?"Online":"Offline"}: <table class="table table-striped table-responsive table-bordered tabela-usuarios-JS">
             <thead>
-                <tr>
-                    <th style="text-align: center;">ID</th>
-                    <th style="text-align: center;">Nome</th>
-                    <th style="text-align: center;">Disponibilidade</th>
-                </tr>
+                ${htmlHead}    
             </thead>
             <tbody>
-                ${htmlReturn}
+                ${htmlBody}
             <tbody>
         </table>`
 }
-    update(model, div, template){
+    update(model, div, template, dados, cargo, online){
         // console.log(this._div);
         // console.log(model);
-        div.innerHTML = template(model);
+        div.innerHTML = template(model, dados, cargo, online);
         
         
     }
