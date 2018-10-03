@@ -59,7 +59,7 @@ Funcionarios {{ cargo }} Online:
   </tbody>
 </table>
 
-
+<!--
 Funcionarios Offline:
 <table class="table table-striped table-responsive table-bordered">
   <thead>
@@ -82,26 +82,13 @@ Funcionarios Offline:
 
   </tbody>
 </table>
+--!>
 <div id="div-tabela-all-JS">Funcionarios Offline:</div>
-______________________________________________________________________________________________________
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
 
-
-<script src="{{url_for('static', filename='js/EstadoUsuarios.js')}}"></script>
+<script src="{{url_for('static', filename='js/EstadoPrototype.js')}}"></script>
 <script src="{{url_for('static', filename='js/Tabelas.js')}}"></script>
 <script>
-  let tabelaCCO = new TabelasUsuarios('usuariosCCO', ['nome', 'cargo'], online = 1);
+  let tabelaCCO = new TabelasUsuarios('usuariosCCO', ['id' ,'nome', 'cargo'], online = 1);
   let tabelaGuarda = new TabelasUsuarios('usuariosGuarda', ['nome', 'cargo'], online = 1);
   let tabelaAnalise = new TabelasUsuarios('usuariosAnalise', ['nome', 'cargo'], online = 1);
   let offline = new TabelasUsuarios('usuarios', ['nome', 'cargo', 'status'], online = 0);

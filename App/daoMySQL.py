@@ -706,7 +706,7 @@ class Analise():
             Tabelas: log_analise
         '''
         cursor = self.__db.connection.cursor()
-        cursor.execute('SELECT * from log_analise where estado = "Finalizado" order by id desc')
+        cursor.execute('SELECT * from log_analise where estado = "Finalizado" order by id desc limit 6')
         resultado = cursor.fetchall()
         return resultado
 

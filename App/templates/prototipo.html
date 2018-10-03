@@ -5,8 +5,20 @@
     <div class="tela">
 
     </div>
-
+    <button class="btn btn-success form-control botao"></button>
+    <div id="div-tabela-prototype-JS"></div>
 </body>
 
-<script src="{{url_for('static', filename='js/prototype.js')}}"></script>
+<!--
+<script src="{{url_for('static', filename='js/Prototype.js')}}"></script>
+<script>
+  let abc = new Prototype();
+  console.log('Carregou');
+</script>
+--!>
+<script src="{{url_for('static', filename='js/EstadoPrototype.js')}}"></script>
+<script src="{{url_for('static', filename='js/Tabelas.js')}}"></script>
+<script>
+  let tabela = new TabelasUsuarios('prototype', ['id','grao', 'destino', 'estado']);
+</script>
 {%endblock%}

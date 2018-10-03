@@ -1,4 +1,4 @@
-class EstadoUsuarios{
+class EstadoPrototype{
 
     constructor(cargo, div, dados, selecao = null, online){
         this._cargo = cargo;
@@ -45,7 +45,6 @@ class EstadoUsuarios{
 
 
     usuarioBanco(){
-        
         //METODS
         let update = this.update;
         let template = this._template;
@@ -65,16 +64,29 @@ class EstadoUsuarios{
         xhr.addEventListener('load', function(){
             if(xhr.status == 200){
                 let resultados = JSON.parse(xhr.responseText);
+                console.log("RESULTS=> ", resultados);
                 resultados.forEach(resultado => {
                     // console.log("RESULTADO =>", resultado);
-                    lista_usuarios.push({
+                    if(cargo.toLowerCase()=='processo'){
+                      lista_usuarios.push({
+                        id:resultado[0],
+                        grao: resultado[1],
+                        fornecedor: resultado[2],
+                        destino: resultado[3],
+                        placa: resultado[4],
+                        estado: resultado[5]});
+                    }else{
+                      lista_usuarios.push({
                         id: resultado.id,
                         nome: resultado.nome,
                         status: resultado.status,
-                        cargo: resultado.cargo
-                    });
+                        cargo: resultado.cargo 
+                      });
+                    }  
                 });
-            }
+              }
+            
+            console.log(lista_usuarios);
             // console.log(tamanho_tabela.length, lista_usuarios.length);
             // console.log(tamanho_tabela, lista_usuarios);
             // console.log("CARGO  ", cargo);

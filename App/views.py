@@ -334,11 +334,11 @@ def jsonTeste(dado, num):
 
             elif(dado == 'all'):
                 cargo_chamada = True
-            return jsonify(usuario_dao.listar(cargo=cargo_chamada, json=True, online=int(num)))
             
-        # elif(dado == 'processo'):
-        #     print(analise.busca_dados_prototipo())
-        #     return jsonify(analise.busca_dados_prototipo())
+            elif(dado == 'processo'):
+                print(analise.busca_dados_prototipo())
+                return jsonify(analise.busca_dados_prototipo())
+            return jsonify(usuario_dao.listar(cargo=cargo_chamada, json=True, online=int(num)))
         # return jsonify({'key': [0,1,2,3,4,5]})
     else:
         return redirect(url_for('index'))
