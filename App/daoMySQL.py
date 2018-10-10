@@ -710,7 +710,7 @@ class Analise():
         resultado = cursor.fetchall()
         return resultado
 
-    def busca_chamados_cco(self):
+    def busca_chamados_cco(self, json=False):
         cursor = self.__db.connection.cursor()
         cursor.execute('SELECT * from info_cargas where estado_fk = "CCO"')
         return cursor.fetchall()

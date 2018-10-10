@@ -3,10 +3,20 @@
 <body>
 
     <div class="tela">
-
+      <div id="selecao-processo-JS"></div>
+      <label class="form-control processo" >OCR</label>
+      <label class="form-control processo" >Maquina</label>
+      <label class="form-control processo" >Analise Maquina</label>
+      <label class="form-control processo processo-ativo" >Nova Analise</label>
+      <label class="form-control processo" >Pedido CCO</label>
+      <label class="form-control processo" >Analista</label>
+      <label class="form-control processo" >CCO</label>
+      <label class="form-control processo" >Guarda</label>
+      <br>
     </div>
-    <button class="btn btn-success form-control botao"></button>
-    <div id="div-tabela-prototype-JS"></div>
+    <br><br><br>
+    <!-- <button class="btn btn-success form-control botao"></button> -->
+    <div id="div-tabela-prototype-JS" class="hide"></div>
 </body>
 
 <!--
@@ -15,10 +25,12 @@
   let abc = new Prototype();
   console.log('Carregou');
 </script>
---!>
+-->
 <script src="{{url_for('static', filename='js/EstadoPrototype.js')}}"></script>
 <script src="{{url_for('static', filename='js/Tabelas.js')}}"></script>
+<script src="{{url_for('static', filename='js/Prototype.js')}}"></script>
 <script>
   let tabela = new TabelasUsuarios('prototype', ['id','grao', 'destino', 'estado']);
+  
 </script>
 {%endblock%}

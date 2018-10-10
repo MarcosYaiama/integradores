@@ -4,3 +4,23 @@
     width: 70%;
     margin: auto;
 }
+
+.processo{
+    background-color: darkgray;
+    color:white;
+    text-align: center;
+}
+
+.processo-ativo{
+    -webkit-animation-name: example; /* Safari 4.0 - 8.0 */
+    /* -webkit-animation-duration: ; Safari 4.0 - 8.0 */
+    animation-name: active-process;
+    animation-duration: 1.5s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes active-process{
+    0%   {background-color:#5cb85c;color: white}
+    50%  {background-color:white; color: #5cb85c}
+    100% {background-color:#5cb85c;color: white}
+}

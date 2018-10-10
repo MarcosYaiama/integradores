@@ -26,6 +26,8 @@
             </tbody>
         </table>
         {%endif%}
+        <!-- <div id="div-tabela-chamados-cco-JS"></div>
+        <div id="div-tabela-ultimas-analises-JS"></div> -->
 
         <!--
         <table class="table table-bordered table-responsive table-striped">
@@ -47,7 +49,7 @@
                 </tr>
             </tbody>
         </table>
-        --!>
+        -->
              {% if ultimas_analises %}
             <table class="table table-striped table-responsive table-bordered">
                 <label>Situação das Ultimas análises</label>
@@ -83,7 +85,7 @@
                 </tbody>
             </table>
             {% endif %}
-        <table class="table table-striped table-responsive table-bordered">
+        <!-- <table class="table table-striped table-responsive table-bordered">
             <thead>
                 <label>Requisições do Posto de Analise Finalizadas</label>
                 <tr>
@@ -134,11 +136,17 @@
                     <td>Finalizado</td>
                 </tr>
             </tbody>
-        </table>
+        </table> -->
         <a class="btn btn-primary form-control" href="#">Ver Mais</a>
         <br>
         <br>
         <a class="btn btn-danger form-control" id="btn_controle_usuarios" href="{{ url_for('controle_funcionarios') }}">Controle Funcionarios</a>
         <br>
 
+        <!-- <script src="{{url_for('static', filename='js/EstadoPrototype.js')}}"></script>
+        <script src="{{url_for('static', filename='js/Tabelas.js')}}"></script>
+        <script>
+            let tabela = new TabelasUsuarios('chamados_cco', ['id', 'grao']);
+            let tabela = new TabelasUsuarios('ultimas_analises', ['id', 'grao', 'destino', 'estado']);
+        </script> -->
 {% endblock %}
