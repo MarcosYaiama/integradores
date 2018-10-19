@@ -88,7 +88,16 @@
                 </tbody>
             </table>
             {% endif %}
-            <table class="table table-striped table-responsive table-bordered">
+            <div id="div-tabela-ultimas-analises-JS"></div>
+            <a class="btn btn-primary form-control" href="#">Ver Mais</a><br><br>
+            <script src="{{url_for('static', filename='js/EstadoPrototype.js')}}"></script>
+            <script src="{{url_for('static', filename='js/Tabelas.js')}}"></script>
+            <script>
+                  let atributos = ['carga', 'grao', 'estado', 'decisao', 'resultado']
+                  let tabelaCCO = new TabelasUsuarios('ultimas_analises', atributos, online = 1);
+            </script>
+{% endblock %}
+            <!-- <table class="table table-striped table-responsive table-bordered">
                 <thead>
                     <label>Requisições CCO Finalizadas</label>
                     <tr>
@@ -139,6 +148,4 @@
                         <td>Finalizado</td>
                     </tr>
                 </tbody>
-            </table>
-            <a class="btn btn-primary form-control" href="#">Ver Mais</a><br><br>
-{% endblock %}
+            </table> -->

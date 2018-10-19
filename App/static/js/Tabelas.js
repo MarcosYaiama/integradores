@@ -1,7 +1,7 @@
 
 class TabelasUsuarios{
 
-    constructor(tabela, dados, online){
+    constructor(tabela, dados, online=0){
         this.tabela = tabela;
         if (tabela == 'usuariosGuarda'){
             let objeto = new EstadoPrototype('guarda', '#div-tabela-guardas-JS', dados=dados, '#selecao-guardas', ['id', ['nome']], online);

@@ -316,6 +316,8 @@ def jsonTeste(dado, num):
 
         Dado - > processo
                     num - > 0 - Em Andamento
+        Dado - > ultimas_analises
+                    num - > 0 - Em Andamento
     '''
     if('usuario_logado' in session):
         # print(dado.lower())
@@ -343,8 +345,9 @@ def jsonTeste(dado, num):
             #     print(analise.busca_chamados_cco())
             #     # return jsonify(analise.busca_chamados_cco())
                 
-            # elif(dado == 'ultimas_analises'):
-            #     return jsonify(analise.analises_finalizadas())
+            elif(dado == 'ultimas_analises'):
+                print(analise.analises_finalizadas(json=True))
+                return jsonify(analise.analises_finalizadas(json=True))
             return jsonify(usuario_dao.listar(cargo=cargo_chamada, json=True, online=int(num)))
         # return jsonify({'key': [0,1,2,3,4,5]})
     else:

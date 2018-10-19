@@ -1,13 +1,13 @@
 class EstadoPrototype{
 
-    constructor(cargo, div, dados, selecao = null, dados_selec = null, online){
+    constructor(cargo, div, dados, selecao = null, dados_selec = null, online=0){
         this._cargo = cargo;
         this.lista_usuarios_banco = [];
         this.lista_usuarios_tabela = [];
         this.dados_a_serem_exibidos = dados;
         this.dados_a_serem_exibidos_selec = dados_selec;
         this.online = online;
-        this._endereco = "192.168.0.6";
+        this._endereco = "192.168.0.3";
         // console.log(this.dados_a_serem_exibidos);
         this._div = document.querySelector(div);    // A div onde ficara a tabela com os usuarios
         // console.log(div);
@@ -34,8 +34,8 @@ class EstadoPrototype{
                     // console.log(usuario);
                     lista_usuarios.push(function() {
                         let obj = {};
-                        dados.forEach(dado =>{
-                            obj[dado] = usuario.querySelector('.'+ dado).textContent; 
+                        dados.forEach(dado =>{               
+                            obj[dado] = usuario.querySelector("."+ dado.toString()).textContent; 
                         });
                         return obj;
                     }());
@@ -79,7 +79,19 @@ class EstadoPrototype{
                         destino: resultado[3],
                         placa: resultado[4],
                         estado: resultado[5]});
-                    }else{
+                    }else if(cargo.toLowerCase()=='ultimas_analises'){
+                        lista_usuarios.push({
+                            'id': resultado['id'],
+                            'analise': resultado['analise'],
+                            'decisao': resultado['decisao'],
+                            'guarda': resultado['guarda'],
+                            'resultado': resultado['resultado'],
+                            'estado': resultado['estado'],
+                            'carga': resultado['carga'],
+                            'grao': resultado['grao'],
+                        });
+                    }
+                    else{
                       lista_usuarios.push({
                         id: resultado.id,
                         nome: resultado.nome,

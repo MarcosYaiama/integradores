@@ -713,12 +713,12 @@ class Analise():
             for resultado in resultados:
                 json_dict.append({
                     'id':resultado[0],
-                    'analise': resultado[1],
+                    'n analises': resultado[1],
                     'decisao': resultado[2],
                     'guarda':resultado[3],
                     'resultado': resultado[4],
                     'estado':resultado[5],
-                    'carga': resultado[6],
+                    'id carga': resultado[6],
                     'grao':resultado[7]
                     })
             return json_dict
