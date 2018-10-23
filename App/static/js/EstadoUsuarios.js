@@ -1,51 +1,60 @@
-class EstadoUsuarios{
 
-    constructor(cargo, div, dados, selecao = null, online){
+
+class EstadoUsuarios extends Definicoes {
+
+    constructor(cargo, div, dados, selecao = null, dados_selec = null, online = 0) {
+        super();
         this._cargo = cargo;
         this.lista_usuarios_banco = [];
         this.lista_usuarios_tabela = [];
         this.dados_a_serem_exibidos = dados;
+        this.dados_a_serem_exibidos_selec = dados_selec;
         this.online = online;
-        this._endereco = "192.168.43.81";
+        // console.log(this._endereco);
+
+        // this._endereco = "192.168.43.98";
         // console.log(this.dados_a_serem_exibidos);
         this._div = document.querySelector(div);    // A div onde ficara a tabela com os usuarios
-        this._selecao = !(selecao === null) ? document.querySelector(selecao):false;    //Verifica quando é necessario criar a caixa de options
+        // console.log(div);
+        // console.log(this._div);
+        this._selecao = !(selecao === null) ? document.querySelector(selecao) : false;    //Verifica quando é necessario criar a caixa de options
         console.log("Construtor");
         this.atualizaObjeto();
     }
 
-    usuarioTabela(){    // Retorna todos os dados da tabela carregada para exibir os usuarios
+    usuarioTabela() {    // Retorna todos os dados da tabela carregada para exibir os usuarios
 
 
 
+        let dados_recebidos = this.dados_a_serem_exibidos;
         let lista_usuarios = [];
-        let dados = this.dados_a_serem_exibidos;
-        if (this._div.children.length){
-            let tabela = document.querySelector(".tabela-usuarios-JS");
+        if (this._div.children.length) {
+            let tabela = this._div.querySelector('.tabela-usuario-JS')
             let usuarios = tabela.querySelectorAll('.usuario-JS');
-            
             // console.log('Usuarios=> ',usuarios);
-      
+
             usuarios.forEach(
                 usuario => {
-                    // console.log(usuario);
-                    lista_usuarios.push(function(dados) {
+                    let dados = dados_recebidos;
+
+                    lista_usuarios.push(function () {
                         let obj = {};
-                        dados.forEach(dado =>{
-                            obj[dado] = usuario.querySelector('.'+ dado).textContent; 
+                        dados.forEach(dado => {
+
+                            obj[dado] = usuario.querySelector("." + dado.toString()).textContent;
+
                         });
                         return obj;
-                    });
+                    }());
                 });
-            }
-      
-            this.lista_usuarios_tabela = lista_usuarios;
         }
-    
+        // console.log(lista_usuarios)
+        this.lista_usuarios_tabela = lista_usuarios;
+    }
 
 
-    usuarioBanco(){
-        
+
+    usuarioBanco() {
         //METODS
         let update = this.update;
         let template = this._template;
@@ -57,53 +66,67 @@ class EstadoUsuarios{
         let lista_usuarios = [];    //Armazenara todos os usuarios e suas caracteristicas
         let tamanho_tabela = this.lista_usuarios_tabela;
         let dados = this.dados_a_serem_exibidos;
+        let dados_selec = this.dados_a_serem_exibidos_selec;
         let cargo = this._cargo.toUpperCase();
         let online = this.online;
-        
+
         let xhr = new XMLHttpRequest();
-        xhr.open('GET', "http://"+this._endereco+":5000/resposta_json/"+ this._cargo +"/" + this.online);
-        xhr.addEventListener('load', function(){
-            if(xhr.status == 200){
+        xhr.open('GET', "http://" + this._endereco + ":5000/resposta_json/" + this._cargo + "/" + this.online);
+        xhr.addEventListener('load', function () {
+            if (xhr.status == 200) {
                 let resultados = JSON.parse(xhr.responseText);
+                // console.log("RESULTS=> ", resultados);
                 resultados.forEach(resultado => {
                     // console.log("RESULTADO =>", resultado);
+                    
                     lista_usuarios.push({
                         id: resultado.id,
                         nome: resultado.nome,
                         status: resultado.status,
                         cargo: resultado.cargo
-                    });
+                    });                   
                 });
             }
+
             // console.log(tamanho_tabela.length, lista_usuarios.length);
             // console.log(tamanho_tabela, lista_usuarios);
             // console.log("CARGO  ", cargo);
-            if(tamanho_tabela.length != lista_usuarios.length){
+            if ((tamanho_tabela.length != lista_usuarios.length) && update) {
                 update(lista_usuarios, div, template, dados, cargo, online);
-                div_selec ? update(lista_usuarios, div_selec, template_selec, dados):null;
+                div_selec ? update(lista_usuarios, div_selec, template_selec, dados_selec) : null;
             }
             if (lista_usuarios.length == 0) {
                 div.innerHTML = "";
-                    // div_selec?div_selec.innerHTML = "":null;
-                
+                div_selec?div_selec.innerHTML = "":null;
+
             }
         });
         xhr.send();
     }
-    
-    _template_selecao(model){
+
+    _template_selecao(model, dados,cargo) {
         let htmlReturn = '';
+        // console.log(dados);
         model.forEach(item => {
+            // console.log(item);
+            let exibicao = '';
+            let ultimo_dado = dados[1][-1];
+            dados[1].forEach(element => {
+                if (exibicao.length > 0 && element != ultimo_dado) {
+                    exibicao += ' - '
+                }
+                exibicao += item[element];
+            });
             htmlReturn += `
-                <option value="${item.id}">${item.nome}</option>
+                <option value="${item[dados[0]]}">${exibicao}</option>
             `
         });
-        return  `<select name="guarda" class="form-control">
+        return `<select name="${cargo}" class="form-control">
                     ${htmlReturn}
                 </select>`
     }
 
-    _template(model, exibir_dados, cargo, online){
+    _template(model, exibir_dados, cargo, online) {
         let htmlBody = '';
         let htmlHead = '<tr>';
         let exibir = exibir_dados;
@@ -114,14 +137,14 @@ class EstadoUsuarios{
             exibir.forEach(dado => {
                 htmlBody += `<td class="${dado}">${item[dado]}</td>`
             });
-            htmlBody+="</tr>";
+            htmlBody += "</tr>";
         });
         exibir.forEach(dado => {
             htmlHead += `<th>${dado.charAt(0).toUpperCase() + dado.substr(1).toLowerCase()}</th>` //O mesmo que Capitalize do Python
         });
-        htmlHead+= "</tr>"
+        htmlHead += "</tr>"
 
-        return `Funcionarios ${cargo=='ALL'?"":cargo} ${online?"Online":"Offline"}: <table class="table table-striped table-responsive table-bordered tabela-usuarios-JS">
+        return `Funcionarios ${cargo == 'ALL' ? "" : cargo} ${online ? "Online" : "Offline"}: <table class="table table-striped table-responsive table-bordered tabela-usuario-JS">
             <thead>
                 ${htmlHead}    
             </thead>
@@ -129,16 +152,16 @@ class EstadoUsuarios{
                 ${htmlBody}
             <tbody>
         </table>`
-}
-    update(model, div, template, dados, cargo, online){
+    }
+    update(model, div, template, dados, cargo, online) {
         // console.log(this._div);
         // console.log(model);
         div.innerHTML = template(model, dados, cargo, online);
-        
-        
+
+
     }
     //PROBLEMA COM ARRAY JS RESOLVER !!!!!!!!!!!!!!
-    atualizaObjeto(){
+    atualizaObjeto() {
         this.usuarioBanco();
         this.usuarioTabela();
     }

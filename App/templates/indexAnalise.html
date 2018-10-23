@@ -1,6 +1,8 @@
 {% extends 'template.html' %} {% block conteudo %}
-            {% if analises %}
-            <table class="table table-bordered table-responsive table-striped">
+            <div id="div-tabela-chamados-analista-JS"></div>
+            <div id="div-tabela-chamados-pedido-nova-analise-CCO-JS"></div>
+            <!-- {% if analises %} -->
+            <!-- <table class="table table-bordered table-responsive table-striped">
                 <label>Retornos da Maquina de Analise</label>
                 {{analises}}
                 <thead>
@@ -29,7 +31,7 @@
                     {% endfor %}
                 </tbody>
             </table>
-            {% endif %}
+            {% endif %} -->
 
             {% if nova_analise %}
             <table class="table table-bordered table-responsive table-striped">
@@ -88,64 +90,13 @@
                 </tbody>
             </table>
             {% endif %}
-            <div id="div-tabela-ultimas-analises-JS"></div>
+            
             <a class="btn btn-primary form-control" href="#">Ver Mais</a><br><br>
-            <script src="{{url_for('static', filename='js/EstadoPrototype.js')}}"></script>
+            <script src="{{url_for('static', filename='js/Definicoes.js')}}"></script>
+            <script src="{{url_for('static', filename='js/tabelaPedidos.js')}}"></script>
             <script src="{{url_for('static', filename='js/Tabelas.js')}}"></script>
             <script>
-                  let atributos = ['carga', 'grao', 'estado', 'decisao', 'resultado']
-                  let tabelaCCO = new TabelasUsuarios('ultimas_analises', atributos, online = 1);
-            </script>
+                let tabelaRetornoMaquina = new TabelasUsuarios('chamados_analise', ['id', 'grao']);
+                let tabelaPedidoCCONovaAnalise = new TabelasUsuarios('chamados_analise', ['id', 'grao'], 1);
+</script>
 {% endblock %}
-            <!-- <table class="table table-striped table-responsive table-bordered">
-                <thead>
-                    <label>Requisições CCO Finalizadas</label>
-                    <tr>
-                        <th>ID</th>
-                        <th>Grão</th>
-                        <th>Peso</th>
-                        <th>Data</th>
-                        <th>Hora</th>
-                        <th>Circunstância</th>
-                        <th>Situação</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>001</td>
-                        <td>Soja</td>
-                        <td>10Kg</td>
-                        <td>10/10/2019</td>
-                        <td>14:30</td>
-                        <td>Reprova Analise</td>
-                        <td>Aguardando CCO</td>
-                    </tr>
-                    <tr>
-                        <td>001</td>
-                        <td>Soja</td>
-                        <td>10Kg</td>
-                        <td>10/10/2019</td>
-                        <td>14:34</td>
-                        <td>Nova Analise</td>
-                        <td>Aguardando Analise</td>
-                    </tr>
-                    <tr>
-                        <td>001</td>
-                        <td>Soja</td>
-                        <td>10Kg</td>
-                        <td>10/10/2019</td>
-                        <td>14:39</td>
-                        <td>Reprova</td>
-                        <td>Aguardando CCO</td>
-                    </tr>
-                    <tr>
-                        <td>001</td>
-                        <td>Soja</td>
-                        <td>10Kg</td>
-                        <td>10/10/2019</td>
-                        <td>14:39</td>
-                        <td>Reprova</td>
-                        <td>Finalizado</td>
-                    </tr>
-                </tbody>
-            </table> -->

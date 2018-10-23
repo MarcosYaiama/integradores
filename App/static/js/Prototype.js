@@ -1,6 +1,9 @@
-class Prototype{
+class Prototype extends Definicoes{
   constructor(){
     // this.busca_processos_lbl();
+    super();
+  }
+  atualizaPrototipo(){
     this.id = this.busca_selection();
     this.busca_id_na_tabela(this.id);
   }

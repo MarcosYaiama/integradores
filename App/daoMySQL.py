@@ -412,7 +412,7 @@ class Analise():
             self.__atualiza_status_analise_info_cargas(
                 "Pedido CCO", dados_inseridos[0])
 
-    def registros_analise(self, estado_fk:int = 0) -> dict:
+    def registros_analise(self, estado_fk:int = 0, json:bool=0) -> dict:
         '''
             Busca todos os registros na tabela info_cargas que tenham o estado_fk = Maquina.
             Caso tenha, retorna apenas o grao e o id_carga de cada item em uma tupla de tuplas.
@@ -435,6 +435,17 @@ class Analise():
         cursor = self.__db.connection.cursor()
         cursor.execute('SELECT id_carga, grao,estado_fk from info_cargas where estado_fk = "{}" or estado_fk = "{}"'.format(condicao[0], condicao[1]))
         resultados = cursor.fetchall()
+        print('RESULTADOS BD', resultados)
+        # if(json):
+        #     json_dict = []
+        #     for resultado in resultados:
+        #         json_dict.append({
+        #             'id':resultado[0],
+        #             'grao': resultado[1],
+        #             'estado': resultado[2]
+        #             })
+        #     print("DICT", json_dict)
+        #     return json_dict
         return resultados
 
     #CONTINUAR
@@ -726,8 +737,17 @@ class Analise():
 
     def busca_chamados_cco(self, json=False):
         cursor = self.__db.connection.cursor()
-        cursor.execute('SELECT * from info_cargas where estado_fk = "CCO"')
-        return cursor.fetchall()
+        cursor.execute('SELECT id_carga,grao from info_cargas where estado_fk = "CCO"')
+        resultados = cursor.fetchall()
+        if(json):
+            json_dict = []
+            for resultado in resultados:
+                json_dict.append({
+                    'id': resultado[0],
+                    'grao': resultado[1]
+                })
+            return json_dict
+        return resultados
 
     def busca_info_cargas_por_id(self, id_carga:int):
         '''

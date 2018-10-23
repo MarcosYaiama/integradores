@@ -354,12 +354,12 @@ def jsonTeste(dado, num):
             elif(dado == 'chamados_cco'):
                 # print(analise.busca_chamados_cco())
                 return jsonify(analise.busca_chamados_cco())
-            elif(dado == 'chamados_analise'):
-                if(not num):
-                    print(analise.registros_analise(json=True))
+            elif(dado == 'chamados_analista'):
+                if(num):
+                    print("AAAAAAAAAA",analise.registros_analise(json=True))
                     return jsonify(analise.registros_analise(json=True))
                 else:
-                    print(analise.registros_analise(estado_fk=1, json=True))
+                    print("AAAAAAAAAA",analise.registros_analise(estado_fk=1, json=True))
                     return jsonify(analise.registros_analise(estado_fk=1, json=True))
                 
             elif(dado == 'ultimas_analises'):

@@ -1,13 +1,18 @@
-class EstadoPrototype{
+
+
+class EstadoPrototype extends Prototype{
 
     constructor(cargo, div, dados, selecao = null, dados_selec = null, online=0){
+        super();
         this._cargo = cargo;
         this.lista_usuarios_banco = [];
         this.lista_usuarios_tabela = [];
         this.dados_a_serem_exibidos = dados;
         this.dados_a_serem_exibidos_selec = dados_selec;
         this.online = online;
-        this._endereco = "192.168.0.3";
+        // console.log(this._endereco);
+        
+        // this._endereco = "192.168.43.98";
         // console.log(this.dados_a_serem_exibidos);
         this._div = document.querySelector(div);    // A div onde ficara a tabela com os usuarios
         // console.log(div);
@@ -25,16 +30,14 @@ class EstadoPrototype{
         let lista_usuarios = [];
         if (this._div.children.length){
             let tabela = document.querySelector(".tabela-prototype-JS");
-            let usuarios = tabela.querySelectorAll('.usuario-JS');
+            let usuarios = tabela.querySelectorAll('.dados-carga-JS');
             // console.log('Usuarios=> ',usuarios);
-            
             usuarios.forEach(
                 usuario => {
                     let dados = dados_recebidos;
-                    // console.log(usuario);
                     lista_usuarios.push(function() {
                         let obj = {};
-                        dados.forEach(dado =>{               
+                        dados.forEach(dado =>{
                             obj[dado] = usuario.querySelector("."+ dado.toString()).textContent; 
                         });
                         return obj;
@@ -71,40 +74,15 @@ class EstadoPrototype{
                 // console.log("RESULTS=> ", resultados);
                 resultados.forEach(resultado => {
                     // console.log("RESULTADO =>", resultado);
-                    if(cargo.toLowerCase()=='processo'){
-                      lista_usuarios.push({
+                    lista_usuarios.push({
                         id:resultado[0],
                         grao: resultado[1],
                         fornecedor: resultado[2],
                         destino: resultado[3],
                         placa: resultado[4],
                         estado: resultado[5]});
-                    }else if(cargo.toLowerCase()=='ultimas_analises'){
-                        lista_usuarios.push({
-                            'id': resultado['id'],
-                            'analise': resultado['analise'],
-                            'decisao': resultado['decisao'],
-                            'guarda': resultado['guarda'],
-                            'resultado': resultado['resultado'],
-                            'estado': resultado['estado'],
-                            'carga': resultado['carga'],
-                            'grao': resultado['grao'],
-                        });
-                    }
-                    else{
-                      lista_usuarios.push({
-                        id: resultado.id,
-                        nome: resultado.nome,
-                        status: resultado.status,
-                        cargo: resultado.cargo 
-                      });
-                    }  
                 });
               }
-            
-              // console.log(tamanho_tabela.length, lista_usuarios.length);
-              // console.log(tamanho_tabela, lista_usuarios);
-              // console.log("CARGO  ", cargo);
               if(tamanho_tabela.length && cargo == 'PROCESSO'){
                 tamanho_tabela.forEach(item => {
                     lista_usuarios.forEach(dado_banco => {
@@ -116,7 +94,6 @@ class EstadoPrototype{
                                 div_selec ? update(lista_usuarios, div_selec, template_selec, dados_selec):null;
                                 document.querySelectorAll('#selecao-processo-JS select option').forEach(option =>{
                                     if(option.value == focus_select_value){
-                                        console.log('entrei')
                                         document.querySelector('#selecao-processo-JS select').value = focus_select_value;
                                     }
                                 })
@@ -132,7 +109,7 @@ class EstadoPrototype{
             }
             if (lista_usuarios.length == 0) {
                 div.innerHTML = "";
-                    // div_selec?div_selec.innerHTML = "":null;
+                // div_selec?div_selec.innerHTML = "":null;
                 
             }
         });
@@ -146,7 +123,9 @@ class EstadoPrototype{
             // console.log(item);
             let exibicao = '';
             let ultimo_dado = dados[1][-1];
+            console.log(item);
             dados[1].forEach(element => {
+                
                 if(exibicao.length > 0 && element != ultimo_dado){
                     exibicao += ' - '
                 }
@@ -156,7 +135,7 @@ class EstadoPrototype{
                 <option value="${item[dados[0]]}">${exibicao}</option>
             `
         });
-        return  `<select name="guarda" class="form-control">
+        return  `<select name="cargas" class="form-control">
                     ${htmlReturn}
                 </select>`
     }
@@ -168,8 +147,10 @@ class EstadoPrototype{
         // console.log("EXIBIR=> ", exibir_dados);
         model.forEach(item => {
             // console.log('Entrei')
-            htmlBody += '<tr class="usuario-JS">'
+            htmlBody += '<tr class="dados-carga-JS">'
             exibir.forEach(dado => {
+                console.log(dado);
+                
                 htmlBody += `<td class="${dado}">${item[dado]}</td>`
             });
             htmlBody+="</tr>";
@@ -199,5 +180,6 @@ class EstadoPrototype{
     atualizaObjeto(){
         this.usuarioBanco();
         this.usuarioTabela();
+        this.atualizaPrototipo();
     }
 }
