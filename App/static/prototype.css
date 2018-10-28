@@ -12,7 +12,7 @@
 }
 
 .processo-ativo{
-    -webkit-animation-name: example; /* Safari 4.0 - 8.0 */
+    -webkit-animation-name: active-process; /* Safari 4.0 - 8.0 */
     /* -webkit-animation-duration: ; Safari 4.0 - 8.0 */
     animation-name: active-process;
     animation-duration: 1.5s;

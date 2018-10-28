@@ -179,9 +179,6 @@ def verifica_analise():
         Faz a analise e redireciona para a pagina inicial
         Paginas que redirecionam para cá: formAnalise
     '''
-    print(session['usuario_cargo'])
-    envia_pagina_arduino(usuarios=session['usuario_logado'],
-                         cargo=session['usuario_cargo'], pagina='Verificacao da Analise')
     if(session['usuario_cargo'] == 'CCO'):
         guarda = 0
         if(len(request.form['guarda']) > 1):
@@ -197,7 +194,10 @@ def verifica_analise():
         
             dados_analisados[d[0]] = int(request.form[d[0]])
         print(dados_analisados)
-        analise.analisar_graos(caracteristicas, dados_analisados, request.form['id_carga'], request.form['redirec'], request.form['grao'])
+        if(not analise.analisar_graos(caracteristicas, dados_analisados, request.form['id_carga'], request.form['redirec'], request.form['grao'])):
+            flash('A analise foi aprovada')
+        else:
+            flash('A analise foi encaminhada para o CCO, aguardar resposta!')
     else:
         flash('Não foi possivel realizar sua requisição!')
 
@@ -387,3 +387,7 @@ def acao_guarda():
 @app.route('/prototype')
 def prototype():
     return render_template('prototipo.html')
+
+@app.route('/chat')
+def chat():
+    return render_template('chatTeste1.html')

@@ -586,10 +586,12 @@ class Analise():
         return retorno_bd
 
     #ESTA DESPREZANDO UMIDADE E TEMPERATURA
-    def analisar_graos(self, caracteristicas: tuple, dados_analisados:dict, id_carga:int, redir:str, grao:str):
+    def analisar_graos(self, caracteristicas: tuple, dados_analisados:dict, id_carga:int, redir:str, grao:str)-> bool:
         '''
             Analisa os graos, publica os dados na tabela ultimas analises, atualiza
             o estado de acordo com o resultado;
+
+            Retorna True ou False dependendo do resultado da analise.
 
             Tabelas: analise_manual, info_cargas, log_analise,
 
@@ -626,19 +628,23 @@ class Analise():
                 #BLOCO ONDE SERA INSERIDO NO BANCO OS DADOS DAS CARAC QUE N ESTAO OK
         estado = ''
         irregular = False
+        feedback_redirecionamento = False #Responsavel pelo retorno da função que diz se está aprovada ou foi para o CCO
         if(total_analisado >= total_permitido):
             # print("Total analisado: {}".format(total_analisado))
             # print("Irregular")
             irregular = True
+            feedback_redirecionamento = True
             estado = 'CCO'
             #encaminha cco
 
             self.__atualiza_status_analise_info_cargas("CCO", id_carga)
+            
         else:
             #aprovado
             print('CHEGUEI')
             if(self.busca_info_cargas_por_id(id_carga)[0][8] in ['Nova Analise', 'Pedido CCO']):
                 self.__atualiza_status_analise_info_cargas("CCO", id_carga)
+                feedback_redirecionamento = True
             else:
                 self.__atualiza_status_analise_info_cargas("Finalizado", id_carga)
                 self.__posta_resultado_final_info_cargas(id_carga, "Aprovado")
@@ -647,7 +653,7 @@ class Analise():
         #Postagem da analise na tabela log_analise
         if(not irregular):
             self.__posta_log_analise(estado, id_carga, grao, n_analises=1 ,decisao_final = 'Analista', resultado='Aprovado', guarda=0)
-
+        return feedback_redirecionamento
 
     def __posta_resultado_analise_manual(self, id_analise:int, id_carga:int, irregular:bool, redir:str, valor_dado_analisado:int):
         '''

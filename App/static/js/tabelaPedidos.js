@@ -145,7 +145,7 @@ class TabelaPedidos extends Definicoes {
         
         htmlHead += "<th></th></tr>"
 
-        return `<label>${label_tabela}</label><table class="table table-striped table-responsive table-bordered tabela-pedidos-${cargo.toLowerCase()}-JS">
+        return `<label>${label_tabela}</label><table class="table table-responsive tabela-pedidos-${cargo.toLowerCase()}-JS">
             <thead>
                 ${htmlHead}    
             </thead>

@@ -2,3 +2,71 @@
     display: none;
 }
 
+#janela-chat{
+    width: 40%;
+    height: 300px;
+}
+
+body{
+    background: rgba(5, 28, 40, 100%);
+    color: white;
+}
+
+
+table tbody tr{
+    color: black;
+    text-transform: capitalize;
+    text-align: center;
+}
+table thead th{
+    text-align: center;
+}
+table tbody tr:nth-child(even){
+    background: #ECEFF1;
+}
+table tbody tr:nth-child(odd){
+    background: #CFD8DC;
+}
+
+table thead{
+    background-color: #0D47A1;
+}
+
+table th, table td{
+ border-collapse: collapse;
+    border: 2px solid black;
+}
+
+.comparacao-analises{
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    width: 100%;
+    border: 4px dashed white;
+    margin-top: 5%;
+    padding: 1%;
+}
+.comparacao-analises div{
+    width: 42%;
+}
+
+.analise-success{
+    border-color: #00C853;
+}
+.analise-danger{
+    border-color: red;
+}
+
+.flash-messages{
+    -webkit-animation-name: flash-message-animation; /* Safari 4.0 - 8.0 */
+    /* -webkit-animation-duration: ; Safari 4.0 - 8.0 */
+    animation-name: flash-message-animation;
+    animation-duration: 3s;
+    /* animation-iteration-count: infinite; */
+    color: white;
+}
+
+@keyframes flash-message-animation{
+    0%   {background-color:#5cb85c;color: white}
+    100% {visibility: hidden;}
+}
