@@ -2,13 +2,9 @@
     display: none;
 }
 
-#janela-chat{
-    width: 40%;
-    height: 300px;
-}
-
 body{
-    background: rgba(5, 28, 40, 100%);
+    background-color: rgb(5, 28, 40);
+    background-color: rgba(5, 28, 40, 100%);
     color: white;
 }
 
@@ -22,10 +18,10 @@ table thead th{
     text-align: center;
 }
 table tbody tr:nth-child(even){
-    background: #ECEFF1;
+    background-color: #ECEFF1;
 }
 table tbody tr:nth-child(odd){
-    background: #CFD8DC;
+    background-color: #CFD8DC;
 }
 
 table thead{

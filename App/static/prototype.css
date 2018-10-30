@@ -1,8 +1,9 @@
 .tela{
-    background-color: lightgray;
-    height: 50%;
     width: 70%;
     margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .processo{

@@ -1,4 +1,4 @@
-from flask import render_template, redirect,session, url_for, flash,request, jsonify
+from flask import render_template, redirect, session, url_for, send_from_directory, flash, request, jsonify
 from app import app, db
 from models import Usuario
 from helpers import nivel_de_acesso, envia_pagina_arduino
@@ -391,3 +391,8 @@ def prototype():
 @app.route('/chat')
 def chat():
     return render_template('chatTeste1.html')
+
+@app.route('/feedback/<nome>')
+def midia(nome):
+    return send_from_directory('medias', 'nome'+'.wav')
+
