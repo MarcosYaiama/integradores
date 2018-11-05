@@ -4,14 +4,23 @@
 
     <div class="tela">
       <div id="selecao-processo-JS"></div>
-      <div class="form-control processo" >OCR</div>
-      <div class="form-control processo" >Maquina</div>
-      <div class="form-control processo" >Analise Maquina</div>
-      <div class="form-control processo" >Nova Analise</div>
-      <div class="form-control processo" >Pedido CCO</div>
-      <div class="form-control processo" >Analista</div>
-      <div class="form-control processo" >CCO</div>
-      <div class="form-control processo" >Guarda</div>
+      <div class="processo" id="OCR"><h2>OCR</h2></div>
+      <div class="processo" id="Maquina"><h2>Maquina</h2></div>
+      <div class="processo" id="Retorno-Maquina"><h2>Analise Maquina</h2></div>
+      <div class="processo" id="Nova-Analise"><h2>Nova Analise</div>
+      <div class="processo" id="Pedido-CCO"><h2>Pedido CCO</h2></div>
+      <div class="processo" id="analista">
+        <h2>Analista</h2>
+        <p>Profissional responsável por examinar o granel e relatar se está de acordo ou não com os paramêtros do terminal</p>
+      </div>
+      <div class="processo" id="cco">
+        <h2>CCO</h2>
+        <p>O Centro de Controle Operacional é responsável porcontrolar e supervisionar todas as operações dentro do terminal</p>
+      </div>
+      <div class="processo" id="guarda">
+        <h2>Guarda</h2>
+        <p>Profissional que tem como uma das responsabilidades fazer a retirada dos caminhões do ponto de analise, caso a carga for rejeitada</p>
+      </div>
     </div>
     <br><br><br>
     <!-- <button class="btn btn-success form-control botao"></button> -->
@@ -26,7 +35,7 @@
 <script src="{{url_for('static', filename='js/Tabelas.js')}}"></script>
 <script>
   let tabela = new TabelasUsuarios('prototype', ['id','grao', 'destino', 'estado']);  
-  var v = document.getElementsByTagName("audio")[0];
-  v.play();
+  // var v = document.getElementsByTagName("audio")[0];
+  // v.play();
 </script>
 {%endblock%}

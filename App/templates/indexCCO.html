@@ -73,7 +73,7 @@
                         <td>{{r[6]}}</td>
                         <td>{{r[7]}}</td>
                         <td>{{r[1]}}</td>
-                        {% if r[3] %}
+                        {% if r[3]|length > 1 %}
                             <td>Sim</td>
                         {% else %}
                             <td>Não</td>
