@@ -19,6 +19,10 @@ class TabelasUsuarios{
             let objeto = new EstadoUsuarios('all', '#div-tabela-all-JS', dados=dados, false, false, online);
             setInterval(function () { objeto.atualizaObjeto() }, 2000);
         }
+        if (tabela == 'disponibilidade'){
+            let objeto = new EstadoUsuarios('guarda', '#disponibilidade-guarda-JS', dados = dados, '#selecao-guardas', ['id', ['nome']], online, true);
+            setInterval(function () { objeto.atualizaObjeto() }, 2000);
+        }
         if (tabela == 'prototype'){
             console.log('PROTOTYPE')
             let objeto = new EstadoPrototype('processo', '#div-tabela-prototype-JS', dados = dados, '#selecao-processo-JS', ['id', ['id','grao','estado']], online=2);

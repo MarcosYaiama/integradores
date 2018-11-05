@@ -52,4 +52,40 @@
             <button class="btn btn-danger form-control">Problema</button>
         </form>
 
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+        <script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous">
+        </script>
+        <script>
+            
+            let nome = document.querySelector('#usuario-nome-JS').textContent;
+                let estado_guarda = document.querySelector('#estado');
+                window.addEventListener('click', function () {
+                    console.log("ENTREI POW");
+                    
+                    let xhr = new XMLHttpRequest();
+                    xhr.open("GET", `http://localhost:5000/guarda/${nome}/0`);
+
+                    xhr.addEventListener('load', () => {
+                        console.log("entrei");
+
+                        if (xhr.status == 200) {
+                            let resultados = JSON.parse(xhr.responseText);
+                            if(resultados != "A caminho"){
+                                console.log('Trocando status');
+                                
+                                var socket = io.connect('http://127.0.0.1:5000/estadoGuarda');
+                                socket.emit('username', nome);
+                                socket.emit('estado', { 'user': nome, 'msg': 3 });
+
+                            }
+                        }
+                    });
+                    xhr.send();
+                    console.log('Hello');
+                }());
+                
+        </script>
+
 {% endblock %}

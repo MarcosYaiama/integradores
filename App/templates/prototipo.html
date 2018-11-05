@@ -26,6 +26,7 @@
 <script src="{{url_for('static', filename='js/Tabelas.js')}}"></script>
 <script>
   let tabela = new TabelasUsuarios('prototype', ['id','grao', 'destino', 'estado']);  
-
+  var v = document.getElementsByTagName("audio")[0];
+  v.play();
 </script>
 {%endblock%}

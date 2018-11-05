@@ -1,10 +1,11 @@
 class Usuario:
-    def __init__(self, id:str, senha:str, cargo:str, nome:str, status="Offline"):
+    def __init__(self, id:str, senha:str, cargo:str, nome:str, status="Offline", situacao=False):
         self.nome = nome
         self.senha = senha
         self.id = id 
         self.cargo = cargo
         self.status = status
+        self.situacao = situacao
 
 class Logs():
     def __init__(self, id_usuario:str, status, hora, data, cargo:str):

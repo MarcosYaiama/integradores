@@ -2,7 +2,7 @@
 
 class EstadoUsuarios extends Definicoes {
 
-    constructor(cargo, div, dados, selecao = null, dados_selec = null, online = 0) {
+    constructor(cargo, div, dados, selecao = null, dados_selec = null, online = 0, disp = false) {
         super();
         this._cargo = cargo;
         this.lista_usuarios_banco = [];
@@ -10,6 +10,7 @@ class EstadoUsuarios extends Definicoes {
         this.dados_a_serem_exibidos = dados;
         this.dados_a_serem_exibidos_selec = dados_selec;
         this.online = online;
+        this.disponibilidade = disp;
         // console.log(this._endereco);
 
         // this._endereco = "192.168.43.98";
@@ -71,7 +72,12 @@ class EstadoUsuarios extends Definicoes {
         let online = this.online;
 
         let xhr = new XMLHttpRequest();
-        xhr.open('GET', "http://" + this._endereco + ":5000/resposta_json/" + this._cargo + "/" + this.online);
+        if (this.disponibilidade) {
+            xhr.open('GET', `http://${this._endereco}:5000/disponibilidade_guarda/${this.online}`);
+         }
+        else{
+            xhr.open('GET', "http://" + this._endereco + ":5000/resposta_json/" + this._cargo + "/" + this.online);
+        }
         xhr.addEventListener('load', function () {
             if (xhr.status == 200) {
                 let resultados = JSON.parse(xhr.responseText);
@@ -93,7 +99,7 @@ class EstadoUsuarios extends Definicoes {
             // console.log("CARGO  ", cargo);
             if ((tamanho_tabela.length != lista_usuarios.length) && update) {
                 update(lista_usuarios, div, template, dados, cargo, online);
-                div_selec ? update(lista_usuarios, div_selec, template_selec, dados_selec) : null;
+                div_selec ? update(lista_usuarios, div_selec, template_selec, dados_selec, cargo.toLowerCase()) : null;
             }
             if (lista_usuarios.length == 0) {
                 div.innerHTML = "";
@@ -117,6 +123,8 @@ class EstadoUsuarios extends Definicoes {
                 }
                 exibicao += item[element];
             });
+            console.log(cargo);
+            
             htmlReturn += `
                 <option value="${item[dados[0]]}">${exibicao}</option>
             `

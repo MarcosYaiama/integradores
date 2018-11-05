@@ -1,6 +1,8 @@
 <html>
 
     <head>
+        <meta name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.css') }}">
         <link rel="stylesheet" href="{{url_for('static', filename='site.css')}}">
         <link rel="stylesheet" href="{{url_for('static', filename='base.css')}}">
@@ -13,7 +15,7 @@
             {% with messages = get_flashed_messages() %} {% if messages %}
             <ul id='messages' class="list-unstyled">
                 {% for message in messages %}
-                <li class="flash-messages">
+                <li class="flash-messages form-control success">
                     {{ message }}
                 </li>
             </ul>
@@ -21,7 +23,8 @@
 
             {% if session['usuario_logado'] != None and session['usuario_logado'] %}
                 <h1 style="text-align: center">{{ session['usuario_cargo'] }}</h1>
-                <p style="text-align: center">Logado como : {{session['usuario_nome']}}</p><br>
+                <p style="text-align: center" >{{session['usuario_nome']}}</p><br>
+                <p style="display:none;" id="usuario-nome-JS">{{session['usuario_logado']}}</p><br>
                 <a href="{{ url_for('logout') }}" id="btn_logout" class="btn-primary btn form-control">Logout</a><br><br>
             {% endif %}
             <br>

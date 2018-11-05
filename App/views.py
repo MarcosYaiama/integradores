@@ -1,9 +1,10 @@
 from flask import render_template, redirect, session, url_for, send_from_directory, flash, request, jsonify
-from app import app, db
+from app import app, db, socketio
 from models import Usuario
 from helpers import nivel_de_acesso, envia_pagina_arduino
 from daoMySQL import UsuarioDao, Analise
 from pprint import pprint
+from flask_socketio import SocketIO, send, emit
 
 mySQL = True
 usuario_dao = UsuarioDao(db)
@@ -58,7 +59,8 @@ def index():
         elif(session['usuario_cargo'] == "GUARDA"):
             
             resultado = analise.retorno_guarda(session['usuario_logado'])
-            return render_template(session['nivel_acesso'][0], resultados=resultado)
+            recusas = analise.retorno_guarda("all")
+            return render_template(session['nivel_acesso'][0], resultados=resultado, recusas=recusas)
             
             
         return render_template(session['nivel_acesso'][0])
@@ -83,6 +85,7 @@ def autenticar():
             session['usuario_nome'] = usuario.nome
             session['usuario_cargo'] = usuario.cargo
             session['nivel_acesso'] = nivel_de_acesso(usuario.cargo)
+            print(session)
             usuario_dao.atualiza_status("Online", usuario.id)
             usuario_dao.atualiza_log(usuario.id, 1, usuario.cargo)
             return redirect(url_for('index'))
@@ -208,9 +211,12 @@ def chamado_guarda():
     '''
         Vai para a tela de chamados do guarda
     '''
-
+    # print(session)
     if(request.form['situacao'] == 'Aguardando'):
-        print('Entrei')
+        if('guarda' in request.form.keys()):
+            print('ENTREI')
+            analise.atualiza_nome_pedido_guarda(
+                request.form['id'], session['usuario_logado'])
         analise.atualiza_estado_pedido_guarda(request.form['id'], "Em Andamento")
     
     return protege_rota('chamadoGuarda.html')
@@ -365,10 +371,55 @@ def jsonTeste(dado, num):
             elif(dado == 'ultimas_analises'):
                 # print(analise.analises_finalizadas(json=True))
                 return jsonify(analise.analises_finalizadas(json=True))
-            return jsonify(usuario_dao.listar(cargo=cargo_chamada, json=True, online=int(num)))
+            return jsonify(usuario_dao.listar(cargo=cargo_chamada, json=True, online=int(num), disponibilidade=False))
         # return jsonify({'key': [0,1,2,3,4,5]})
     else:
         return redirect(url_for('index'))
+
+
+@app.route('/disponibilidade_guarda/<online>')
+def busca_disponibilidade_guarda(online):
+        print(usuario_dao.listar(cargo="guarda", json=True, online=int(online), disponibilidade=True))
+        return jsonify(usuario_dao.listar(cargo="guarda", json=True, online=int(online), disponibilidade=True))
+
+
+@app.route('/pedido_guarda/<nome>/<num>')
+def busca_pedido_guarda(nome, num):
+    '''
+        Busca os pedidos do guarda, é usado em chamada Ajax para
+        definir elementos via JS no Index_Guarda
+
+        Params:
+            nome - id do guarda
+            num
+                0 - Aguardando
+                1 - Em Andamento
+                2 - Finalizado
+
+    '''
+    return jsonify(analise.busca_pedido_guarda(nome, num))
+
+@app.route('/guarda/<nome_guarda>/<num>')
+def busca_situacao_guarda(nome_guarda, num):
+    '''
+        num
+            0 - Retorna do estado do nome_guarda
+            1- Seta o nome_guarda para Disponivel
+            2- Seta o nome_guarda para Oculpado
+        
+        online
+            0 - Offline
+            1 - Online
+            2 - Todos
+    ''' 
+    # print("GET")
+    # print("RESULTADO",jsonify(usuario_dao.busca_estado_guarda(nome_guarda)))
+    return jsonify(usuario_dao.busca_estado_guarda(nome_guarda))
+
+@app.route('/info_cargas/placa/<id_carga>')
+def busca_placa_por_id_carga(id_carga):
+    return jsonify(analise.busca_placa_id_carga(id_carga))
+
 
 @app.route('/mapa_processo')
 def mapa_processo():
@@ -379,8 +430,13 @@ def mapa_processo():
 
 @app.route('/acao_guarda', methods=['POST',])
 def acao_guarda():
-    analise.guarda_finaliza_pedido(request.form['id'],request.form['id_carga'])
-    flash(request.form['id'] + request.form['id_carga'])
+    if(request.form['guarda'] == 'all'):
+        analise.atualiza_nome_pedido_guarda(request.form['id'], "all")
+        flash("Pedido colocado em escopo GLOBAL")
+    else:
+        analise.guarda_finaliza_pedido(request.form['id'],request.form['id_carga'])
+        usuario_dao.seta_estado_guarda(request.form['guarda'], 2)
+        flash(request.form['id'] + request.form['id_carga'])
     
     return redirect(url_for('index'))
 
@@ -392,7 +448,41 @@ def prototype():
 def chat():
     return render_template('chatTeste1.html')
 
-@app.route('/feedback/<nome>')
-def midia(nome):
-    return send_from_directory('medias', 'nome'+'.wav')
+@app.route('/feedback/')
+def midia():
+    return send_from_directory('medias', 'feedback.mp3')
+
+@app.route('/situacao/<num>')
+def altera_situacao(num):
+    '''
+        Altera o estado do usuario e dependendo desse estado 
+        verifica se está ou não disponivel
+
+    '''
+    ...
+
+users = {}
+# WEBSOCKETS ------------------------------
+@socketio.on('username', namespace='/estadoGuarda')
+def usuario_recebido(username):
+    # users['username'] = request.sid
+    users[username] = request.sid
+    # print(users)
+    # print(session['usuario_logado'])
+    # print(username)
+    # print('Username added!')
+
+
+@socketio.on('estado', namespace='/estadoGuarda')
+def estado(payload):
+    resposta_server = usuario_dao.seta_estado_guarda(payload['user'], payload['msg'])
+    # print(resposta_server)
+    emit('estado_resposta', payload['msg'], room=users[payload['user']])
+
+
+
+
+
+
+
 

@@ -70,6 +70,8 @@ class UsuarioDao:
                     ...
             else:
                 query += ' status_atual="Offline"'
+            if(disponibilidade):
+                query += ' and situacao = "Disponivel"'              
 
         print(query)
         
@@ -83,7 +85,10 @@ class UsuarioDao:
             for user in usuarios:
                 # print(user.nome)
                 if(disponibilidade):
-                    ...
+                    dicionario_resposta.append({'id':user.id,
+                                            'cargo':user.cargo,
+                                            'nome': user.nome,
+                                            'status':user.situacao})
                 else:
                     dicionario_resposta.append({'id':user.id,
                                             'cargo':user.cargo,
@@ -182,13 +187,33 @@ class UsuarioDao:
                                                   cargo))
         self.__db.connection.commit()
 
+    def busca_estado_guarda(self, nome_guarda)-> tuple:
+        cursor = self.__db.connection.cursor()
+        cursor.execute(
+            'Select situacao from usuarios where id = "{}"'.format(nome_guarda)
+        )
+        return {'estado':cursor.fetchall()[0][0]}
+
+    def seta_estado_guarda(self, nome_guarda, estado)-> tuple:
+        # print("SETANDO")
+        cursor = self.__db.connection.cursor()
+        estado_guarda = "Oculpado"
+        if(int(estado) ==2): 
+            estado_guarda = "Disponivel"
+        elif(int(estado) ==3): 
+            estado_guarda = "A Caminho"
+        cursor.execute(
+            'update usuarios set situacao = "{}" where id = "{}"'.format(estado_guarda ,nome_guarda))
+        self.__db.connection.commit()
+        return estado_guarda
+
 def traduz_user(usuarios:tuple) -> list:
     '''
         Recebe uma tupla do banco de dados e retorna uma lista de
         objetos.
     '''
     def cria_user_com_tupla(tupla):
-        return Usuario(tupla[0], tupla[1], tupla[2],tupla[3], tupla[4])
+        return Usuario(tupla[0], tupla[1], tupla[2],tupla[3], tupla[4], tupla[5])
     return list(map(cria_user_com_tupla, usuarios))
 
 def traduz_logs(logs:tuple) -> list:
@@ -222,7 +247,6 @@ class Analise():
         '''
         self.__db = db
 
-    #POSSIVEL REFATORACAO
     def __busca(self, tabela:str, composta=False) -> list:
         '''
             Método interno da classe e usado por métodos do próprio objeto.
@@ -891,7 +915,7 @@ class Analise():
             ...
 
     
-    def __pesquisa_chamados_guarda(self, id_guarda:str)-> tuple:
+    def __pesquisa_chamados_guarda(self, id_guarda:str, todos=False)-> tuple:
         '''
             Todos os chamados relativos ao id do guarda.
 
@@ -899,7 +923,10 @@ class Analise():
         '''
 
         cursor = self.__db.connection.cursor()
-        cursor.execute('SELECT * from pedido_guarda where nome = "{}" and status != "Finalizado"'.format(id_guarda))
+        if(todos):
+            cursor.execute('SELECT * from pedido_guarda where nome = "all" and status != "Finalizado"')
+        else:
+            cursor.execute('SELECT * from pedido_guarda where nome = "{}" and status != "Finalizado"'.format(id_guarda))
         resultado_busca = cursor.fetchall()
         if(resultado_busca):
             return resultado_busca
@@ -916,8 +943,11 @@ class Analise():
             Views: / , /chamado_guarda
             Tipo de Usuario: Guarda
         '''
-        print(id_guarda)
-        chamados = self.__pesquisa_chamados_guarda(id_guarda)
+        # print(id_guarda)
+        if(id_guarda == "all"):
+            chamados = self.__pesquisa_chamados_guarda(id_guarda, todos=True)
+        else:
+            chamados = self.__pesquisa_chamados_guarda(id_guarda)
         info_cargas_retorno = []
         if(chamados):
             for chamado in chamados:
@@ -928,6 +958,12 @@ class Analise():
             return (chamados, info_cargas_retorno)
         return False
 
+    def atualiza_nome_pedido_guarda(self, id_pedido:int, guarda:str):
+        cursor = self.__db.connection.cursor()
+        cursor.execute(
+            'update pedido_guarda set nome ="{}" where id={}'.format(guarda, id_pedido))
+        cursor.connection.commit()
+        
     def atualiza_estado_pedido_guarda(self, id_pedido:int, estado:str):
         cursor = self.__db.connection.cursor()
         cursor.execute(
@@ -963,4 +999,38 @@ class Analise():
             'Select id_carga, grao, fornecedor, destino, placa, estado_fk from info_cargas where estado_fk != "Finalizado"'
         )
         return cursor.fetchall()
+
+    def busca_pedido_guarda(self,nome,num):
+        status = "Aguardando"
+        if(num):
+            status = "Em Andamento"
+            if(num == 2):
+                status = "Finalizado"   
+        cursor = self.__db.connection.cursor()
+        cursor.execute(
+            'select * from pedido_guarda where status = "{}" and nome = "{}"'.format(status,nome)
+            )
+        resultados = cursor.fetchall()
+        json_dict = []
+        # print(len(resultados[0]))
+        for r in resultados:
+            print(r)
+            json_dict.append({'id':r[0], 'nome':r[1], 'id_carga':r[2], 'cco':r[3], 'status':r[4]})
+        # print(json_dict)
+        return json_dict
+
+    def busca_placa_id_carga(self, id_carga):
+        cursor = self.__db.connection.cursor()
+        cursor.execute(
+            'select placa from info_cargas where id_carga = {}'.format(id_carga)
+            )
+        resultados = cursor.fetchall()
+        json_dict = []
+        # print(len(resultados[0]))
+        for r in resultados:
+            json_dict.append({'placa':r[0]})
+        # print(json_dict)
+        return json_dict
+
+
     
