@@ -27,12 +27,14 @@ class Prototype extends Definicoes{
     })
   }
   exibe_estado_processo(estado){
-    let labels = document.querySelectorAll('.tela .processo');
-    console.log('ESTADO =>' + estado);
+    let labels = document.querySelectorAll('.tela .processo h2');
+    // console.log('ESTADO =>' + estado);
     labels.forEach(element => {
-      // console.log(element.textContent);
+      // console.log(element.textContent, ' x ', estado);
       if (element.textContent.toLowerCase() == estado.toLowerCase()){
-        element.classList.add('processo-ativo');
+        // console.log('YESSSSSS');
+        
+        element.parentElement.classList.add('processo-ativo');
       }
       else{
         if(element.classList.contains('processo-ativo')){

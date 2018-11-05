@@ -46,13 +46,6 @@ window.addEventListener('click', function () {
             
 
             }
-            // else{
-            //     div_btns.innerHTML =
-            //     `
-            //         <button class="form-control btn btn-danger" id="estado_1">Oculpado</button>
-            //         <button id="estado_2" class="form-control btn btn-success">Disponivel</button>
-            //     `;
-            // }
         }
     });
     xhr.send();

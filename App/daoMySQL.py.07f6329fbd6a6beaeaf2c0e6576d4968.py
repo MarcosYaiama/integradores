@@ -1036,9 +1036,6 @@ class Analise():
     def verifica_existencia_processos_info_cargas(self):
         cursor = self.__db.connection.cursor()
         cursor.execute(
-            'select COUNT(*) from info_cargas where estado_fk != "Finalizado"'
+            'select COUNT(*) from info_cargas where estado_fk != "Finalizado"'    
             )
-        if(cursor.fetchall()[0][0] > 0):
-            return False
-        else:
-            return True
+        resultados = cursor.fetchall()

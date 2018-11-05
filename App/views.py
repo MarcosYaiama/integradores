@@ -50,10 +50,12 @@ def index():
         elif(session['usuario_cargo'] == "CCO"):
             if('decisao_cco' in request.form):
                 # AQUI ENTRA OS METODOS DO CCO QUE ALTERAM A DECISAO DO ANALISTA
-                print(request.form['decisao_cco'])
-                print(request.form['id_carga'])
+            #     print(request.form['decisao_cco'])
+            #     print(request.form['id_carga'])
+                ...
             chamadas_cco = analise.busca_chamados_cco()
             ultimas_analises = analise.analises_finalizadas()
+            # print(ultimas_analises)
             return render_template(session['nivel_acesso'][0], ultimas_analises=ultimas_analises, chamadas_cco = chamadas_cco)
 
         elif(session['usuario_cargo'] == "GUARDA"):
@@ -85,7 +87,7 @@ def autenticar():
             session['usuario_nome'] = usuario.nome
             session['usuario_cargo'] = usuario.cargo
             session['nivel_acesso'] = nivel_de_acesso(usuario.cargo)
-            print(session)
+            # print(session)
             usuario_dao.atualiza_status("Online", usuario.id)
             usuario_dao.atualiza_log(usuario.id, 1, usuario.cargo)
             return redirect(url_for('index'))
@@ -124,19 +126,19 @@ def novo_usuario():
 @app.route('/formCCO', methods=['POST',])
 def cco_form():
 
-    print(request.form['id_carga'])
-    envia_pagina_arduino(
-        usuarios=session['usuario_logado'], cargo=session['usuario_cargo'], pagina='Form CCO')
+    # print(request.form['id_carga'])
+    # envia_pagina_arduino(
+    #     usuarios=session['usuario_logado'], cargo=session['usuario_cargo'], pagina='Form CCO')
     dados = []
     dados.append(analise.busca_info_cargas_por_id(request.form['id_carga']))
     dados.append(analise.busca_analise_manual_por_id(request.form['id_carga']))
     dados.append(analise.busca_analise_maquina_por_id(request.form['id_carga']))
     dados.append(analise.caracteristicas_grao_analise(dados[0][0][1]))
-    print("TAMANHO_TUPLE==>>", len(dados[1]))
-    print()
-    for i in dados[1]:
-        print("Dados==>>", i)
-        print()
+    # print("TAMANHO_TUPLE==>>", len(dados[1]))
+    # print()
+    # for i in dados[1]:
+        # print("Dados==>>", i)
+        # print()
 
     return protege_rota('formCCO.html', arquivos = dados)
 
@@ -182,21 +184,23 @@ def verifica_analise():
         Faz a analise e redireciona para a pagina inicial
         Paginas que redirecionam para cá: formAnalise
     '''
+    print(session, "ENTREEEEEEEEEEEI")
     if(session['usuario_cargo'] == 'CCO'):
         guarda = 0
         if(len(request.form['guarda']) > 1):
             guarda = request.form['guarda']
+        print("CHEGEEEEEEEEEEEEEEEEEEI", guarda)
         analise.decisao_cco(request.form['decisao'],request.form['id_carga'], guarda = guarda, cco = session['usuario_logado'])
     elif(session['usuario_cargo'] == 'ANALISTA DE GRAOS'):
         caracteristicas = analise.caracteristicas_grao_analise(request.form['grao'])
         dados_analisados = {}
         for d in caracteristicas:
         
-            print(d)
-            print(int(request.form[d[0]]))
+            # print(d)
+            # print(int(request.form[d[0]]))
         
             dados_analisados[d[0]] = int(request.form[d[0]])
-        print(dados_analisados)
+        # print(dados_analisados)
         if(not analise.analisar_graos(caracteristicas, dados_analisados, request.form['id_carga'], request.form['redirec'], request.form['grao'])):
             flash('A analise foi aprovada')
         else:
@@ -214,7 +218,7 @@ def chamado_guarda():
     # print(session)
     if(request.form['situacao'] == 'Aguardando'):
         if('guarda' in request.form.keys()):
-            print('ENTREI')
+            # print('ENTREI')
             analise.atualiza_nome_pedido_guarda(
                 request.form['id'], session['usuario_logado'])
         analise.atualiza_estado_pedido_guarda(request.form['id'], "Em Andamento")
@@ -274,24 +278,27 @@ def controle_funcionarios():
 
 @app.route('/gera_analise', methods=['POST','GET'])
 def gera_analise():
-    
     if(len(request.form)):
-        try:
-            if(request.form['nova_analise'] == 'True'):
-                analise.cria_analise(
-                        dados_inseridos = [
-                            request.form['id_carga'],
-                            request.form['grao'],
-                            request.form['umidade'],
-                            request.form['temperatura']])
-            flash('Pedido de Nova analise enviado com Sucesso!')
-        except:
-            flash('Erro ao enviar pedido Nova Analise!!!! Gera Analise')
-            return redirect(url_for('index'))
+            try:
+                if(request.form['nova_analise'] == 'True'):
+                    analise.cria_analise(
+                            dados_inseridos = [
+                                request.form['id_carga'],
+                                request.form['grao'],
+                                request.form['umidade'],
+                                request.form['temperatura']])
+                flash('Pedido de Nova analise enviado com Sucesso!')
+            except:
+                flash('Erro ao enviar pedido Nova Analise!!!! Gera Analise')
+                return redirect(url_for('index'))
 
     else:
-        analise.cria_analise()
-        flash('OCR e Analise manual simuladas, criadas com sucesso')
+        if(analise.verifica_existencia_processos_info_cargas()):
+            print('ENTREI')
+            analise.cria_analise()
+            flash('OCR e Analise manual simuladas, criadas com sucesso')
+        else:
+            flash('Existem processos em aberto')
 
     return redirect(url_for('index'))
 
@@ -339,7 +346,7 @@ def jsonTeste(dado, num):
         # print(dado.lower())
 
         cargo_chamada = ""
-        print(dado)
+        # print(dado)
         if(dado):
             if(dado == 'cco'):
                 cargo_chamada = 'CCO'
@@ -362,10 +369,10 @@ def jsonTeste(dado, num):
                 return jsonify(analise.busca_chamados_cco())
             elif(dado == 'chamados_analise'):
                 if(not num):
-                    print(analise.registros_analise(json=True))
+                    # print(analise.registros_analise(json=True))
                     return jsonify(analise.registros_analise(json=True))
                 else:
-                    print(analise.registros_analise(estado_fk=1, json=True))
+                    # print(analise.registros_analise(estado_fk=1, json=True))
                     return jsonify(analise.registros_analise(estado_fk=1, json=True))
                 
             elif(dado == 'ultimas_analises'):
@@ -379,7 +386,7 @@ def jsonTeste(dado, num):
 
 @app.route('/disponibilidade_guarda/<online>')
 def busca_disponibilidade_guarda(online):
-        print(usuario_dao.listar(cargo="guarda", json=True, online=int(online), disponibilidade=True))
+        # print(usuario_dao.listar(cargo="guarda", json=True, online=int(online), disponibilidade=True))
         return jsonify(usuario_dao.listar(cargo="guarda", json=True, online=int(online), disponibilidade=True))
 
 

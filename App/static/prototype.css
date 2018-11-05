@@ -10,16 +10,20 @@
     background-color: darkgray;
     color:white;
     text-align: center;
+    display: none;
 }
 
 .processo-ativo{
+    display: block;
+}
+
+.processo-ativo h2{
     -webkit-animation-name: active-process; /* Safari 4.0 - 8.0 */
     /* -webkit-animation-duration: ; Safari 4.0 - 8.0 */
     animation-name: active-process;
     animation-duration: 1.5s;
     animation-iteration-count: infinite;
 }
-
 @keyframes active-process{
     0%   {background-color:#5cb85c;color: white}
     50%  {background-color:white; color: #5cb85c}

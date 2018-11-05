@@ -45,6 +45,7 @@
         <form action="{{ url_for('acao_guarda') }}" method="POST">
             <input type="hidden" name="id" value="{{ request.form['id'] }}">
             <input type="hidden" name="id_carga" value="{{ request.form['id_carga'] }}">
+            <input type="hidden" name="guarda" value="{{ session['usuario_logado'] }}">
             <button class="btn btn-success form-control">Finalizar</button>
         </form>
         <form action="#" method="POST">
