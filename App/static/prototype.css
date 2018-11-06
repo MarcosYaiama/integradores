@@ -1,13 +1,15 @@
 .tela{
-    width: 70%;
+    width: 100%;
     margin: auto;
+    margin-bottom: 2%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    border: white solid 3px;
 }
 
 .processo{
-    background-color: darkgray;
+    background-color: inherit;
     color:white;
     text-align: center;
     display: none;
@@ -23,6 +25,8 @@
     animation-name: active-process;
     animation-duration: 1.5s;
     animation-iteration-count: infinite;
+    margin: 1px;
+    padding: 1%;
 }
 @keyframes active-process{
     0%   {background-color:#5cb85c;color: white}

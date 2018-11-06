@@ -37,8 +37,8 @@ class Prototype extends Definicoes{
         element.parentElement.classList.add('processo-ativo');
       }
       else{
-        if(element.classList.contains('processo-ativo')){
-          element.classList.remove('processo-ativo');
+        if (element.parentElement.classList.contains('processo-ativo')){
+          element.parentElement.classList.remove('processo-ativo');
         }
       }
     });

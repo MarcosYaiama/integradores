@@ -935,7 +935,7 @@ class Analise():
             return False
 
 
-    def retorno_guarda(self, id_guarda:str)-> tuple:
+    def retorno_guarda(self, id_guarda:str, json=False)-> tuple:
         '''
             Recebe o id do Guarda e retorna uma tupla de tuplas com as informações da carga
             e dados do pedido.
@@ -950,6 +950,10 @@ class Analise():
         else:
             chamados = self.__pesquisa_chamados_guarda(id_guarda)
         info_cargas_retorno = []
+        # if(json):
+        #     ...
+        # else:
+        print(chamados)
         if(chamados):
             for chamado in chamados:
                 #Busca info_cargas atraves do id_carga e adiciona a lista
@@ -958,6 +962,16 @@ class Analise():
         #pois os itens vão ser relativos um ao outro através da ordem dos indices. 
             return (chamados, info_cargas_retorno)
         return False
+        # resultados = cursor.fetchall()
+        # if(json):
+        #     json_dict = []
+        #     for resultado in resultados:
+        #         json_dict.append({
+        #             'id': resultado[0],
+        #             'grao': resultado[1]
+        #         })
+        #     return json_dict
+        # return resultados
 
     def atualiza_nome_pedido_guarda(self, id_pedido:int, guarda:str):
         cursor = self.__db.connection.cursor()

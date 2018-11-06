@@ -1,56 +1,41 @@
 {% extends 'template.html' %} {% block conteudo %}
-        <div id="div-tabela-chamados-cco-JS"></div>
-<!-- {{chamadas_cco}}
-        {% if chamadas_cco %}
-        <table class="table table-bordered table-responsive table-striped">
-            <label>Reprovas da Analise</label>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Grão</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for chamada in chamadas_cco %}
-                <tr>
-                    <td>{{chamada[0]}}</td>
-                    <td>{{chamada[1]}}</td>
-                    <td>
-                        <form action="{{url_for('cco_form')}}" method="POST">
-                            <input type="hidden" name="id_carga" value="{{chamada[0]}}">
-                        <button class="btn btn-danger form-control" type="submit">Verificar</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {%endif%} -->
-        <!-- <div id="div-tabela-chamados-cco-JS"></div>
-        <div id="div-tabela-ultimas-analises-JS"></div> -->
+    <div class="tela">
+        <div id="selecao-processo-JS"></div>
+        <div class="processo">
+            <h2>OCR</h2>
+        </div>
+        <div class="processo">
+            <h2>Maquina</h2>
+        </div>
+        <div class="processo">
+            <h2>Analise Maquina</h2>
+        </div>
+        <div class="processo">
+            <h2>Nova Analise</h2>
+        </div>
+        <div class="processo">
+            <h2>Pedido CCO</h2>
+        </div>
+        <div class="processo">
+            <h2>Analista</h2>
+            <p>Profissional responsável por examinar o granel e relatar se está de acordo ou não com os paramêtros do
+                terminal</p>
+        </div>
+        <div class="processo">
+            <h2>CCO</h2>
+            <p>O Centro de Controle Operacional é responsável porcontrolar e supervisionar todas as operações dentro do
+                terminal</p>
+        </div>
+        <div class="processo">
+            <h2>Guarda</h2>
+            <p>Profissional que tem como uma das responsabilidades fazer a retirada dos caminhões do ponto de analise,
+                caso a carga for rejeitada</p>
+        </div>
+    </div>
+    <div id="div-tabela-prototype-JS" class="hide"></div>
+    <audio class="hide" src="feedback" preload="auto" controls></audio>
+<div id="div-tabela-chamados-cco-JS"></div>
 
-        <!--
-        <table class="table table-bordered table-responsive table-striped">
-            <label>Reprovas da Analise</label>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Grão</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>002</td>
-                    <td>Soja</td>
-                    <td>
-                        <a class="btn btn-danger form-control" href="{{url_for('cco_form')}}">Verificar</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        -->
              {% if ultimas_analises %}
             <table class="table table-responsive">
                 <label>Situação das Ultimas análises</label>
@@ -86,9 +71,6 @@
                 </tbody>
             </table>
             {% endif %}
-        <a class="btn btn-primary form-control" href="#">Ver Mais</a>
-        <br>
-        <br>
         <a class="btn btn-danger form-control" id="btn_controle_usuarios" href="{{ url_for('controle_funcionarios') }}">Controle Funcionarios</a>
         <br>
 
@@ -98,5 +80,13 @@
     <script src="{{url_for('static', filename='js/Tabelas.js')}}"></script>
     <script>
         let tabelaCCO = new TabelasUsuarios('chamados_cco', ['id', 'grao']);
+    </script>
+
+    <script src="{{url_for('static', filename='js/Prototype.js')}}"></script>
+    <script src="{{url_for('static', filename='js/EstadoPrototype.js')}}"></script>
+    <script>
+        let tabela = new TabelasUsuarios('prototype', ['id', 'grao', 'destino', 'estado']);
+      // var v = document.getElementsByTagName("audio")[0];
+      // v.play();
     </script>
 {% endblock %}
