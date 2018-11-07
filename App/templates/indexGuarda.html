@@ -7,127 +7,15 @@
         <button id="estado_2" class="form-control btn btn-success">Disponivel</button>
         
     </div>
-    
-<!-- {{resultados[0]}}<br><br>
-{{resultados[1]}} -->
-{% if(resultados) %}
-    <div style="border: 3px solid white; padding: 1%; margin: 1%;">
-        <h2 style="text-align: center; color: white; padding: 1%;"><strong>Chamados Direto do CCO</strong></h2>
-        <table class="table table-striped table-responsive table-bordered">
-            <thead>
-                <tr>
-                    <th>Placa</th>
-                    <th>Fornecedor</th>
-                    <!-- <th>CCO</th> -->
-                    <th>Requisição</th>
-                    <!-- <th>Situação</th> -->
-                </tr>
-            </thead>
-            <tbody>
-                {% for dado_recebido in range(resultados[0]|length) %}
-                    <tr>
-                        <td>{{resultados[1][dado_recebido][0][7]}}</td>
-                        <td>{{resultados[1][dado_recebido][0][2]}}</td>
-                        <!-- <td>{{resultados[0][dado_recebido][3]}}</td> -->
-                        <td>
-                        {% if resultados[0][dado_recebido][-1] == "Aguardando" %}
-                            <form action="{{ url_for('chamado_guarda') }}" method="POST">
-                                <input type="hidden" value="{{resultados[1][dado_recebido][0][7]}}" name="placa">
-                                <input type="hidden" value="{{resultados[1][dado_recebido][0][2]}}" name="fornecedor">
-                                <input type="hidden" value="{{resultados[1][dado_recebido][0][1]}}" name="grao">
-                                    <input type="hidden" value="{{resultados[1][dado_recebido][0][0]}}" name="id_carga">
-                                    <input type="hidden" value="{{resultados[0][dado_recebido][3]}}" name="cco">
-                                    <input type="hidden" value="{{resultados[0][dado_recebido][-1]}}" name="situacao">
-                                    <input type="hidden" value="{{resultados[0][dado_recebido][0]}}" name="id">
-                                    <button class="btn btn-success form-control">Aceitar</button>
-                                </form>
-                                <form action="{{ url_for('acao_guarda') }}" method="POST">
-                                    <input type="hidden" value="{{resultados[0][dado_recebido][0]}}" name="id">
-                                    <input type="hidden" value="{{resultados[1][dado_recebido][0][0]}}" name="id_carga">
-                                    <input type="hidden" value="all" name="guarda">
-                                    <button class="btn btn-danger form-control">Recusar</button>
-                            </form>
-                        {%else%}
-                            <form action="{{ url_for('chamado_guarda') }}" method="POST">
-                                <input type="hidden" value="{{resultados[1][dado_recebido][0][7]}}" name="placa">
-                                <input type="hidden" value="{{resultados[1][dado_recebido][0][2]}}" name="fornecedor">
-                                <input type="hidden" value="{{resultados[1][dado_recebido][0][1]}}" name="grao">
-                                <input type="hidden" value="{{resultados[1][dado_recebido][0][0]}}" name="id_carga">
-                                <input type="hidden" value="{{resultados[0][dado_recebido][3]}}" name="cco">
-                                <input type="hidden" value="{{resultados[0][dado_recebido][-1]}}" name="situacao">
-                                <input type="hidden" value="{{resultados[0][dado_recebido][0]}}" name="id">
-                                <button class="btn btn-primary form-control">Ver Detalhes</button>
-                            </form>
-                        {%endif%}
-                        </td>
-                        
-                        <!-- {% if resultados[0][dado_recebido][-1] == "Aguardando" %} True
-                            <td style="text-align: center; background-color: #337ab7; color: white; font-weight: bolder">{{resultados[0][dado_recebido][-1]}}</td>
-                        {%else%}
-                            <td style="text-align: center; background-color: #d9534f; color: white; font-weight: bolder">{{resultados[0][dado_recebido][-1]}}</td>
-                        {%endif%} -->
-                        
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% else %}
-    <h2 style="text-align: center; background-color: #337ab7; color: white"><strong>Nenhuma chamado do CCO até o momento</strong></h2>
-{% endif %}
-{% if(recusas) %}
-    <div style="border: 3px solid white;padding: 1%;margin: 1%;">
-        <h2 style="text-align: center; color: white"><strong>Chamados de Escopo Global</strong></h2>
-        <table class="table table-striped table-responsive table-bordered">
-            <thead>
-                <tr>
-                    <th>Placa</th>
-                    <th>Fornecedor</th>
-                    <th>Requisição</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for dado_recebido in range(recusas[0]|length) %}
-                    <tr>
-                        <td>{{recusas[1][dado_recebido][0][7]}}</td>
-                        <td>{{recusas[1][dado_recebido][0][2]}}</td>
-                        <td>
-                        {% if recusas[0][dado_recebido][-1] == "Aguardando" %}
-                            <form action="{{ url_for('chamado_guarda') }}" method="POST">
-                                <input type="hidden" value="{{recusas[1][dado_recebido][0][7]}}" name="placa">
-                                <input type="hidden" value="{{recusas[1][dado_recebido][0][2]}}" name="fornecedor">
-                                <input type="hidden" value="{{recusas[1][dado_recebido][0][1]}}" name="grao">
-                                <input type="hidden" value="{{recusas[1][dado_recebido][0][0]}}" name="id_carga">
-                                <input type="hidden" value="{{recusas[0][dado_recebido][3]}}" name="cco">
-                                <input type="hidden" value="{{recusas[0][dado_recebido][-1]}}" name="situacao">
-                                <input type="hidden" value="{{recusas[0][dado_recebido][0]}}" name="id">
-                                <input type="hidden" value="{{session['usuario_logado']}}" name="guarda">
-                                <button class="btn btn-success form-control">Aceitar</button>
-                            </form>
-
-                        {%else%}
-                            <form action="{{ url_for('chamado_guarda') }}" method="POST">
-                                <input type="hidden" value="{{recusas[1][dado_recebido][0][7]}}" name="placa">
-                                <input type="hidden" value="{{recusas[1][dado_recebido][0][2]}}" name="fornecedor">
-                                <input type="hidden" value="{{recusas[1][dado_recebido][0][1]}}" name="grao">
-                                <input type="hidden" value="{{recusas[1][dado_recebido][0][0]}}" name="id_carga">
-                                <input type="hidden" value="{{recusas[0][dado_recebido][3]}}" name="cco">
-                                <input type="hidden" value="{{recusas[0][dado_recebido][-1]}}" name="situacao">
-                                <input type="hidden" value="{{recusas[0][dado_recebido][0]}}" name="id">
-                                <button class="btn btn-primary form-control">Ver Detalhes</button>
-                            </form>
-                        {%endif%}
-                        </td>
-
-                        
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-{% else %}
-    <h2 style="text-align: center; background-color: #337ab7; color: white"><strong>Nenhum chamado de Escopo Global até o momento</strong></h2>
-{% endif %}
+<div id="div-tabela-chamados-guarda-JS">
+    <h2 style="text-align: center; background-color: #337ab7; color: white"><strong>Nenhum chamado do CCO até o
+            momento</strong></h2>
+</div>
+<div id="div-tabela-chamados-guarda-all-JS">
+    <h2 style="text-align: center; background-color: #337ab7; color: white"><strong>Nenhum chamado de Escopo Global até
+            o
+            momento</strong></h2>
+</div>
     <br>
         <br>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
@@ -136,4 +24,14 @@
             crossorigin="anonymous">
     </script>
     <script src="{{url_for('static', filename='js/IndexGuarda.js')}}"></script>
+
+
+    <script src="{{url_for('static', filename='js/Definicoes.js')}}"></script>
+    <script src="{{url_for('static', filename='js/tabelaGuarda.js')}}"></script>
+    <script src="{{url_for('static', filename='js/Tabelas.js')}}"></script>
+    <script>
+        let tabelaGuardaIndividual = new TabelasUsuarios('chamados_guarda', ['placa', 'fornecedor', 'requisição'],1);
+        let tabelaGuardaGlobal = new TabelasUsuarios('chamados_guarda_all', ['placa', 'fornecedor', 'requisição']);
+        
+    </script>
 {% endblock %}

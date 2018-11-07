@@ -341,6 +341,10 @@ def jsonTeste(dado, num):
         Dado - > chamados_analista
                     num - > 0 - Nova Analise
                     num - > 1 - Retorno Maquina
+        
+        Dado - > chamados_guarda
+                    num - > 0 - Pedidos Globais
+                    num - > 1 - Pedidos especificos
     '''
     if('usuario_logado' in session):
         # print(dado.lower())
@@ -378,6 +382,14 @@ def jsonTeste(dado, num):
             elif(dado == 'ultimas_analises'):
                 # print(analise.analises_finalizadas(json=True))
                 return jsonify(analise.analises_finalizadas(json=True))
+            
+            elif(dado == 'chamados_guarda'):
+                # print(analise.analises_finalizadas(json=True))
+                if(num):
+                    return jsonify(analise.retorno_guarda(session['usuario_logado'], json=True, dados='placa, fornecedor, grao, id_carga'))
+                else:
+                    return jsonify(analise.retorno_guarda("all", json=True, dados='placa, fornecedor, grao, id_carga'))
+            
             return jsonify(usuario_dao.listar(cargo=cargo_chamada, json=True, online=int(num), disponibilidade=False))
         # return jsonify({'key': [0,1,2,3,4,5]})
     else:

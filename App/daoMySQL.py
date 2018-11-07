@@ -780,7 +780,7 @@ class Analise():
             return json_dict
         return resultados
 
-    def busca_info_cargas_por_id(self, id_carga:int):
+    def busca_info_cargas_por_id(self, id_carga:int, dados = False):
         '''
             Busca todos os registro de info_cargas com o id_carga e retorna uma tupla com os resultados
 
@@ -788,8 +788,13 @@ class Analise():
             Métodos usando: retorno_guarda
             Views Usando : /reprovaCCO
         '''
+        query = ''
+        if(dados):
+            query = dados
+        else:
+            query = '*'
         cursor = self.__db.connection.cursor()
-        cursor.execute('SELECT * from info_cargas where id_carga = {}'.format(id_carga))
+        cursor.execute('SELECT {} from info_cargas where id_carga = {}'.format(query, id_carga))
         return cursor.fetchall()
 
     def busca_analise_manual_por_id(self, id_carga):
@@ -935,7 +940,7 @@ class Analise():
             return False
 
 
-    def retorno_guarda(self, id_guarda:str, json=False)-> tuple:
+    def retorno_guarda(self, id_guarda:str, json=False, dados=False)-> tuple:
         '''
             Recebe o id do Guarda e retorna uma tupla de tuplas com as informações da carga
             e dados do pedido.
@@ -957,21 +962,35 @@ class Analise():
         if(chamados):
             for chamado in chamados:
                 #Busca info_cargas atraves do id_carga e adiciona a lista
-                info_cargas_retorno.append(self.busca_info_cargas_por_id(chamado[2])) # O item 2 é o id da CARGA
+                info_cargas_retorno.append(self.busca_info_cargas_por_id(chamado[2], dados=dados)) # O item 2 é o id da CARGA
+                print("RIC>>>>>>>>>", info_cargas_retorno)
         # A ideia é a tupla chamada ter o mesmo tamanho da lista resultado, assim posso usar o MESMO indice 
         #pois os itens vão ser relativos um ao outro através da ordem dos indices. 
+            if(json):
+                json_dict_chamados = []
+                for chamado in chamados:
+                    json_dict_chamados.append({
+                        'id': chamado[0],
+                        'nome': chamado[1],
+                        'id_carga': chamado[2],
+                        'cco': chamado[3],
+                        'status': chamado[4]
+                    })
+                json_dict_info_cargas = []
+                for r_i_c in info_cargas_retorno[0]:
+                    json_dict_info_cargas.append({
+                        'placa': r_i_c[0],
+                        'fornecedor': r_i_c[1],
+                        'grao': r_i_c[2],
+                        'id_carga': r_i_c[3]
+
+                    })
+
+                return [json_dict_chamados, json_dict_info_cargas]
             return (chamados, info_cargas_retorno)
+        if(json):
+            return []
         return False
-        # resultados = cursor.fetchall()
-        # if(json):
-        #     json_dict = []
-        #     for resultado in resultados:
-        #         json_dict.append({
-        #             'id': resultado[0],
-        #             'grao': resultado[1]
-        #         })
-        #     return json_dict
-        # return resultados
 
     def atualiza_nome_pedido_guarda(self, id_pedido:int, guarda:str):
         cursor = self.__db.connection.cursor()

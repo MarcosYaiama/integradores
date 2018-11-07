@@ -41,6 +41,16 @@ class TabelasUsuarios{
             let objeto = new TabelaPedidos('chamados_analise', online?'#div-tabela-chamados-pedido-nova-analise-CCO-JS':'#div-tabela-chamados-analista-JS', dados = dados, '/formAnalise', online);
             setInterval(function () { objeto.atualizaObjeto() }, 2000);
         }
+        if (tabela == 'chamados_guarda'){
+            console.log('chamados_guarda')
+            let objeto = new TabelaGuarda('chamados_guarda', '#div-tabela-chamados-guarda-JS', dados = dados, '/chamados', online);
+            setInterval(function () { objeto.atualizaObjeto() }, 2000);
+        }
+        if (tabela == 'chamados_guarda_all'){
+            console.log('chamados_guarda')
+            let objeto = new TabelaGuarda('chamados_guarda','#div-tabela-chamados-guarda-all-JS', dados = dados, '/chamados', online);
+            setInterval(function () { objeto.atualizaObjeto() }, 2000);
+        }
         if (tabela == 'ultimas_analises'){
             console.log('ultimas_analises')
             let objeto = new EstadoPrototype('ultimas_analises', '#div-tabela-ultimas-analises-JS', dados=dados, false, false, online=0);
