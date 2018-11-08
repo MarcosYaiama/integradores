@@ -38,20 +38,21 @@
 <script src="{{url_for('static', filename='js/Tabelas.js')}}"></script>
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
-<script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-  crossorigin="anonymous">
-  </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+      crossorigin="anonymous">
+      </script>
 <script src="{{url_for('static', filename='js/IndexGuarda.js')}}"></script>
 
   <script>
+    let endereco = '127.0.0.1';
     let tabela = new TabelasUsuarios('prototype', ['id','grao', 'destino', 'estado']);  
     var v = document.getElementsByTagName("audio")[0];
     v.play();
 
     $(document).ready(function () {
 
-        var socket = io.connect('http://127.0.0.1:5000/tocar_audio');
+        var socket = io.connect(`http://${endereco}:5000/tocar_audio`);
         socket.emit('username', "Proto");
 
 
