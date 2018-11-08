@@ -10,6 +10,9 @@ class EstadoPrototype extends Prototype{
         this.dados_a_serem_exibidos = dados;
         this.dados_a_serem_exibidos_selec = dados_selec;
         this.online = online;
+        this._retorno_update_antes = false;
+        this._contador = 0;
+        this._audios = document.querySelectorAll('audio');
         // console.log(this._endereco);
         
         // this._endereco = "192.168.43.98";
@@ -66,9 +69,11 @@ class EstadoPrototype extends Prototype{
         let cargo = this._cargo.toUpperCase();
         let online = this.online;
         
+        let contador_do_bug_mardito = 0;
+
         let xhr = new XMLHttpRequest();
         xhr.open('GET', "http://"+this._endereco+":5000/resposta_json/"+ this._cargo +"/" + this.online);
-        xhr.addEventListener('load', function(){
+        xhr.addEventListener('load', ()=>{
             if(xhr.status == 200){
                 let resultados = JSON.parse(xhr.responseText);
                 // console.log("RESULTS=> ", resultados);
@@ -89,8 +94,19 @@ class EstadoPrototype extends Prototype{
                         if(item.id == dado_banco.id){
                             if(item.estado != dado_banco.estado){
                                 let focus_select_value = document.querySelector('#selecao-processo-JS select').value;
-                                 
-                                update(lista_usuarios, div, template, dados, cargo, online);
+                                // console.log(this._cargo);
+
+                                this._retorno_update_antes = update(lista_usuarios, div, template, dados, cargo, online);
+                                console.log("ATUALIZADO PELO UPDATE", this._retorno_update_antes);
+                                if (this._retorno_update_antes[0].toLowerCase() == 'guarda'){
+                                    contador_do_bug_mardito += 1;
+                                    if(contador_do_bug_mardito == 2){
+                                        this._contador = 0;
+                                        contador_do_bug_mardito = 0;
+                                    }
+                                }else{
+                                    this._contador = 0;
+                                }
                                 div_selec ? update(lista_usuarios, div_selec, template_selec, dados_selec):null;
                                 document.querySelectorAll('#selecao-processo-JS select option').forEach(option =>{
                                     if(option.value == focus_select_value){
@@ -107,11 +123,54 @@ class EstadoPrototype extends Prototype{
                 update(lista_usuarios, div, template, dados, cargo, online);
                 div_selec ? update(lista_usuarios, div_selec, template_selec, dados_selec):null;
             }
+            console.log(this._contador);
+            
             if (lista_usuarios.length == 0) {
+                if(this._retorno_update_antes){
+                    
+                    if (this._retorno_update_antes[0].toLowerCase() != 'guarda'){
+                        // console.log('Entrei');
+                        
+                        if (this._retorno_update_antes.length == 2){
+                            let xhrArmazem = new XMLHttpRequest();
+                            xhrArmazem.open('GET', `http://${this._endereco}:5000/resposta_json/armazem/${this._retorno_update_antes[1]}`);
+                            xhrArmazem.addEventListener('load', () =>{
+                                if(xhrArmazem.status == 200){
+                                    let resposta = JSON.parse(xhrArmazem.responseText);
+                                    this._retorno_update_antes.push(resposta['armazem'])
+                                }
+                            });
+                            xhrArmazem.send();
+                        }
+                        if (this._retorno_update_antes.length == 3 && this._contador === 0){
+                            if (this._retorno_update_antes[2] == 1){
+                                console.log('Armazem1');
+                                this._audios[1].play();
+                            }
+                            else{
+                                console.log('Armazem2');
+                                this._audios[2].play();
+                            }
+                            this._contador = 1;
+                            console.log("CONTADOR APROVA ", this._contador);
+                        }
+                    }
+                }
                 div.innerHTML = "";
                 // div_selec?div_selec.innerHTML = "":null;
-                
             }
+            if (this._retorno_update_antes) {
+                console.log(this._retorno_update_antes);
+                
+                if (this._retorno_update_antes[0].toLowerCase() == 'guarda' && this._contador === 0){
+                    this._contador = 1;
+                    this._audios[0].play();
+                    console.log("CONTADOR IRREGULAR ", this._contador);
+                    console.log('IRREGULAR');
+                    
+                }
+            }
+            
         });
         xhr.send();
     }
@@ -123,7 +182,7 @@ class EstadoPrototype extends Prototype{
             // console.log(item);
             let exibicao = '';
             let ultimo_dado = dados[1][-1];
-            console.log(item);
+            // console.log(item);
             dados[1].forEach(element => {
                 
                 if(exibicao.length > 0 && element != ultimo_dado){
@@ -149,7 +208,7 @@ class EstadoPrototype extends Prototype{
             // console.log('Entrei')
             htmlBody += '<tr class="dados-carga-JS">'
             exibir.forEach(dado => {
-                console.log(dado);
+                // console.log(dado);
                 
                 htmlBody += `<td class="${dado}">${item[dado]}</td>`
             });
@@ -170,11 +229,11 @@ class EstadoPrototype extends Prototype{
         </table>`
 }
     update(model, div, template, dados, cargo, online){
-        // console.log(this._div);
-        // console.log(model);
+
         div.innerHTML = template(model, dados, cargo, online);
+        // console.log(model);
         
-        
+        return model[0] != undefined ? [model[0]['estado'], model[0]['id']]:false;
     }
     //PROBLEMA COM ARRAY JS RESOLVER !!!!!!!!!!!!!!
     atualizaObjeto(){

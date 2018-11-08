@@ -1,0 +1,25 @@
+<html>
+    <input name="nome" type="hidden" value="{{ nome }}">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+<script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+    crossorigin="anonymous">
+</script>
+
+<script>
+    $(document).ready(function () {
+        
+        let nome = document.getElementsByName('nome')[0].value
+        var socket = io.connect('http://127.0.0.1:5000/tocar_audio');
+        socket.emit('username', nome);
+        socket.emit('estado_pergunta', 'GOGOGO');
+
+
+        socket.on('estado_resposta', function (msg) {
+
+            console.log(`RESPOSTA SERVIDOR ${msg}`);
+
+        });
+    });
+
+</script>
+</html>

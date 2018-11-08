@@ -1075,3 +1075,18 @@ class Analise():
             return False
         else:
             return True
+
+    def retorna_armazem_info_cargas_por_id(self, id_carga, json=False):
+        '''
+            Retorna o armazem da carga do id_carga especifico
+
+            Foi criada para ser usada como meio de acesso de uma chamada GET que envia informações para o JS executar algo
+
+            Tabelas: analise_manual
+            Métodos View usando: jsonTeste
+        '''
+        cursor = self.__db.connection.cursor()
+        cursor.execute(
+            'SELECT redirecionamento from analise_manual where id_carga_fk={}'.format(id_carga)
+            )
+        return({'armazem':cursor.fetchall()[0][0][-1]})

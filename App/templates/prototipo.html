@@ -24,8 +24,11 @@
     </div>
     <br><br><br>
     <!-- <button class="btn btn-success form-control botao"></button> -->
-    <div id="div-tabela-prototype-JS" class="hide"></div>
-  <audio class="hide" src="feedback" preload="auto" controls></audio>
+    <div id="div-tabela-prototype-JS" ></div>
+  <audio id="irregular" class="hide" src="/feedback/irregular" preload="auto" controls></audio>
+  <audio id="armazem1" class="hide" src="/feedback/armazem1" preload="auto" controls></audio>
+  <audio id="armazem2" class="hide" src="/feedback/armazem2" preload="auto" controls></audio>
+
 </body>
 
 
@@ -33,9 +36,30 @@
 <script src="{{url_for('static', filename='js/Prototype.js')}}"></script>
 <script src="{{url_for('static', filename='js/EstadoPrototype.js')}}"></script>
 <script src="{{url_for('static', filename='js/Tabelas.js')}}"></script>
-<script>
-  let tabela = new TabelasUsuarios('prototype', ['id','grao', 'destino', 'estado']);  
-  // var v = document.getElementsByTagName("audio")[0];
-  // v.play();
-</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+<script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous">
+  </script>
+<script src="{{url_for('static', filename='js/IndexGuarda.js')}}"></script>
+
+  <script>
+    let tabela = new TabelasUsuarios('prototype', ['id','grao', 'destino', 'estado']);  
+    var v = document.getElementsByTagName("audio")[0];
+    v.play();
+
+    $(document).ready(function () {
+
+        var socket = io.connect('http://127.0.0.1:5000/tocar_audio');
+        socket.emit('username', "Proto");
+
+
+        socket.on('estado_resposta', function (msg) {
+
+          console.log(`RESPOSTA SERVIDOR ${msg}`);
+   });
+      });
+  </script>
+
 {%endblock%}

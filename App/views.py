@@ -5,6 +5,7 @@ from helpers import nivel_de_acesso, envia_pagina_arduino
 from daoMySQL import UsuarioDao, Analise
 from pprint import pprint
 from flask_socketio import SocketIO, send, emit
+from requests import get
 
 mySQL = True
 usuario_dao = UsuarioDao(db)
@@ -184,12 +185,10 @@ def verifica_analise():
         Faz a analise e redireciona para a pagina inicial
         Paginas que redirecionam para cá: formAnalise
     '''
-    print(session, "ENTREEEEEEEEEEEI")
     if(session['usuario_cargo'] == 'CCO'):
         guarda = 0
         if(len(request.form['guarda']) > 1):
             guarda = request.form['guarda']
-        print("CHEGEEEEEEEEEEEEEEEEEEI", guarda)
         analise.decisao_cco(request.form['decisao'],request.form['id_carga'], guarda = guarda, cco = session['usuario_logado'])
     elif(session['usuario_cargo'] == 'ANALISTA DE GRAOS'):
         caracteristicas = analise.caracteristicas_grao_analise(request.form['grao'])
@@ -203,6 +202,7 @@ def verifica_analise():
         # print(dados_analisados)
         if(not analise.analisar_graos(caracteristicas, dados_analisados, request.form['id_carga'], request.form['redirec'], request.form['grao'])):
             flash('A analise foi aprovada')
+            get('http://localhost:5000/toca_audio')
         else:
             flash('A analise foi encaminhada para o CCO, aguardar resposta!')
     else:
@@ -225,6 +225,9 @@ def chamado_guarda():
     
     return protege_rota('chamadoGuarda.html')
 
+@app.route('/toca_audio')
+def toca_audio():
+    return render_template('toca_audio.html', nome='Proto')
 
 @app.route('/logout')
 def logout():
@@ -345,6 +348,10 @@ def jsonTeste(dado, num):
         Dado - > chamados_guarda
                     num - > 0 - Pedidos Globais
                     num - > 1 - Pedidos especificos
+        
+        Dado - > armazem
+                    num - > id
+                    
     '''
     if('usuario_logado' in session):
         # print(dado.lower())
@@ -389,7 +396,9 @@ def jsonTeste(dado, num):
                     return jsonify(analise.retorno_guarda(session['usuario_logado'], json=True, dados='placa, fornecedor, grao, id_carga'))
                 else:
                     return jsonify(analise.retorno_guarda("all", json=True, dados='placa, fornecedor, grao, id_carga'))
-            
+            elif dado == 'armazem':
+                    return jsonify(analise.retorna_armazem_info_cargas_por_id(num ,json=True))
+                
             return jsonify(usuario_dao.listar(cargo=cargo_chamada, json=True, online=int(num), disponibilidade=False))
         # return jsonify({'key': [0,1,2,3,4,5]})
     else:
@@ -467,9 +476,10 @@ def prototype():
 def chat():
     return render_template('chatTeste1.html')
 
-@app.route('/feedback/')
-def midia():
-    return send_from_directory('medias', 'feedback.mp3')
+@app.route('/feedback/<audio>')
+def midia(audio):
+    if(audio):
+        return send_from_directory('medias', '{}.mp3'.format(audio))
 
 @app.route('/situacao/<num>')
 def altera_situacao(num):
@@ -500,6 +510,20 @@ def estado(payload):
 
 
 
+@socketio.on('username', namespace='/tocar_audio')
+def usuario_recebido_audio(username):
+    # users['username'] = request.sid
+    users[username] = request.sid
+    print(users)
+    # print(session['usuario_logado'])
+    # print(username)
+    # print('Username added!')
+
+
+@socketio.on('estado_pergunta', namespace='/tocar_audio')
+def estado_audio(payload):
+    print('Enviando')
+    emit('estado_resposta', payload['msg'], room=users['Proto'])
 
 
 
