@@ -1,55 +1,38 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ArduinoJson.h>
+//---DISPLAY---
+#include <Adafruit_SSD1306.h>
+#define OLED_RESET LED_BUILTIN
+Adafruit_SSD1306 display(OLED_RESET);
+
 
 ESP8266WebServer server;
+
 uint8_t pin_led = LED_BUILTIN;
 
-char* ssid = "Lenovo C2";
-char* psswd = "nick1234";
-
+char* ssid = "ssd";
+char* psswd = "senha";
+void configura_display();
+void configura_server();
+void configura_wifi();
+void abre_cancela();
+void fecha_cancela();
 
 void setup()
 {
-    pinMode(LED_BUILTIN, 1);
-    WiFi.begin(ssid,psswd);
+    pinMode(D3, 1);
+    digitalWrite(D3,0);
     Serial.begin(115200);
-    
-    while(WiFi.status() != WL_CONNECTED){
-        delay(500);
-        Serial.print(".");
-    }
-    Serial.println("");
-    Serial.print("IP Address:");
-    Serial.print(WiFi.localIP());
+    configura_display();
+    configura_wifi();
+    configura_server();
 
-    server.on("/",[](){server.send(200,"text/plain", "<h1>Hello World</h1>");});
-    server.on("/toggle", toggleLED);
-    server.on("/arduino", setPanTilt);
-    server.begin();
+    
 }
 
 void loop(){
-
     server.handleClient();
 }
 
-void toggleLED(){
-    digitalWrite(pin_led, !digitalRead(pin_led));
-    server.send(204,"");
-}
 
-void setPanTilt(){
-    String data = server.arg("plain");
-    StaticJsonBuffer<200> jBuffer;
-    JsonObject& jObject = jBuffer.parseObject(data);
-    String nome = jObject["Usuario"];
-    String cargo = jObject["Cargo"];
-    String pagina = jObject["Pagina"];
-    
-//    Serial.println(data);
-    Serial.println(nome);
-    Serial.println(cargo);
-    Serial.println(pagina);
-    server.send(204, "");
-}
