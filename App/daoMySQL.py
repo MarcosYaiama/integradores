@@ -197,7 +197,7 @@ class UsuarioDao:
     def seta_estado_guarda(self, nome_guarda, estado)-> tuple:
         # print("SETANDO")
         cursor = self.__db.connection.cursor()
-        estado_guarda = "Oculpado"
+        estado_guarda = "Ocupado"
         if(int(estado) ==2): 
             estado_guarda = "Disponivel"
         elif(int(estado) ==3): 

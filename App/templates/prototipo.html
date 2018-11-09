@@ -42,17 +42,16 @@
     <script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
       crossorigin="anonymous">
       </script>
-<script src="{{url_for('static', filename='js/IndexGuarda.js')}}"></script>
 
   <script>
-    let endereco = '127.0.0.1';
+    definicoes = new Definicoes();
     let tabela = new TabelasUsuarios('prototype', ['id','grao', 'destino', 'estado']);  
-    var v = document.getElementsByTagName("audio")[0];
-    v.play();
+    // var v = document.getElementsByTagName("audio")[0];
+    // v.play();
 
     $(document).ready(function () {
 
-        var socket = io.connect(`http://${endereco}:5000/tocar_audio`);
+        var socket = io.connect(`http://${definicoes._endereco}:5000/tocar_audio`);
         socket.emit('username', "Proto");
 
 

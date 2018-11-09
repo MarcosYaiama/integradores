@@ -433,7 +433,7 @@ def busca_situacao_guarda(nome_guarda, num):
         num
             0 - Retorna do estado do nome_guarda
             1- Seta o nome_guarda para Disponivel
-            2- Seta o nome_guarda para Oculpado
+            2- Seta o nome_guarda para Ocupado
         
         online
             0 - Offline

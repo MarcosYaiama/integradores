@@ -35,15 +35,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
 <script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
     crossorigin="anonymous"></script>
-        <script>
-            let endereco = '127.0.0.1';
+<script src="{{url_for('static', filename='js/Definicoes.js')}}"></script>
+<script>
+            let definicoes = new Definicoes();
             let nome = document.querySelector('#usuario-nome-JS').textContent;
                 let estado_guarda = document.querySelector('#estado');
                 window.addEventListener('click', function () {
                     console.log("ENTREI POW");
                     
                     let xhr = new XMLHttpRequest();
-                    xhr.open("GET", `http://${endereco}:5000/guarda/${nome}/0`);
+                    xhr.open("GET", `http://${definicoes._endereco}:5000/guarda/${nome}/0`);
 
                     xhr.addEventListener('load', () => {
                         console.log("entrei");
@@ -53,7 +54,7 @@
                             if(resultados != "A caminho"){
                                 console.log('Trocando status');
                                 
-                                var socket = io.connect(`http://${endereco}:5000/estadoGuarda`);
+                                var socket = io.connect(`http://${definicoes._endereco}:5000/estadoGuarda`);
                                 socket.emit('username', nome);
                                 socket.emit('estado', { 'user': nome, 'msg': 3 });
 

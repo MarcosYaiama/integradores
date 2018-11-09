@@ -98,6 +98,20 @@ class EstadoPrototype extends Prototype{
 
                                 this._retorno_update_antes = update(lista_usuarios, div, template, dados, cargo, online);
                                 console.log("ATUALIZADO PELO UPDATE", this._retorno_update_antes);
+                                
+                                let xhr3 = new XMLHttpRequest();
+                                let ip = "192.168.0.3";
+                                xhr3.open("POST", `http://${ip}/exibe_status`, true);
+                                xhr3.setRequestHeader("Content-Type", "application/json");
+                                xhr3.onreadystatechange = function () {
+                                    if (xhr3.readyState === 4 && xhr3.status === 200) {
+                                        let json = JSON.parse(xhr3.responseText);
+                                        console.log(json.estado);
+                                    }
+                                };
+                                let data = JSON.stringify({ "estado": this._retorno_update_antes });
+                                xhr3.send(data);
+
                                 if (this._retorno_update_antes[0].toLowerCase() == 'guarda'){
                                     contador_do_bug_mardito += 1;
                                     if(contador_do_bug_mardito == 2){
@@ -152,6 +166,7 @@ class EstadoPrototype extends Prototype{
                                 this._audios[2].play();
                             }
                             this._contador = 1;
+                            document.querySelector('.tela').classList.add('hide');
                             console.log("CONTADOR APROVA ", this._contador);
                         }
                     }
@@ -168,6 +183,20 @@ class EstadoPrototype extends Prototype{
                     console.log("CONTADOR IRREGULAR ", this._contador);
                     console.log('IRREGULAR');
                     
+                }
+            }
+
+            if (document.querySelector('#selecao-processo-JS').textContent.length > 39){
+                if (document.querySelector('.tela ').classList.contains('hide')) {
+                    console.log('Hide removido com sucesso');
+
+                    document.querySelector('.tela ').classList.remove('hide');
+                }
+            }else{
+                if (!document.querySelector('.tela ').classList.contains('hide')) {
+                    console.log('Hide removido com sucesso');
+
+                    document.querySelector('.tela ').classList.add('hide');
                 }
             }
             

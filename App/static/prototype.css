@@ -8,6 +8,8 @@
     border: white solid 3px;
 }
 
+.hide{display: none;}
+
 .processo{
     background-color: inherit;
     color:white;

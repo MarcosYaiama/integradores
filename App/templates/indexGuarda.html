@@ -3,7 +3,7 @@
 <div style="text-align: center; font-weight: bolder" id="estado" class="form-control">Aguardando</div>
     <div id="botoes-decisao-JS">
         
-        <button class="form-control btn btn-danger" id="estado_1">Oculpado</button>
+        <button class="form-control btn btn-danger" id="estado_1">Ocupado</button>
         <button id="estado_2" class="form-control btn btn-success">Disponivel</button>
         
     </div>
@@ -23,12 +23,12 @@
             integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
             crossorigin="anonymous">
     </script>
-    <script src="{{url_for('static', filename='js/IndexGuarda.js')}}"></script>
 
 
-    <script src="{{url_for('static', filename='js/Definicoes.js')}}"></script>
-    <script src="{{url_for('static', filename='js/tabelaGuarda.js')}}"></script>
-    <script src="{{url_for('static', filename='js/Tabelas.js')}}"></script>
+<script src="{{url_for('static', filename='js/Definicoes.js')}}"></script>
+<script src="{{url_for('static', filename='js/tabelaGuarda.js')}}"></script>
+<script src="{{url_for('static', filename='js/Tabelas.js')}}"></script>
+<script src="{{url_for('static', filename='js/IndexGuarda.js')}}"></script>
     <script>
         let tabelaGuardaIndividual = new TabelasUsuarios('chamados_guarda', ['placa', 'fornecedor', 'requisição'],1);
         let tabelaGuardaGlobal = new TabelasUsuarios('chamados_guarda_all', ['placa', 'fornecedor', 'requisição']);
