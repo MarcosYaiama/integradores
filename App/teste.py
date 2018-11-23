@@ -18,7 +18,7 @@ for i in range(tamanho_array):
     else:
         c+=1
 
-print(resultado)
+# print(resultado)
 
 
 def organiza_multiplas_analises(dados:tuple, grao:str):
@@ -41,5 +41,5 @@ def organiza_multiplas_analises(dados:tuple, grao:str):
         else:
             c+=1
 
-    print(resultado)
+    # print(resultado)
     

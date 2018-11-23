@@ -297,7 +297,7 @@ def gera_analise():
 
     else:
         if(analise.verifica_existencia_processos_info_cargas()):
-            print('ENTREI')
+            # print('ENTREI')
             analise.cria_analise()
             flash('OCR e Analise manual simuladas, criadas com sucesso')
         else:
@@ -514,7 +514,7 @@ def estado(payload):
 def usuario_recebido_audio(username):
     # users['username'] = request.sid
     users[username] = request.sid
-    print(users)
+    # print(users)
     # print(session['usuario_logado'])
     # print(username)
     # print('Username added!')
@@ -522,7 +522,7 @@ def usuario_recebido_audio(username):
 
 @socketio.on('estado_pergunta', namespace='/tocar_audio')
 def estado_audio(payload):
-    print('Enviando')
+    # print('Enviando')
     emit('estado_resposta', payload['msg'], room=users['Proto'])
 
 

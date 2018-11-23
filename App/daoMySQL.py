@@ -958,12 +958,12 @@ class Analise():
         # if(json):
         #     ...
         # else:
-        print(chamados)
+        # print(chamados)
         if(chamados):
             for chamado in chamados:
                 #Busca info_cargas atraves do id_carga e adiciona a lista
                 info_cargas_retorno.append(self.busca_info_cargas_por_id(chamado[2], dados=dados)) # O item 2 é o id da CARGA
-                print("RIC>>>>>>>>>", info_cargas_retorno)
+                # print("RIC>>>>>>>>>", info_cargas_retorno)
         # A ideia é a tupla chamada ter o mesmo tamanho da lista resultado, assim posso usar o MESMO indice 
         #pois os itens vão ser relativos um ao outro através da ordem dos indices. 
             if(json):
