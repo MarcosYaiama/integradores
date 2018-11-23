@@ -175,6 +175,7 @@ def analise_form():
     id_carga = int(request.form['id_carga_fk'])
     dados_maquina = analise.busca_por_analise_por_id('id_carga_fk', id_carga, 'analise')  # Retorna os dados da Tabela Analise com o ID passado
     analise_manual = analise.inicia_analise_manual(dados_maquina[0][0], id_carga, session['usuario_logado'], nova_analise = False if not request.form.get('nova_analise', False) else True)
+
     # ids_analise_manual = analise.busca_analise_manual_incompleta(id_carga)
     dados = [dados_maquina, analise_manual]
     return protege_rota('formAnalise.html', dados)
@@ -218,11 +219,10 @@ def chamado_guarda():
     # print(session)
     if(request.form['situacao'] == 'Aguardando'):
         if('guarda' in request.form.keys()):
-            # print('ENTREI')
             analise.atualiza_nome_pedido_guarda(
                 request.form['id'], session['usuario_logado'])
         analise.atualiza_estado_pedido_guarda(request.form['id'], "Em Andamento")
-    
+
     return protege_rota('chamadoGuarda.html')
 
 @app.route('/toca_audio')

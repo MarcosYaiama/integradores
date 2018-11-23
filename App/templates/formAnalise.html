@@ -29,7 +29,12 @@
             </table>
             {% for dado in arquivos[1] %}
                     <label>{{dado[0]}}</label>
-                    <input class="form-control" type="text" name="{{dado[0]}}" required>
+                    <select name="{{dado[0]}}" class="form-control">
+                        {% for i in range(0,101) %}
+                        <option value="{{i}}">{{i}} %</option>
+                        {% endfor %}
+                    </select>
+                    <!-- <input class="form-control" type="text" name="{{dado[0]}}" required> -->
             {% endfor %}
             
             <br>
@@ -46,9 +51,9 @@
         Não foi possivel realizar a ação!
         <br><br>
         {% endif %}
-        Maquina
+        <!-- Maquina
         {{ arquivos[0] }}
         <br><br>
         Dados do Grao
-        {{ arquivos[1] }}
+        {{ arquivos[1] }} -->
 {% endblock %}

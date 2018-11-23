@@ -170,6 +170,7 @@ class TabelaGuarda extends Definicoes {
                                     <input type="hidden" value="${model[0][0]['cco']}" name="cco">
                                     <input type="hidden" value="${model[0][0]['status']}" name="situacao">
                                     <input type="hidden" value="${model[0][0]['id']}" name="id">
+                                    <input type="hidden" value="1" name="redirecionar">
                                     <button class="btn btn-primary form-control">Ver Detalhes</button>
                                 </form>`}
                             </td>

@@ -1,7 +1,5 @@
 {% extends 'template.html' %} {% block conteudo %}
-         {{arquivos[0]}}<br><br><br>
-         {{arquivos[1]}}<br><br><br>
-         {{arquivos[2]}}<br><br><br>
+
         <h1 style="text-align: center;">Encaminhamento de Carga Reprovada</h1>
         <form action="{{ url_for('cco_form') }}" method="POST">
             <input type="hidden" name="id_carga" value="{{arquivos[0][0][0]}}">
