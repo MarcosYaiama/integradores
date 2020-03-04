@@ -1,3 +1,3 @@
 # Projetos Integradores
 
-![Result Integradores](./project.gif)
+![Result Integradores](./integradores_pronto.gif)
